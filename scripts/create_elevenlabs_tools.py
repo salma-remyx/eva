@@ -86,11 +86,7 @@ def build_parameters(tool: dict) -> ObjectJsonSchemaPropertyInput:
     )
 
 
-def convert_tool(
-    tool: dict,
-    pre_tool_speech: str = "force",
-    execution_mode: str = "immediate",
-) -> ToolRequestModel:
+def convert_tool(tool: dict) -> ToolRequestModel:
     """Convert a YAML tool definition to an ElevenLabs ToolRequestModel."""
     client_config = ToolRequestModelToolConfig_Client(
         type="client",
@@ -98,8 +94,6 @@ def convert_tool(
         description=f"{tool['name']}: {tool['description']}",
         expects_response=True,
         parameters=build_parameters(tool),
-        pre_tool_speech=pre_tool_speech,
-        execution_mode=execution_mode,
     )
     return ToolRequestModel(tool_config=client_config)
 
@@ -110,18 +104,6 @@ def main():
     parser.add_argument("--agent-id", default="", help="ElevenLabs agent ID")
     parser.add_argument("--domain", default="airline", help="Agent domain name (e.g. airline, itsm, medical_hr)")
     parser.add_argument("--config", default=None, help="Path to agent YAML config (overrides --domain)")
-    parser.add_argument(
-        "--pre-tool-speech",
-        default="force",
-        choices=["auto", "force", "off"],
-        help="Pre-tool speech mode (default: force)",
-    )
-    parser.add_argument(
-        "--execution-mode",
-        default="immediate",
-        choices=["immediate", "post_tool_speech", "async"],
-        help="Tool execution mode (default: immediate)",
-    )
     parser.add_argument("--dry-run", action="store_true", help="Print tool configs without creating them")
     args = parser.parse_args()
 
@@ -131,7 +113,7 @@ def main():
 
     if args.dry_run:
         for tool in tools:
-            request_model = convert_tool(tool, pre_tool_speech=args.pre_tool_speech, execution_mode=args.execution_mode)
+            request_model = convert_tool(tool)
             tool_cfg = request_model.tool_config
             print(f"\n--- {tool_cfg.name} ---")
             print(f"  description: {tool_cfg.description}")
