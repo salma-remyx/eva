@@ -30,7 +30,7 @@ export function AcknowledgementsSection() {
           transition={{ duration: 0.5, delay: 0.1 }}
         >
           <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-6">
-            <h3 className="text-base font-semibold text-emerald-400 mb-2">Linguists</h3>
+            <h3 className="text-base font-semibold text-emerald-400 mb-2">Machine Learning Data Linguists</h3>
             <p className="text-sm text-text-secondary mb-3">We thank our linguist collaborators for their work on carefully reviewing the HR and ITSM data domains, providing feedback on domain design, and annotating conversation samples with ratings for us to measure judge alignment.</p>
             <p className="text-sm font-semibold text-text-primary">Tiffany Do, Ryan Dux, Maria Kossenko, Keerthana Gopinathan, Anne Heaton-Dunlap, Nidhi Kumari, Ranjani Iyer</p>
           </div>

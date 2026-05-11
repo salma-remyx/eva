@@ -29,7 +29,7 @@ const paretoInsights = [
   {
     title: 'S2S systems anchor every Pareto frontier',
     description:
-      'Despite trailing on raw accuracy, speech-to-speech systems consistently sit on the Pareto frontier in every domain — their experience-side lead (driven by turn-taking and response latency) makes them uniformly Pareto-efficient relative to cascades, even when no single S2S system dominates all axes.',
+      'Speech-to-speech systems consistently sit on the Pareto frontier in every domain — their experience-side lead (driven by turn-taking and response latency) makes them uniformly Pareto-efficient relative to cascades.',
   },
 ];
 
