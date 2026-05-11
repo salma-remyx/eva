@@ -17,7 +17,7 @@ import { useThemeColors } from '../../styles/theme';
 // Three central findings from the EVA-Bench paper abstract / §5 Conclusion.
 const paretoInsights = [
   {
-    title: 'No system clears 0.5 on both axes',
+    title: 'No system clears 0.5 on both axes pass@1',
     description:
       'Across 12 systems spanning all three architectures, no system simultaneously exceeds 0.5 on both EVA-A pass@1 and EVA-X pass@1 — joint accuracy–experience quality remains far from saturated.',
   },
@@ -27,9 +27,9 @@ const paretoInsights = [
       'Peak (pass@k) and reliable (pass^k) performance diverge substantially: the median pass@k–pass^k gap is 0.44 on EVA-A and 0.24 on EVA-X, indicating single-trial scores systematically overstate deployment-grade reliability.',
   },
   {
-    title: 'Perturbations expose robustness gaps',
+    title: 'S2S systems anchor every Pareto frontier',
     description:
-      'Accent and noise perturbations expose substantial robustness gaps, with effects varying across architectures, systems, and metrics (mean ∆ up to 0.314).',
+      'Despite trailing on raw accuracy, speech-to-speech systems consistently sit on the Pareto frontier in every domain — their experience-side lead (driven by turn-taking and response latency) makes them uniformly Pareto-efficient relative to cascades, even when no single S2S system dominates all axes.',
   },
 ];
 
