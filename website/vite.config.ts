@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: '/eva-internal/',
+  base: './',
   build: {
     outDir: '../docs',
     emptyOutDir: false,
