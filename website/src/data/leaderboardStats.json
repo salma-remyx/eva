@@ -6042,16 +6042,6 @@
           }
         }
       },
-      "perturbation_delta": {}
-    },
-    {
-      "id": "gemini-3-flash-plus-gemini-flash-tts",
-      "name": "Gemini 3 Flash + Gemini Flash TTS",
-      "type": "2-part",
-      "stt": "-",
-      "llm": "Gemini 3 Flash",
-      "tts": "Gemini Flash TTS",
-      "clean": {},
       "perturbation_delta": {
         "task_completion": {
           "accent": {

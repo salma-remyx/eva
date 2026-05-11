@@ -39,7 +39,8 @@ DOMAINS = ["airline", "itsm", "medical_hr"]
 #   Cascade: Cohere + Gemma-4-26B + Voxtral; ElevenAgents (Scribe + Gemini-3-Flash + Conversational v3);
 #            Ink + Haiku-4.5 + Sonic; Nova + GPT-5.4 + Sonic; Nova + GPT-5.4-mini + Aura;
 #            Parakeet + Gemma-4-31B + Kokoro; Whisper + Qwen3.5-27B + Voxtral.
-#   Hybrid (2-part): Gemini-3-Flash + Gemini-3.1-Flash-TTS; Ultravox.
+#   Hybrid (2-part): Gemini-3-Flash + Gemini-3.1-Flash-TTS (merged from two source rows
+#     carrying clean and perturbation_delta separately); Ultravox.
 #   S2S: Gemini-3.1-Flash-Live; GPT-Realtime-1.5; GPT-Realtime-mini.
 SYSTEM_META = {
     "Ultravox":                                {"type": "2-part",  "stt": "-",                "llm": "Ultravox-Realtime", "tts": "-"},
@@ -47,7 +48,6 @@ SYSTEM_META = {
     "GPT Realtime Mini":                       {"type": "s2s",     "stt": "-",                "llm": "gpt-realtime-mini", "tts": "-"},
     "ElevenAgent":                             {"type": "cascade", "stt": "Scribe v2.2 Realtime", "llm": "Gemini 3 Flash", "tts": "TTS Conversational v3"},
     "Gemini 3.1 Flash Live":                   {"type": "s2s",     "stt": "-",                "llm": "Gemini 3.1 Flash Live", "tts": "-"},
-    "Gemini 3 Flash + Gemini Flash TTS":       {"type": "2-part",  "stt": "-",                "llm": "Gemini 3 Flash", "tts": "Gemini Flash TTS"},
     "Gemini 3 Flash + Gemini 3.1 Flash TTS":   {"type": "2-part",  "stt": "-",                "llm": "Gemini 3 Flash", "tts": "Gemini 3.1 Flash TTS"},
     "Cohere + Gemma-4-26B + Voxtral":          {"type": "cascade", "stt": "Cohere Transcribe", "llm": "Gemma-4-26B", "tts": "Voxtral 4B TTS"},
     "Ink Whisper + Haiku 4.5 + Sonic 3":       {"type": "cascade", "stt": "Ink Whisper",       "llm": "Haiku 4.5",   "tts": "Sonic 3"},
@@ -117,6 +117,18 @@ def extract_pert(system_pert: dict) -> dict:
 
 def main():
     raw = json.loads(SRC.read_text())
+    # Merge accidentally-split Gemini hybrid rows (one carries `clean`, the
+    # other carries `perturbation_delta`). Keep the canonical name.
+    GEMINI_MERGE = {
+        "Gemini 3 Flash + Gemini 3.1 Flash TTS": "Gemini 3 Flash + Gemini Flash TTS",
+    }
+    for canon, alias in GEMINI_MERGE.items():
+        if alias in raw:
+            extra = raw.pop(alias)
+            if "perturbation_delta" in extra:
+                raw[canon].setdefault("perturbation_delta", {}).update(extra["perturbation_delta"])
+            if "clean" in extra:
+                raw[canon].setdefault("clean", {}).update(extra["clean"])
     systems = []
     for name, payload in raw.items():
         meta = SYSTEM_META.get(name)
