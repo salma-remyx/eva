@@ -15,6 +15,12 @@ export interface MetricDefinition {
   judgePrompt?: string;
   judgeAccuracy?: number;
   judgeScores?: { label: string; value: number; std?: number }[];
+  judgeAlignment?: {
+    measure: string;
+    value: number;
+    ci?: [number, number];
+    notes?: string;
+  };
   judgeDevelopmentNotes?: string;
   developmentDocUrl?: string;
 }
@@ -55,6 +61,12 @@ export const metrics: MetricDefinition[] = [
       { label: 'accuracy', value: 0.8957, std: 0.0258 },
       { label: 'macro_f1', value: 0.856, std: 0.024 },
     ],
+    judgeAlignment: {
+      measure: "Unweighted Cohen's κ",
+      value: 0.777,
+      ci: [0.704, 0.835],
+      notes: 'Binary metric',
+    },
     description: 'Measures whether the agent correctly spoke the information it intended to communicate. TTS systems can mispronounce, skip, or distort words \u2014 in a voice context, if a confirmation code is not spoken correctly, the user cannot act on it regardless of whether the LLM produced the right answer.',
     inputs: 'Agent audio recording, intended assistant text (what LLM generated)',
     outputRange: 'Binary per turn (0=low fidelity, 1=high fidelity), aggregated as mean across turns',
@@ -143,6 +155,11 @@ Respond with a JSON object. Each turn entry must include the turn_id matching th
       { label: 'accuracy', value: 0.8394, std: 0.0292 },
       { label: 'macro_f1', value: 0.8065, std: 0.0286 },
     ],
+    judgeAlignment: {
+      measure: "Quadratic-weighted Cohen's κ",
+      value: 0.836,
+      ci: [0.729, 0.915],
+    },
     description: 'Measures whether the agent\'s responses were consistent with its instructions, provided policy, user inputs, and tool call results. Evaluates across 5 dimensions: fabricating tool parameters, misrepresenting tool results, violating policies, failing to disambiguate, and hallucination.',
     inputs: 'Agent role, agent instructions, available tools, current date/time, full conversation trace with tool calls',
     outputRange: '1-3 scale, normalized to 0-1 (1=unfaithful, 2=partially faithful, 3=fully faithful)',
@@ -363,6 +380,11 @@ Respond in JSON format:
       { label: 'accuracy', value: 0.9226, std: 0.0076 },
       { label: 'macro_f1', value: 0.8375, std: 0.0112 },
     ],
+    judgeAlignment: {
+      measure: "Quadratic-weighted Cohen's κ",
+      value: 0.823,
+      ci: [0.754, 0.874],
+    },
     description: 'Measures whether the agent\'s responses were appropriately brief and focused for spoken delivery. In voice, users cannot skim, re-read, or scroll back \u2014 presenting too many options, asking multiple questions per turn, or including unnecessary hedging degrades the interaction.',
     inputs: 'Full conversation trace with all turns',
     outputRange: '1-3 per turn (1=verbose, 2=adequate, 3=concise), normalized to 0-1',
@@ -484,6 +506,11 @@ If the turn is rated 3 or null, failure_modes must be an empty list: [].`,
       { label: 'accuracy', value: 0.799, std: 0.0112 },
       { label: 'macro_f1', value: 0.7817, std: 0.0128 },
     ],
+    judgeAlignment: {
+      measure: "Quadratic-weighted Cohen's κ",
+      value: 0.845,
+      ci: [0.753, 0.911],
+    },
     description: 'Measures whether the agent moved the conversation forward effectively \u2014 avoiding unnecessary repetition, retaining context across turns, and driving toward task completion without stalling.',
     inputs: 'Full conversation trace',
     outputRange: '1-3 (1=clear progression issues, 2=minor issues, 3=smooth progression), normalized to 0-1',
@@ -1055,50 +1082,6 @@ Respond with a JSON object. Each turn entry must include the turn_id matching th
     }}
   ]
 }}`,
-  },
-];
-
-export interface HumanJudgeAgreementRow {
-  metricId: string;
-  metricLabel: string;
-  agreement: number;
-  agreementLabel: string;
-  std?: number;
-  notes?: string;
-}
-
-// Source: EVA-Bench paper, Table 14 ("Human–judge agreement"). Primary judge
-// (L_J) Cohen's κ vs. human linguist annotators. Quadratic-weighted κ for the
-// three ordinal metrics; unweighted κ for the binary Speech Fidelity metric.
-// 95% CIs come from 10,000 record-level bootstrap resamples.
-export const humanJudgeAgreement: HumanJudgeAgreementRow[] = [
-  {
-    metricId: 'faithfulness',
-    metricLabel: 'Faithfulness',
-    agreement: 0.836,
-    agreementLabel: "Cohen's κ",
-    notes: '95% CI [0.729, 0.915]; quadratic-weighted',
-  },
-  {
-    metricId: 'conversation_progression',
-    metricLabel: 'Conversation Progression',
-    agreement: 0.845,
-    agreementLabel: "Cohen's κ",
-    notes: '95% CI [0.753, 0.911]; quadratic-weighted',
-  },
-  {
-    metricId: 'conciseness',
-    metricLabel: 'Conciseness',
-    agreement: 0.823,
-    agreementLabel: "Cohen's κ",
-    notes: '95% CI [0.754, 0.874]; quadratic-weighted',
-  },
-  {
-    metricId: 'speech_fidelity',
-    metricLabel: 'Speech Fidelity',
-    agreement: 0.777,
-    agreementLabel: "Cohen's κ",
-    notes: '95% CI [0.704, 0.835]; unweighted (binary)',
   },
 ];
 

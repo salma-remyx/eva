@@ -18,6 +18,7 @@ const typeIcons = {
 export function MetricNode({ metric }: MetricNodeProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showDevAccuracy, setShowDevAccuracy] = useState(false);
+  const [showAlignment, setShowAlignment] = useState(false);
   const Icon = typeIcons[metric.type];
   const badgeColor = metricTypeColors[metric.type];
 
@@ -99,7 +100,7 @@ export function MetricNode({ metric }: MetricNodeProps) {
                     onClick={() => setShowDevAccuracy(!showDevAccuracy)}
                     className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-bg-hover/30 transition-colors"
                   >
-                    <div className="text-sm font-semibold text-text-secondary">Judge Accuracy</div>
+                    <div className="text-sm font-semibold text-text-secondary">Judge Accuracy (Dev Dataset)</div>
                     <ChevronDown
                       className={`w-4 h-4 text-text-muted transition-transform ${showDevAccuracy ? 'rotate-180' : ''}`}
                     />
@@ -144,6 +145,50 @@ export function MetricNode({ metric }: MetricNodeProps) {
                           )}
                           {metric.judgeDevelopmentNotes && (
                             <p className="text-sm text-text-secondary leading-relaxed">{metric.judgeDevelopmentNotes}</p>
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
+
+              {metric.judgeAlignment && (
+                <div className="rounded-lg border border-border-default overflow-hidden">
+                  <button
+                    onClick={() => setShowAlignment(!showAlignment)}
+                    className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-bg-hover/30 transition-colors"
+                  >
+                    <div className="text-sm font-semibold text-text-secondary">Judge Alignment (Test Dataset)</div>
+                    <ChevronDown
+                      className={`w-4 h-4 text-text-muted transition-transform ${showAlignment ? 'rotate-180' : ''}`}
+                    />
+                  </button>
+                  <AnimatePresence>
+                    {showAlignment && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-4 pb-4 space-y-2">
+                          <div className="border-t border-border-default pt-3">
+                            <div className="flex items-center gap-2 rounded-lg bg-bg-primary px-3 py-2 w-fit">
+                              <span className="text-xs text-text-muted">{metric.judgeAlignment.measure}</span>
+                              <span className="text-sm font-semibold text-text-primary font-mono">
+                                {metric.judgeAlignment.value.toFixed(3)}
+                              </span>
+                              {metric.judgeAlignment.ci && (
+                                <span className="text-xs text-text-muted font-mono">
+                                  [{metric.judgeAlignment.ci[0].toFixed(3)}, {metric.judgeAlignment.ci[1].toFixed(3)}]
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          {metric.judgeAlignment.notes && (
+                            <p className="text-sm text-text-muted leading-relaxed">{metric.judgeAlignment.notes}</p>
                           )}
                         </div>
                       </motion.div>
