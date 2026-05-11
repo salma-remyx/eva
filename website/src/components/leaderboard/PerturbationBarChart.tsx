@@ -1,6 +1,6 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ErrorBar, ReferenceLine } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ErrorBar, ReferenceLine, LabelList } from 'recharts';
 import type { SystemStats, DomainOrPooled } from '../../data/leaderboardData';
-import { getPertValue, perturbations, perturbationLabels } from '../../data/leaderboardData';
+import { getPertValue, perturbations, perturbationLabels, groupedSystems } from '../../data/leaderboardData';
 import { useThemeColors } from '../../styles/theme';
 
 interface PerturbationBarChartProps {
@@ -12,6 +12,7 @@ interface PerturbationBarChartProps {
 
 interface ChartRow {
   name: string;
+  type: SystemStats['type'];
   [key: string]: string | number | [number, number] | boolean | null | undefined;
 }
 
@@ -77,9 +78,12 @@ function colorFor(pert: string, colors: ReturnType<typeof useThemeColors>): stri
 export function PerturbationBarChart({ metric, metricLabel, systems, domain }: PerturbationBarChartProps) {
   const colors = useThemeColors();
 
+  // Order systems by architecture group: S2S → Hybrid (2-part) → Cascade.
+  const ordered = groupedSystems(systems);
+
   // Build data rows: one per system that has any perturbation data for this metric.
-  const data: ChartRow[] = systems.flatMap((s) => {
-    const row: ChartRow = { name: s.name };
+  const data: ChartRow[] = ordered.flatMap((s) => {
+    const row: ChartRow = { name: s.name, type: s.type };
     let any = false;
     for (const p of perturbations) {
       const v = getPertValue(s, metric, p, domain);
@@ -87,11 +91,13 @@ export function PerturbationBarChart({ metric, metricLabel, systems, domain }: P
         row[`${p}_point`] = v.point;
         row[`${p}_err`] = [v.point - v.ci_lower, v.ci_upper - v.point];
         row[`${p}_sig`] = !!v.reject;
+        row[`${p}_sig_label`] = v.reject ? '*' : '';
         any = true;
       } else {
         row[`${p}_point`] = null;
         row[`${p}_err`] = undefined;
         row[`${p}_sig`] = false;
+        row[`${p}_sig_label`] = '';
       }
     }
     return any ? [row] : [];
@@ -105,50 +111,67 @@ export function PerturbationBarChart({ metric, metricLabel, systems, domain }: P
     );
   }
 
+  // Compute group boundary indices: positions where the type changes from the previous row.
+  // The ReferenceLine x value is the `name` of the first row in the new group; recharts will
+  // draw the line at that category's tick.
+  const separators: string[] = [];
+  for (let i = 1; i < data.length; i++) {
+    if (data[i].type !== data[i - 1].type) separators.push(data[i].name);
+  }
+
+  const minWidth = Math.max(720, data.length * 80);
+
   return (
     <div>
-      <div style={{ width: '100%', height: 360 }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 16, right: 16, bottom: 60, left: 16 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke={colors.bg.tertiary} />
-            <XAxis
-              dataKey="name"
-              stroke={colors.text.muted}
-              tick={{ fill: colors.text.secondary, fontSize: 10 }}
-              interval={0}
-              angle={-30}
-              textAnchor="end"
-              height={70}
-            />
-            <YAxis
-              stroke={colors.text.muted}
-              tick={{ fill: colors.text.secondary, fontSize: 11 }}
-              label={{ value: 'Δ vs clean', angle: -90, position: 'insideLeft', fill: colors.text.secondary, style: { fontSize: 12 } }}
-            />
-            <ReferenceLine y={0} stroke={colors.text.muted} />
-            <Tooltip content={<CustomTooltip />} cursor={{ fill: colors.bg.hover, opacity: 0.3 }} />
-            <Legend
-              formatter={(value: string) => {
-                const k = value.replace(/_point$/, '');
-                return <span style={{ color: colors.text.secondary }}>{perturbationLabels[k] ?? k}</span>;
-              }}
-            />
-            {perturbations.map((p) => (
-              <Bar key={p} dataKey={`${p}_point`} fill={colorFor(p, colors)} radius={[2, 2, 0, 0]}>
-                <ErrorBar dataKey={`${p}_err`} direction="y" width={4} strokeWidth={1} stroke={colors.text.muted} />
-              </Bar>
-            ))}
-          </BarChart>
-        </ResponsiveContainer>
+      <div className="overflow-x-auto">
+        <div className="h-[440px]" style={{ minWidth: `${minWidth}px` }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data} margin={{ top: 24, right: 16, bottom: 70, left: 16 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke={colors.bg.tertiary} />
+              <XAxis
+                dataKey="name"
+                stroke={colors.text.muted}
+                tick={{ fill: colors.text.secondary, fontSize: 10 }}
+                interval={0}
+                angle={-30}
+                textAnchor="end"
+                height={80}
+              />
+              <YAxis
+                stroke={colors.text.muted}
+                tick={{ fill: colors.text.secondary, fontSize: 11 }}
+                label={{ value: 'Δ vs clean', angle: -90, position: 'insideLeft', fill: colors.text.secondary, style: { fontSize: 12 } }}
+              />
+              <ReferenceLine y={0} stroke={colors.text.muted} />
+              {separators.map((sepName) => (
+                <ReferenceLine
+                  key={`sep-${sepName}`}
+                  x={sepName}
+                  stroke={colors.text.muted}
+                  strokeDasharray="4 4"
+                  strokeOpacity={0.6}
+                />
+              ))}
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: colors.bg.hover, opacity: 0.3 }} />
+              {perturbations.map((p) => (
+                <Bar key={p} dataKey={`${p}_point`} fill={colorFor(p, colors)} radius={[2, 2, 0, 0]}>
+                  <ErrorBar dataKey={`${p}_err`} direction="y" width={4} strokeWidth={1} stroke={colors.text.muted} />
+                  <LabelList
+                    dataKey={`${p}_sig_label`}
+                    position="top"
+                    fill={colors.accent.amber}
+                    fontSize={14}
+                    fontWeight={700}
+                  />
+                </Bar>
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
-      <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-text-muted px-2">
-        <div>
-          <span className="font-medium text-text-secondary">{metricLabel}</span>
-          {' '}— Δ = perturbed − clean
-        </div>
-        <div>
-          <span className="text-amber-400">*</span> significant after correction (reject = true)
-        </div>
+      <div className="mt-2 text-xs text-text-muted px-2">
+        <span className="font-medium text-text-secondary">{metricLabel}</span>
+        {' '}— Δ = perturbed − clean
       </div>
     </div>
   );

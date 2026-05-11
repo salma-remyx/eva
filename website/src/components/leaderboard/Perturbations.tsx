@@ -1,7 +1,15 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import type { SystemStats, DomainOrPooled } from '../../data/leaderboardData';
+import { perturbations, perturbationLabels } from '../../data/leaderboardData';
 import { PerturbationBarChart } from './PerturbationBarChart';
+import { useThemeColors } from '../../styles/theme';
+
+const PERT_COLOR_KEYS: Record<string, 'amber' | 'cyan' | 'purple'> = {
+  accent: 'amber',
+  background_noise: 'cyan',
+  both: 'purple',
+};
 
 interface PerturbationsProps {
   systems: SystemStats[];
@@ -26,6 +34,7 @@ const METRICS: MetricSpec[] = [
 ];
 
 export function Perturbations({ systems, domain }: PerturbationsProps) {
+  const colors = useThemeColors();
   const [sectionOpen, setSectionOpen] = useState(false);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
@@ -60,6 +69,24 @@ export function Perturbations({ systems, domain }: PerturbationsProps) {
 
       {sectionOpen && (
         <div className="border-t border-border-default p-4 space-y-3">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-2 py-3 rounded-lg bg-bg-primary border border-border-default">
+            {perturbations.map((p) => {
+              const k = PERT_COLOR_KEYS[p];
+              const fill = k ? colors.accent[k] : colors.accent.blue;
+              return (
+                <div key={p} className="flex items-center gap-2 text-xs">
+                  <span
+                    className="w-3 h-3 rounded-sm flex-shrink-0"
+                    style={{ backgroundColor: fill }}
+                  />
+                  <span className="text-text-secondary">{perturbationLabels[p] ?? p}</span>
+                </div>
+              );
+            })}
+            <div className="text-xs text-text-muted ml-auto">
+              <span className="text-amber-400 font-bold">*</span> significant after correction (reject = true)
+            </div>
+          </div>
           {METRICS.map((m) => {
             const open = expanded.has(m.key);
             return (
