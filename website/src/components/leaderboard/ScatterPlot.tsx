@@ -170,9 +170,9 @@ const plots: PlotConfig[] = [
     domain: [0, 1],
   },
   {
-    title: 'pass@k (k=3)',
+    title: 'pass@k (k=5)',
     description: (<>
-      Percent of scenarios where at least 1 of k=3 trials surpasses metric-specific thresholds in all metrics in the category. .
+      Percent of scenarios where at least 1 of k=5 trials surpasses metric-specific thresholds in all metrics in the category. .
     </>),
     subscript: 'pass@k',
     xMetric: 'EVA-A_pass_at_k',
@@ -180,9 +180,9 @@ const plots: PlotConfig[] = [
     domain: [0, 1],
   },
   {
-    title: 'pass^k (k=3)',
+    title: 'pass^k (k=5)',
     description: (<>
-      Per-scenario probability of all k=3 trials succeeding (scenario pass rate raised to the k-th power) for that category, averaged across scenarios.
+      Per-scenario probability of all k=5 trials succeeding (scenario pass rate raised to the k-th power) for that category, averaged across scenarios.
     </>),
     subscript: 'pass^k',
     xMetric: 'EVA-A_pass_power_k',
