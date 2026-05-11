@@ -24,6 +24,13 @@ PERTURBATION_METRICS = [
 ]
 DOMAINS = ["airline", "itsm", "medical_hr"]
 
+# Intentionally excluded from the website surface:
+#   - response_speed.no_tool_calls / response_speed.with_tool_calls
+#   - turn_taking.early_rate / late_rate / on_time_rate / agent_interruption.rate
+#   - transcription_accuracy_key_entities (cascade-only, perturbation-only)
+# These breakdowns live in the paper / dev docs; the leaderboard surfaces only
+# top-level metrics. Add them here if a future page needs them.
+
 
 # System metadata — author-curated. Edit when new systems are added.
 # type: 'cascade' | 's2s' | '2-part'
