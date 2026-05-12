@@ -4,9 +4,9 @@ Creates Pipecat services with proper configuration.
 """
 
 import datetime
-from typing import Any, AsyncGenerator, Optional
+from collections.abc import AsyncGenerator
+from typing import Any
 
-from deepgram import LiveOptions
 from openai import AsyncAzureOpenAI, BadRequestError
 from pipecat.frames.frames import (
     ErrorFrame,
@@ -37,13 +37,15 @@ from pipecat.services.openai.realtime.events import (
 )
 from pipecat.services.openai.realtime.llm import OpenAIRealtimeLLMService
 from pipecat.services.openai.stt import OpenAISTTService
-from pipecat.services.openai.tts import VALID_VOICES, OpenAITTSService
+from pipecat.services.openai.tts import OpenAITTSService
 from pipecat.services.stt_service import STTService
 from pipecat.services.tts_service import TTSService
 from pipecat.transcriptions.language import Language
 from pipecat.utils.text.base_text_filter import BaseTextFilter
 from websockets.asyncio.client import connect as websocket_connect
 
+from eva.assistant.pipeline.alm_base import BaseALMClient
+from eva.assistant.pipeline.alm_gemini import ALMGeminiClient
 from eva.assistant.pipeline.alm_vllm import ALMvLLMClient
 from eva.assistant.pipeline.nvidia_baseten import BasetenSTTService, BasetenTTSService
 from eva.assistant.pipeline.realtime_llm import InstrumentedRealtimeLLMService
@@ -51,11 +53,14 @@ from eva.models.agents import AgentConfig
 
 # Conditional Gemini imports - may fail if google-genai package version is incompatible
 try:
+    from pipecat.services.google.gemini_live.llm import GeminiLiveLLMService, GeminiVADParams
     from pipecat.services.google.tts import GeminiTTSService
 
     GEMINI_AVAILABLE = True
 except ImportError:
     # Gemini services unavailable - will fail at runtime if requested
+    GeminiLiveLLMService = None
+    GeminiVADParams = None
     GeminiTTSService = None
     GEMINI_AVAILABLE = False
 from pipecat.adapters.schemas.function_schema import FunctionSchema
@@ -82,8 +87,8 @@ _audio_llm_url_counter: int = 0
 
 
 def create_stt_service(
-    model: Optional[str],
-    params: Optional[dict[str, Any]] = None,
+    model: str | None,
+    params: dict[str, Any] | None = None,
     language_code: str = "en",
 ) -> STTService | None:
     """Create speech-to-text service.
@@ -134,6 +139,16 @@ def create_stt_service(
             ),
         )
 
+    elif model_lower == "cohere":
+        logger.info(f"Using Cohere STT: {params['model']}")
+        return OpenAISTTService(
+            api_key=api_key,
+            base_url=url,
+            model=params["model"],
+            language=Language.EN,
+            sample_rate=SAMPLE_RATE,
+        )
+
     elif model_lower.startswith("deepgram"):
         # Check if using Flux model
         if "flux" in model_lower:
@@ -146,11 +161,9 @@ def create_stt_service(
         logger.info(f"Using Deepgram STT: {params['model']}")
         return DeepgramSTTService(
             api_key=api_key,
-            live_options=LiveOptions(
+            settings=DeepgramSTTService.Settings(
                 language=language_code,
                 model=params["model"],
-                encoding="linear16",
-                sample_rate=SAMPLE_RATE,
                 interim_results=True,
             ),
             sample_rate=SAMPLE_RATE,
@@ -174,6 +187,8 @@ def create_stt_service(
             api_key=api_key,
             sample_rate=params.get("sample_rate", SAMPLE_RATE),
             verify=False,
+            model=params.get("model"),
+            language=None,
         )
 
     elif model_lower == "nvidia-baseten":
@@ -207,13 +222,13 @@ def create_stt_service(
 
     else:
         raise ValueError(
-            f"Unknown STT model: {model}. Available: assemblyai, cartesia, deepgram, deepgram-flux, elevenlabs, nvidia, nvidia-baseten, openai"
+            f"Unknown STT model: {model}. Available: assemblyai, cartesia, cohere, deepgram, deepgram-flux, elevenlabs, nvidia, nvidia-baseten, openai"
         )
 
 
 def create_tts_service(
-    model: Optional[str],
-    params: Optional[dict[str, Any]] = None,
+    model: str | None,
+    params: dict[str, Any] | None = None,
     language_code: str = "en",
 ) -> TTSService | None:
     """Create text-to-speech service.
@@ -261,6 +276,12 @@ def create_tts_service(
             voice=params.get("voice", "alloy"),
             base_url=url,
         )
+        chatterbox_tts._eva_extra_body = {
+            "streaming_quality": "fast",
+            "streaming_strategy": "word",
+            "streaming_chunk_size": 80,
+            "streaming_buffer_size": 1,
+        }
         OpenAITTSService.run_tts = override_run_tts
         chatterbox_tts._settings.language = language_code
         return chatterbox_tts
@@ -291,10 +312,12 @@ def create_tts_service(
             )
 
         logger.info(f"Using Gemini TTS: {params['model']}")
+        # Supports gemini-2.5-flash-tts, gemini-3.1-flash-tts-preview, etc.
         return GeminiTTSService(
             api_key=api_key,
             model=params["model"],
-            voice_name=params.get("voice_name", "Puck"),
+            voice_id=params.get("voice_id", params.get("voice_name", "Kore")),
+            sample_rate=SAMPLE_RATE,
         )
 
     elif model_lower == "kokoro":
@@ -305,6 +328,13 @@ def create_tts_service(
             voice=params.get("voice", "alloy"),
             base_url=url,
         )
+        kokoro_tts._eva_extra_body = {
+            "stream": True,
+            "streaming_quality": "fast",
+            "streaming_strategy": "word",
+            "streaming_chunk_size": 80,
+            "streaming_buffer_size": 1,
+        }
         OpenAITTSService.run_tts = override_run_tts
         kokoro_tts._settings.language = language_code
         return kokoro_tts
@@ -341,6 +371,18 @@ def create_tts_service(
 
         return openai_tts
 
+    elif model_lower == "voxtral":
+        logger.info(f"Using Voxtral TTS: {params['model']}")
+        voxtral_tts = OpenAITTSService(
+            api_key=api_key,
+            model=params["model"],
+            voice=params.get("voice", "neutral_female"),
+            base_url=url,
+        )
+        OpenAITTSService.run_tts = override_run_tts_voxtral
+        voxtral_tts._settings.language = language_code
+        return voxtral_tts
+
     elif model_lower == "xtts":
         logger.info(f"Using XTTS TTS: {params['model']}")
         xtts_tts = OpenAITTSService(
@@ -349,6 +391,12 @@ def create_tts_service(
             voice=params.get("voice", "alloy"),
             base_url=url,
         )
+        xtts_tts._eva_extra_body = {
+            "streaming_quality": "fast",
+            "streaming_strategy": "word",
+            "streaming_chunk_size": 80,
+            "streaming_buffer_size": 1,
+        }
         OpenAITTSService.run_tts = override_run_tts
         xtts_tts._settings.language = language_code
         return xtts_tts
@@ -360,11 +408,11 @@ def create_tts_service(
 
 
 def create_realtime_llm_service(
-    model: Optional[str],
-    params: Optional[dict[str, Any]] = None,
-    agent: Optional[AgentConfig] = None,
-    audit_log: Optional[AuditLog] = None,
-    current_date_time: Optional[str] = None,
+    model: str | None,
+    params: dict[str, Any] | None = None,
+    agent: AgentConfig | None = None,
+    audit_log: AuditLog | None = None,
+    current_date_time: str | None = None,
 ) -> LLMService:
     """Create realtime LLM service.
 
@@ -473,8 +521,29 @@ def create_realtime_llm_service(
             one_shot_selected_tools=pipecat_tools,
         )
 
+    elif model_lower == "gemini-live":
+        if not GEMINI_AVAILABLE:
+            raise ValueError(
+                "Gemini Live requested but Gemini services are unavailable. "
+                "Check google-genai package installation and version compatibility."
+            )
+
+        gemini_model = params.get("model")
+        logger.info(f"Using Gemini Live LLM: {gemini_model}")
+
+        return GeminiLiveLLMService(
+            api_key=params["api_key"],
+            tools=pipecat_tools,
+            settings=GeminiLiveLLMService.Settings(
+                model=gemini_model,
+                system_instruction=system_prompt,
+                voice=params.get("voice", "Puck"),  # Aoede, Charon, Fenrir, Kore, Puck
+                vad=GeminiVADParams(disabled=params.get("vad_disabled", True)),
+            ),
+        )
+
     else:
-        raise ValueError(f"Unknown realtime model: {model}. Available: gpt-realtime, ultravox")
+        raise ValueError(f"Unknown realtime model: {model}. Available: gpt-realtime, ultravox, gemini-live")
 
 
 def get_openai_session_properties(system_prompt: str, params: dict, pipecat_tools) -> SessionProperties:
@@ -501,26 +570,53 @@ def get_openai_session_properties(system_prompt: str, params: dict, pipecat_tool
 def create_audio_llm_client(
     model: str,
     params: dict[str, Any],
-) -> ALMvLLMClient:
+) -> BaseALMClient:
     """Create an audio-LLM API client.
 
     Audio-LLM models accept audio input + text context and return text output.
-    Currently supports self-hosted models via vLLM's OpenAI-compatible API.
+    Supports self-hosted models via vLLM's OpenAI-compatible API and Gemini
+    via its OpenAI-compatibility endpoint (e.g. gemini-3-flash-preview).
 
     Args:
-        model: Audio-LLM model identifier (e.g. "vllm").
-        params: Model-specific parameters. Required: url (or urls for round-robin).
-                Optional: api_key, model, temperature, max_tokens,
-                sample_rate, num_channels, sample_width.
+        model: Audio-LLM model identifier (e.g. "vllm", "gemini").
+        params: Model-specific parameters. Required for vLLM: url (or urls).
+                Required for Gemini: api_key, model.
+                Optional: temperature, max_tokens, sample_rate, num_channels, sample_width.
 
     Returns:
-        Configured ALMvLLMClient.
+        Configured audio-LLM client.
     """
     model_lower = model.lower()
 
     # Resolve URL once (supports round-robin via "base_urls" list)
     global _audio_llm_url_counter
     base_url, _audio_llm_url_counter = _resolve_url(params, _audio_llm_url_counter)
+
+    if "gemini" in model_lower:
+        gemini_model = params["model"]
+        project = params.get("project")
+        location = params.get("location")
+        api_key = params.get("api_key")
+        if not (project and location) and not api_key:
+            raise ValueError(
+                "Gemini audio-LLM requires either api_key (Developer API) "
+                "or project+location (Vertex AI via GOOGLE_APPLICATION_CREDENTIALS)."
+            )
+        client = ALMGeminiClient(
+            api_key=api_key,
+            base_url=base_url or None,
+            model=gemini_model,
+            temperature=params.get("temperature", 1.0),
+            max_tokens=params.get("max_tokens", 1024),
+            sample_rate=params.get("sample_rate", 16000),
+            num_channels=params.get("num_channels", 1),
+            sample_width=params.get("sample_width", 2),
+            project=project,
+            location=location,
+            thinking_level=params.get("thinking_level", "minimal"),
+        )
+        logger.info(f"Using Gemini audio-LLM: {gemini_model} ({'vertex' if project and location else 'api_key'})")
+        return client
 
     if "vllm" in model_lower:
         if not base_url:
@@ -539,7 +635,7 @@ def create_audio_llm_client(
         logger.info(f"Using {model} vLLM audio-LLM: {base_url}")
         return client
 
-    raise ValueError(f"Unknown audio-LLM model: {model}. Available: vllm")
+    raise ValueError(f"Unknown audio-LLM model: {model}. Available: vllm, gemini")
 
 
 async def override_run_tts(self, text: str, context_id: str) -> AsyncGenerator[Frame, None]:
@@ -560,26 +656,70 @@ async def override_run_tts(self, text: str, context_id: str) -> AsyncGenerator[F
     try:
         await self.start_ttfb_metrics()
 
-        # add chatterbox streaming params to `create_params``
-        # Setup API parameters
+        # Per-backend streaming knobs are attached to the service instance as
+        # `_eva_extra_body` by the factory in this module (e.g. kokoro sets
+        # "stream": True; chatterbox/xtts omit it).
         create_params = {
             "input": text,
             "model": self._settings.model,
-            "voice": VALID_VOICES[self._settings.voice],
+            "voice": self._settings.voice,
             "response_format": "pcm",
-            "extra_body": {
-                "streaming_quality": "fast",
-                "streaming_strategy": "word",
-                "streaming_chunk_size": 80,
-                "streaming_buffer_size": 1,
-            },
         }
+        extra_body = getattr(self, "_eva_extra_body", None)
+        if extra_body:
+            create_params["extra_body"] = extra_body
 
         if self._settings.instructions:
             create_params["instructions"] = self._settings.instructions
 
         if self._settings.speed:
             create_params["speed"] = self._settings.speed
+
+        async with self._client.audio.speech.with_streaming_response.create(**create_params) as r:
+            if r.status_code != 200:
+                error = await r.text()
+                logger.error(f"{self} error getting audio (status: {r.status_code}, error: {error})")
+                yield ErrorFrame(error=f"Error getting audio (status: {r.status_code}, error: {error})")
+                return
+
+            await self.start_tts_usage_metrics(text)
+
+            CHUNK_SIZE = self.chunk_size
+
+            yield TTSStartedFrame(context_id=context_id)
+            async for chunk in r.iter_bytes(CHUNK_SIZE):
+                if len(chunk) > 0:
+                    await self.stop_ttfb_metrics()
+                    frame = TTSAudioRawFrame(chunk, self.sample_rate, 1, context_id=context_id)
+                    yield frame
+            yield TTSStoppedFrame(context_id=context_id)
+    except BadRequestError as e:
+        yield ErrorFrame(error=f"Unknown error occurred: {e}")
+
+
+async def override_run_tts_voxtral(self, text: str, context_id: str) -> AsyncGenerator[Frame, None]:
+    """Override OpenAITTSService.run_tts for Voxtral served via vLLM-omni.
+
+    vLLM-omni's /v1/audio/speech ignores Chatterbox-style streaming knobs and
+    instead uses a top-level ``stream: true`` flag (with response_format pcm/wav)
+    to emit PCM chunks as they are decoded. ``speed`` is rejected when streaming.
+    """
+    logger.debug(f"{self}: Generating TTS [{text}], model {self._settings.model}")
+    try:
+        await self.start_ttfb_metrics()
+
+        create_params = {
+            "input": text,
+            "model": self._settings.model,
+            "voice": self._settings.voice,
+            "response_format": "pcm",
+            "extra_body": {
+                "stream": True,
+            },
+        }
+
+        if self._settings.instructions:
+            create_params["instructions"] = self._settings.instructions
 
         async with self._client.audio.speech.with_streaming_response.create(**create_params) as r:
             if r.status_code != 200:

@@ -1,14 +1,19 @@
 """Shared fixtures for metric tests."""
 
 import logging
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 
 from eva.metrics.base import MetricContext
+from eva.metrics.processor import MetricsContextProcessor
 from eva.models.results import MetricScore, RecordMetrics
 
 
 def make_metric_context(**overrides) -> MetricContext:
     """Create a MetricContext with sensible defaults, overridable via kwargs.
+
+    If audio_timestamps_*_turns are provided but latency_assistant_turns is not,
+    it is automatically derived from the timestamps.
 
     Usage::
 
@@ -27,9 +32,24 @@ def make_metric_context(**overrides) -> MetricContext:
         "agent_role": "Test role",
         "agent_instructions": "Test instructions",
         "agent_tools": [],
+        "agent_id": "agent_test",
         "current_date_time": "2026-01-01T00:00:00Z",
     }
     defaults.update(overrides)
+
+    # Auto-derive latency_assistant_turns from audio timestamps if not provided
+    if "latency_assistant_turns" not in overrides:
+        user_ts = defaults.get("audio_timestamps_user_turns")
+        asst_ts = defaults.get("audio_timestamps_assistant_turns")
+        if user_ts and asst_ts:
+            tmp = SimpleNamespace(
+                audio_timestamps_user_turns=user_ts,
+                audio_timestamps_assistant_turns=asst_ts,
+                latency_assistant_turns={},
+            )
+            MetricsContextProcessor._compute_per_turn_latency(tmp)
+            defaults["latency_assistant_turns"] = tmp.latency_assistant_turns
+
     return MetricContext(**defaults)
 
 
@@ -50,6 +70,9 @@ def make_judge_metric(metric_cls, *, mock_llm: bool = False, logger_name: str | 
     if mock_llm:
         m.llm_client = MagicMock()
         m.llm_client.generate_text = AsyncMock()
+        m.llm_client.params = {}
+    if hasattr(m, "_trim_silence"):
+        m._trim_silence = lambda audio, _ctx: audio
     return m
 
 

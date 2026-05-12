@@ -7,8 +7,7 @@ by leveraging LiteLLM's built-in exception types and attributes instead of strin
 import asyncio
 import traceback
 from dataclasses import dataclass
-from datetime import datetime, timezone
-from typing import Optional
+from datetime import UTC, datetime
 
 from litellm.exceptions import (
     # Network/Connection Errors
@@ -17,6 +16,7 @@ from litellm.exceptions import (
     APIError,
     # 4xx Client Errors
     AuthenticationError,
+    BadGatewayError,
     BadRequestError,
     # Other
     BudgetExceededError,
@@ -46,7 +46,7 @@ class ErrorInfo:
     error_type: str  # Maps to ErrorDetails.error_type
     error_source: str  # Provider or component name
     is_retryable: bool
-    status_code: Optional[int]
+    status_code: int | None
     original_exception: Exception
 
 
@@ -99,7 +99,7 @@ def categorize_error(error: Exception) -> ErrorInfo:
         )
 
     # Server errors (5xx) - retryable
-    if isinstance(error, (ServiceUnavailableError, InternalServerError)):
+    if isinstance(error, (ServiceUnavailableError, InternalServerError, BadGatewayError)):
         return ErrorInfo(
             error_type="llm_error",
             error_source=error_source,
@@ -308,6 +308,7 @@ def is_retryable_error(error: Exception) -> bool:
         RateLimitError,
         ServiceUnavailableError,
         InternalServerError,
+        BadGatewayError,
         APIError,  # Generic API errors are retryable
     )
 
@@ -353,7 +354,7 @@ def create_error_details(
         is_retryable=error_info.is_retryable,
         retry_count=retry_count,
         retry_succeeded=retry_succeeded,
-        timestamps=[datetime.now(timezone.utc).isoformat()],
+        timestamps=[datetime.now(UTC).isoformat()],
         stack_trace=stack_trace,
         original_error=str(error),
     )

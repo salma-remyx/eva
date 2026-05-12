@@ -10,7 +10,7 @@ compare equal to their string counterparts (e.g. ``FareClass.main_cabin == "main
 """
 
 from enum import StrEnum
-from typing import Annotated, Optional
+from typing import Annotated
 
 from pydantic import BaseModel, Field, ValidationError
 
@@ -87,6 +87,16 @@ class RefundType(StrEnum):
     ancillary_fees = "ancillary_fees"
 
 
+class CancellationReason(StrEnum):
+    voluntary = "voluntary"
+    irrops_refund = "irrops_refund"
+    # Prefixed because Python enum members can't start with a digit.
+    rule_24_hour = "24_hour_rule"
+    schedule_unacceptable = "schedule_unacceptable"
+    medical = "medical"
+    bereavement = "bereavement"
+
+
 ConfirmationNumber = Annotated[str, Field(pattern=r"^[A-Za-z0-9]{6}$", description="6 alphanumeric characters")]
 FlightNumberStr = Annotated[
     str, Field(pattern=r"^[A-Za-z]{2,3}\d{1,4}$", description="2-3 letters followed by 1-4 digits", examples=["SK621"])
@@ -133,8 +143,8 @@ class RebookFlightParams(BaseModel):
     new_journey_id: JourneyIdStr
     rebooking_type: RebookingType
     waive_change_fee: bool
-    new_fare_class: Optional[FareClass] = None
-    flight_number: Optional[FlightNumberStr] = None
+    new_fare_class: FareClass | None = None
+    flight_number: FlightNumberStr | None = None
 
 
 class AddToStandbyParams(BaseModel):
@@ -148,14 +158,14 @@ class AssignSeatParams(BaseModel):
     passenger_id: PassengerIdStr
     journey_id: JourneyIdStr
     seat_preference: SeatPreference
-    flight_number: Optional[FlightNumberStr] = None
+    flight_number: FlightNumberStr | None = None
 
 
 class AddBaggageAllowanceParams(BaseModel):
     confirmation_number: ConfirmationNumber
     journey_id: JourneyIdStr
     num_bags: int = Field(ge=0, le=5)
-    flight_number: Optional[FlightNumberStr] = None
+    flight_number: FlightNumberStr | None = None
 
 
 class AddMealRequestParams(BaseModel):
@@ -163,7 +173,7 @@ class AddMealRequestParams(BaseModel):
     passenger_id: PassengerIdStr
     journey_id: JourneyIdStr
     meal_type: MealType
-    flight_number: Optional[FlightNumberStr] = None
+    flight_number: FlightNumberStr | None = None
 
 
 class IssueTravelCreditParams(BaseModel):
@@ -188,7 +198,7 @@ class IssueMealVoucherParams(BaseModel):
 class CancelReservationParams(BaseModel):
     confirmation_number: ConfirmationNumber
     journey_id: JourneyIdStr
-    cancellation_reason: str
+    cancellation_reason: CancellationReason
 
 
 class ProcessRefundParams(BaseModel):
@@ -214,6 +224,7 @@ FIELD_ERROR_TYPES: dict[str, tuple[str, str]] = {
     "voucher_reason": ("invalid_voucher_reason", "voucher_reason"),
     "refund_type": ("invalid_refund_type", "refund_type"),
     "seat_preference": ("invalid_seat_preference", "seat_preference"),
+    "cancellation_reason": ("invalid_cancellation_reason", "cancellation_reason"),
     # Format-validated fields
     "confirmation_number": ("invalid_confirmation_number_format", "confirmation_number"),
     "flight_number": ("invalid_flight_number_format", "flight_number"),

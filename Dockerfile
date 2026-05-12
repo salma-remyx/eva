@@ -4,7 +4,7 @@
 # ============================================
 # Stage 1: Builder
 # ============================================
-FROM python:3.11-slim as builder
+FROM python:3.11-slim AS builder
 
 WORKDIR /app
 
@@ -27,7 +27,17 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # ============================================
 # Stage 2: Runtime
 # ============================================
-FROM python:3.11-slim as runtime
+FROM python:3.11-slim AS runtime
+
+# Git provenance baked in at build time
+ARG GIT_COMMIT_SHA
+ARG GIT_BRANCH
+ARG GIT_DIRTY
+ARG GIT_DIFF_HASH
+ENV GIT_COMMIT_SHA=${GIT_COMMIT_SHA}
+ENV GIT_BRANCH=${GIT_BRANCH}
+ENV GIT_DIRTY=${GIT_DIRTY}
+ENV GIT_DIFF_HASH=${GIT_DIFF_HASH}
 
 WORKDIR /app
 
@@ -47,6 +57,7 @@ COPY src/ ./src/
 COPY scripts/ ./scripts/
 COPY configs/ ./configs/
 COPY data/ ./data/
+COPY assets/ ./assets/
 
 # Create non-root user for runtime security
 RUN groupadd --gid 1000 eva && \

@@ -54,7 +54,7 @@ class TestComputeRecordAggregates:
                 "faithfulness": 0.5,
                 "agent_speech_fidelity": 0.95,
                 "conversation_progression": 0.5,
-                "turn_taking": 0.5,
+                "turn_taking": 0.8,
                 "conciseness": 0.5,
             }
         )
@@ -64,8 +64,8 @@ class TestComputeRecordAggregates:
         assert agg["EVA-X_pass"] == 1.0
         assert agg["EVA-overall_pass"] == 1.0
         assert agg["EVA-A_mean"] == pytest.approx((1.0 + 0.5 + 0.95) / 3)
-        assert agg["EVA-X_mean"] == pytest.approx((0.5 + 0.5 + 0.5) / 3)
-        assert agg["EVA-overall_mean"] == pytest.approx((1.0 + 0.5 + 0.95 + 0.5 + 0.5 + 0.5) / 6)
+        assert agg["EVA-X_mean"] == pytest.approx((0.5 + 0.8 + 0.5) / 3)
+        assert agg["EVA-overall_mean"] == pytest.approx((1.0 + 0.5 + 0.95 + 0.5 + 0.8 + 0.5) / 6)
 
     def test_eva_a_fails(self):
         """task_completion < 1.0 causes EVA-A_pass to fail."""
@@ -75,7 +75,7 @@ class TestComputeRecordAggregates:
                 "faithfulness": 0.5,
                 "agent_speech_fidelity": 0.95,
                 "conversation_progression": 0.5,
-                "turn_taking": 0.5,
+                "turn_taking": 0.8,
                 "conciseness": 0.5,
             }
         )
@@ -93,7 +93,7 @@ class TestComputeRecordAggregates:
                 "faithfulness": 0.5,
                 "agent_speech_fidelity": 0.95,
                 "conversation_progression": 0.5,
-                "turn_taking": 0.5,
+                "turn_taking": 0.8,
                 "conciseness": 0.3,
             }
         )
@@ -157,6 +157,62 @@ class TestComputeRecordAggregates:
         # Mean only includes non-error scores
         assert agg["EVA-A_mean"] == pytest.approx((0.5 + 0.95) / 2)
 
+    def test_skipped_component_excluded_from_pass(self):
+        """Skipped component excluded from pass check.
+
+        Remaining components still determine pass/fail.
+        """
+        rm = RecordMetrics(
+            record_id="1.1.1",
+            metrics={
+                "task_completion": MetricScore(name="task_completion", score=1.0, normalized_score=1.0),
+                "faithfulness": MetricScore(name="faithfulness", score=0.8, normalized_score=0.8),
+                "agent_speech_fidelity": MetricScore(
+                    name="agent_speech_fidelity",
+                    score=None,
+                    normalized_score=None,
+                    skipped=True,
+                ),
+            },
+        )
+        agg = compute_record_aggregates(rm)
+
+        # Skipped component is excluded; the two remaining components both pass
+        assert agg["EVA-A_pass"] == 1.0
+
+    def test_skipped_component_still_respects_other_failures(self):
+        """A skipped component does not mask a real failure in another component."""
+        rm = RecordMetrics(
+            record_id="1.1.1",
+            metrics={
+                "task_completion": MetricScore(name="task_completion", score=0.5, normalized_score=0.5),
+                "faithfulness": MetricScore(name="faithfulness", score=0.8, normalized_score=0.8),
+                "agent_speech_fidelity": MetricScore(
+                    name="agent_speech_fidelity", score=None, normalized_score=None, skipped=True
+                ),
+            },
+        )
+        agg = compute_record_aggregates(rm)
+
+        # task_completion fails (0.5 != 1.0) -> EVA-A_pass is 0.0
+        assert agg["EVA-A_pass"] == 0.0
+
+    def test_all_components_skipped_pass_is_none(self):
+        """If every component is skipped, the composite is None (nothing to evaluate)."""
+        rm = RecordMetrics(
+            record_id="1.1.1",
+            metrics={
+                "task_completion": MetricScore(name="task_completion", score=None, normalized_score=None, skipped=True),
+                "faithfulness": MetricScore(name="faithfulness", score=None, normalized_score=None, skipped=True),
+                "agent_speech_fidelity": MetricScore(
+                    name="agent_speech_fidelity", score=None, normalized_score=None, skipped=True
+                ),
+            },
+        )
+        agg = compute_record_aggregates(rm)
+
+        assert agg["EVA-A_pass"] is None
+
     def test_agent_speech_fidelity_threshold_boundary(self):
         """agent_speech_fidelity uses > 0.9 (not >=), so 0.9 exactly fails."""
         rm = make_record_metrics(
@@ -179,7 +235,7 @@ class TestComputeRunLevelAggregates:
                 "faithfulness": 0.5,
                 "agent_speech_fidelity": 0.95,
                 "conversation_progression": 0.5,
-                "turn_taking": 0.5,
+                "turn_taking": 0.8,
                 "conciseness": 0.5,
             },
             record_id="1.1.1",
@@ -206,7 +262,7 @@ class TestComputeRunLevelAggregates:
         assert result["EVA-A_pass"]["count"] == 2
         assert result["EVA-A_pass"]["success_rate"] == 0.5
 
-        # EVA-X_pass: r1=1.0, r2=0.0 (turn_taking < 0.5) -> mean=0.5
+        # EVA-X_pass: r1=1.0, r2=0.0 (turn_taking < 0.8) -> mean=0.5
         assert result["EVA-X_pass"]["mean"] == 0.5
 
     def test_mean_success_rate(self):
@@ -267,7 +323,7 @@ class TestComputeRunLevelAggregates:
                     "faithfulness": 0.5,
                     "agent_speech_fidelity": 0.95,
                     "conversation_progression": 0.5,
-                    "turn_taking": 0.5,
+                    "turn_taking": 0.8,
                     "conciseness": 0.5,
                 },
                 record_id=f"1.1.1/trial_{trial_idx}",
@@ -299,7 +355,7 @@ class TestComputeRunLevelAggregates:
                 "faithfulness": 0.5,
                 "agent_speech_fidelity": 0.95,
                 "conversation_progression": 0.5,
-                "turn_taking": 0.5,
+                "turn_taking": 0.8,
                 "conciseness": 0.5,
             }
             # Make trial_2 have an error in task_completion → EVA-A_pass becomes None

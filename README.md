@@ -127,7 +127,7 @@ EVA_DOMAIN=airline python main.py
 #   data/airline_scenarios/
 
 # Run with CLI overrides
-python main.py --llm-model gpt-5-mini --max-concurrent 10
+python main.py --model.llm gpt-5-mini --max-concurrent-conversations 10
 ```
 
 ### Running Metrics
@@ -138,6 +138,16 @@ python main.py \
     --run-id <existing_run_id> \
     --metrics task_completion,faithfulness,conciseness
 ```
+
+### Exploring Results
+
+EVA includes a Streamlit analysis app for visualizing and comparing results:
+
+```bash
+streamlit run apps/analysis.py
+```
+
+The app reads from the `output/` directory by default and provides three views: cross-run comparison, run overview, and per-record detail (transcripts, audio, metrics, conversation traces). See [`apps/README.md`](apps/README.md) for full documentation.
 
 ### Using Docker
 
@@ -256,6 +266,7 @@ Flight rebooking is a strong initial domain: it is high-stakes, time-pressured, 
 eva/
 ├── main.py                    # Main entry point
 ├── pyproject.toml             # Python project configuration
+├── apps/                      # Streamlit apps
 ├── Dockerfile                 # Docker configuration
 ├── compose.yaml               # Docker Compose configuration
 ├── src/eva/

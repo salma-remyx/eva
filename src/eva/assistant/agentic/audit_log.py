@@ -2,9 +2,10 @@
 
 import json
 import time
+from datetime import datetime
 from enum import StrEnum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -16,6 +17,19 @@ logger = get_logger(__name__)
 def current_timestamp_ms() -> str:
     """Return current POSIX timestamp in milliseconds as string."""
     return str(int(round(time.time() * 1000)))
+
+
+def convert_to_epoch_ms(timestamp: str) -> str:
+    """Convert a timestamp to epoch milliseconds string.
+
+    If the timestamp is already in epoch milliseconds format (all digits),
+    return it as-is. Otherwise, parse as ISO 8601 and convert.
+    """
+    if timestamp.isdigit():
+        return timestamp
+
+    dt = datetime.fromisoformat(timestamp)
+    return str(int(dt.timestamp() * 1000))
 
 
 class MessageRole(StrEnum):
@@ -32,11 +46,11 @@ class ConversationMessage(BaseModel):
 
     role: MessageRole
     content: str
-    tool_calls: Optional[list[dict[str, Any]]] = None
-    tool_call_id: Optional[str] = None
-    name: Optional[str] = None  # For tool messages
-    turn_id: Optional[int] = None  # For associating transcription updates
-    reasoning: Optional[str] = None  # For model reasoning (e.g., from OpenAI o1)
+    tool_calls: list[dict[str, Any]] | None = None
+    tool_call_id: str | None = None
+    name: str | None = None  # For tool messages
+    turn_id: int | None = None  # For associating transcription updates
+    reasoning: str | None = None  # For model reasoning (e.g., from OpenAI o1)
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to a plain dict, excluding None fields and internal tracking fields."""
@@ -47,17 +61,17 @@ class LLMCall(BaseModel):
     """Record of an LLM call."""
 
     messages: list[dict]
-    tools: Optional[list[dict]] = None
-    response: Optional[ConversationMessage] = None
+    tools: list[dict] | None = None
+    response: ConversationMessage | None = None
     duration_seconds: float = 0.0
     start_time: str = ""
     end_time: str = ""
     status: str = "success"
-    model: Optional[str] = None
+    model: str | None = None
     # New fields for enhanced tracking (optional for backward compatibility)
-    latency_ms: Optional[float] = None
-    error_type: Optional[str] = None
-    error_source: Optional[str] = None
+    latency_ms: float | None = None
+    error_type: str | None = None
+    error_source: str | None = None
     retry_attempt: int = 0
 
 
@@ -75,13 +89,13 @@ class AuditLog:
         self.conversation_messages: list[ConversationMessage] = []  # Full message sequence for LLM context
         self._tool_calls_count = 0
         self._tools_called: list[str] = []
-        self._last_tool_call: Optional[str] = None  # Track last tool called for matching responses
+        self._last_tool_call: str | None = None  # Track last tool called for matching responses
 
     def append_user_input(
         self,
         content: str,
-        timestamp_ms: Optional[str] = None,
-        turn_id: Optional[int] = None,
+        timestamp_ms: str | None = None,
+        turn_id: int | None = None,
     ) -> None:
         """Record user input.
 
@@ -189,7 +203,8 @@ class AuditLog:
         self,
         content: str,
         tool_calls: list[dict[str, Any]] | None = None,
-        timestamp_ms: Optional[str] = None,
+        timestamp_ms: str | None = None,
+        reasoning: str | None = None,
     ) -> None:
         """Record assistant output.
 
@@ -201,6 +216,7 @@ class AuditLog:
                 is used.  The realtime instrumented LLM service passes the
                 wall-clock captured at the first ``audio_delta`` so the audit
                 log reflects when the assistant actually started responding.
+            reasoning: Optional reasoning content from the model (for metrics/debugging).
         """
         if content:
             entry = {
@@ -218,6 +234,7 @@ class AuditLog:
                 role=MessageRole.ASSISTANT,
                 content=content,
                 tool_calls=tool_calls,
+                reasoning=reasoning,  # Include reasoning for metrics/debugging
             )
         )
 
@@ -236,7 +253,7 @@ class AuditLog:
         )
         logger.debug(f"Audit: tool message for call_id {tool_call_id}")
 
-    def append_llm_call(self, llm_call: LLMCall, agent_name: Optional[str] = None) -> None:
+    def append_llm_call(self, llm_call: LLMCall, agent_name: str | None = None) -> None:
         """Record an LLM call."""
         response_content = llm_call.response.content if llm_call.response else ""
         response_dict = llm_call.response.to_dict() if llm_call.response else None
@@ -276,7 +293,7 @@ class AuditLog:
         self,
         tool_name: str,
         parameters: dict[str, Any],
-        response: Optional[dict[str, Any]] = None,
+        response: dict[str, Any] | None = None,
     ) -> None:
         """Record a tool call and its response."""
         # Record tool call in transcript
@@ -342,7 +359,7 @@ class AuditLog:
 
     def get_conversation_messages(
         self,
-        max_messages: Optional[int] = None,
+        max_messages: int | None = None,
     ) -> list[ConversationMessage]:
         """Get conversation messages for LLM context.
 
