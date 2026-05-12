@@ -362,13 +362,11 @@ class MetricsRunner:
         requested_names = {m.name for m in self.metrics}
         if self._is_rerun_mode:
             # Rerun mode: only recompute filter metrics that haven't already succeeded.
-            # When force_rerun is also set, recompute every metric in the filter
-            # regardless of its existing status (used by --fix-false-positives).
             metrics_to_compute = {
                 name
                 for name in self.record_metric_filter[record_id]
                 if name in requested_names
-                and (self.force_rerun or name not in existing_metrics or existing_metrics[name].error is not None)
+                and (name not in existing_metrics or existing_metrics[name].error is not None)
             }
         else:
             # Normal mode: compute all requested if force_rerun, otherwise only missing
@@ -459,11 +457,11 @@ class MetricsRunner:
                 )
                 return metric.name, score
             except Exception as e:
-                logger.error(f"[{record_id}] Metric {metric.name} failed: {e!r}", exc_info=True)
+                logger.exception(f"[{record_id}] Metric {metric.name} failed")
                 return metric.name, MetricScore(
                     name=metric.name,
                     score=0.0,
-                    error=str(e) or repr(e),
+                    error=str(e) or repr(e),  # Memory Errors need repr(e)
                 )
 
         # Filter out metrics incompatible with the pipeline type
