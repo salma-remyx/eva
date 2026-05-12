@@ -1,13 +1,13 @@
 {
   "AgentSpeechFidelityMetric": {
     "name": "agent_speech_fidelity",
-    "prompt_hash": "864be78919d2",
-    "source_hash": "77743114e9b0",
-    "version": "v0.1"
+    "prompt_hash": "c34b4ccf458f",
+    "source_hash": "2daa628603bd",
+    "version": "v0.2"
   },
   "AgentSpeechFidelityS2SMetric": {
     "name": "agent_speech_fidelity",
-    "prompt_hash": "864be78919d2",
+    "prompt_hash": "c34b4ccf458f",
     "source_hash": "5b3deb4968cd",
     "version": "v0.1"
   },
@@ -20,7 +20,7 @@
   "ConcisenessJudgeMetric": {
     "name": "conciseness",
     "prompt_hash": "5d033338d36a",
-    "source_hash": "cd0ea09a9613",
+    "source_hash": "cd73d4caaf6f",
     "version": "v0.1"
   },
   "ConversationCorrectlyFinishedMetric": {

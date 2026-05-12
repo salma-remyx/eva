@@ -77,6 +77,7 @@ class SpeechFidelityBaseMetric(AudioJudgeMetric):
             per_turn_explanations: dict[int, str] = {}
             per_turn_transcripts: dict[int, str] = {}
             per_turn_normalized: dict[int, float] = {}
+            per_turn_failure_modes: dict[int, list[str]] = {}
             tts_turn_ids = sorted(intended_turns.keys())
             min_rating, max_rating = self.rating_scale
             valid_ratings_range = list(range(min_rating, max_rating + 1))
@@ -108,17 +109,22 @@ class SpeechFidelityBaseMetric(AudioJudgeMetric):
                 rating = response_item.get("rating")
                 transcript = response_item.get("transcript")
                 explanation = response_item.get("explanation", "")
+                failure_modes = response_item.get("failure_modes") or []
+                if not isinstance(failure_modes, list):
+                    failure_modes = []
 
                 if rating not in valid_ratings_range:
                     self.logger.warning(f"[{context.record_id}] Invalid rating {rating} for turn {turn_id}")
                     per_turn_ratings[turn_id] = None
                     per_turn_explanations[turn_id] = f"Invalid rating: {rating}"
+                    per_turn_failure_modes[turn_id] = failure_modes
                     continue
 
                 per_turn_ratings[turn_id] = rating
                 per_turn_explanations[turn_id] = explanation
                 per_turn_transcripts[turn_id] = transcript
                 per_turn_normalized[turn_id] = normalize_rating(rating, min_rating, max_rating)
+                per_turn_failure_modes[turn_id] = failure_modes
 
             aggregated_score = aggregate_per_turn_scores(list(per_turn_normalized.values()), self.aggregation)
 
@@ -132,11 +138,14 @@ class SpeechFidelityBaseMetric(AudioJudgeMetric):
                 "audio_trimmed": self.trim_silence,
                 "per_turn_ratings": per_turn_ratings,
                 "per_turn_explanations": per_turn_explanations,
+                "per_turn_failure_modes": per_turn_failure_modes,
                 "judge_prompt": prompt,
                 "judge_raw_response": response_text,
             }
             if min_rating != 0 or max_rating != 1:
                 details["per_turn_normalized"] = per_turn_normalized
+
+            sub_metrics = self.build_sub_metrics(context, per_turn_ratings, per_turn_failure_modes)
 
             return MetricScore(
                 name=self.name,
@@ -144,6 +153,7 @@ class SpeechFidelityBaseMetric(AudioJudgeMetric):
                 normalized_score=round(aggregated_score, 3) if aggregated_score is not None else 0,
                 details=details,
                 error="Aggregation failed" if aggregated_score is None else None,
+                sub_metrics=sub_metrics or None,
             )
 
         except Exception as e:
@@ -389,3 +399,15 @@ class SpeechFidelityBaseMetric(AudioJudgeMetric):
     def _format_intended_turns(intended_turns: dict[int, str]) -> str:
         """Format intended turns dictionary as numbered list."""
         return "\n".join(f"Turn {turn_id}: {text}" for turn_id, text in intended_turns.items())
+
+    def build_sub_metrics(
+        self,
+        context: MetricContext,
+        per_turn_ratings: dict[int, int | None],
+        per_turn_failure_modes: dict[int, list[str]],
+    ) -> dict[str, MetricScore] | None:
+        """Return sub-metrics derived from per-turn data, or None.
+
+        Default returns None so the parent metric has no sub-metrics.
+        """
+        return None

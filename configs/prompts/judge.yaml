@@ -691,15 +691,32 @@ judge:
         - **1 (High Fidelity)**: All entities are spoken correctly. Non-entity words are faithfully reproduced with no meaningful omissions or additions.
         - **0 (Low Fidelity)**: One or more entity errors, OR significant non-entity word errors that change the meaning of the turn.
 
+        ## Failure Modes (only when rating = 0)
+        For each low-fidelity turn, tag every failure mode that applies. A turn may have multiple failure modes. Leave the list empty when rating = 1.
+
+        - **entity_error** — A TTS-critical entity (confirmation code, dollar amount, name, date, time, flight/seat number, reference ID, etc.) was rendered incorrectly in the audio. Use this whenever the intended text shows an entity at that position, regardless of *how* it went wrong: a wrong digit/letter, a missing character in a spelled-out code, a value swapped for a different one, OR sounds that are garbled / slurred / unintelligible in place of an entity. The intended text tells you whether a given position is an entity — if it is, any defect there is `entity_error`, not `garbled_hallucination`.
+
+        - **truncation** — Expected content from the intended text is missing in the audio, and the missing region is **NOT** covered by an interruption tag (`[likely cut off ...]`, `[user interrupts]`, `[speaker likely cut itself off]`, `[likely interruption]`). Apply only when the speaker silently dropped content that the tags do not explain. Missing content before a tag is fidelity-preserved by design and should NOT be flagged here.
+
+        - **garbled_hallucination** — The audio contains speech-like sounds in place of expected **non-entity** words, but the sounds are distorted, slurred, or unintelligible enough that the listener cannot reliably parse what was said. The TTS produced noise/non-words rather than a clean rendering of the intended text. Use this category only for non-entity regions — if the garbled region corresponds to an entity in the intended text, use `entity_error` instead.
+
+        - **insertion_hallucination** — The audio contains words or phrases that were NOT in the intended text. The TTS added content on its own — extra sentences, repeated phrases, or filler that the script did not contain.
+
+        Tagging guidance:
+        - If a turn has both an entity error and missing/dropped content outside tagged regions, list both `entity_error` and `truncation`.
+        - Garbled audio at an entity position is `entity_error`, not `garbled_hallucination` — check the intended text first to decide whether the affected region is an entity.
+        - Do NOT use `truncation` for content lost to interruption tags, even if the interruption tags are not at the exact location where the truncation occured — that is expected behavior, not an error.
+
         ## Response Format
         Respond with a JSON object. Each turn entry must include the turn_id matching the turn number shown in the Intended Turns above:
         {{
           "turns": [
             {{
               "turn_id": <int: the turn number from the Intended Turns>,
-              "transcript": <string: your transcription of the audio for this turn, use only the audio for this not the intended text>
+              "transcript": <string: your transcription of the audio for this turn, use only the audio for this not the intended text>,
               "explanation": "<string: 1-3 sentence analysis of fidelity for this turn, citing specific intended vs actual mismatches, noting any regions skipped due to interruption flags>",
-              "rating": <0 or 1>
+              "rating": <0 or 1>,
+              "failure_modes": <list of strings: zero or more of "entity_error", "truncation", "garbled_hallucination", "insertion_hallucination". Must be [] when rating = 1.>
             }}
           ]
         }}
