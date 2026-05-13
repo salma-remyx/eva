@@ -1,5 +1,4 @@
-import type React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ErrorBar, ReferenceLine, Customized, useXAxisScale, useYAxisScale } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ErrorBar, ReferenceLine, Customized, LabelList } from 'recharts';
 import type { SystemStats, DomainOrPooled } from '../../data/leaderboardData';
 import { getPertValue, perturbations, perturbationLabels, groupedSystems } from '../../data/leaderboardData';
 import { useThemeColors } from '../../styles/theme';
@@ -39,7 +38,7 @@ function CustomTooltip({ active, payload, label }: TooltipProps) {
         {payload.map((item) => {
           // dataKey of the form `<pert>_point`
           const pertKey = item.dataKey.replace(/_point$/, '');
-          const sig = item.payload[`${pertKey}_sig`] as boolean | undefined;
+          const sigLabel = item.payload[`${pertKey}_sig_label`] as string | undefined;
           const err = item.payload[`${pertKey}_err`] as [number, number] | undefined;
           if (item.value === null || item.value === undefined || Number.isNaN(item.value)) return null;
           const lower = err ? item.value - err[0] : item.value;
@@ -50,7 +49,7 @@ function CustomTooltip({ active, payload, label }: TooltipProps) {
               <span className="text-text-muted">{perturbationLabels[pertKey] ?? pertKey}:</span>
               <span className="font-mono text-text-primary">
                 {item.value >= 0 ? '+' : ''}{item.value.toFixed(3)}
-                {sig ? <span className="text-amber-400 ml-0.5">*</span> : null}
+                {sigLabel ? <span className="text-amber-400 ml-0.5">{sigLabel}</span> : null}
               </span>
               <span className="font-mono text-text-muted">
                 [{lower.toFixed(2)}, {upper.toFixed(2)}]
@@ -84,49 +83,10 @@ function tierLabel(p: number | null | undefined): string {
   return '';
 }
 
-interface BandScale {
-  (v: string): number | undefined;
-  bandwidth?: () => number;
-}
-
-function StarsLayer({ data, amberColor }: { data: ChartRow[]; amberColor: string }) {
-  const xScale = useXAxisScale() as BandScale | undefined;
-  const yScale = useYAxisScale() as ((v: number) => number | undefined) | undefined;
-  if (!xScale || !yScale || typeof xScale.bandwidth !== 'function') return null;
-  const bandwidth = xScale.bandwidth();
-  const n = perturbations.length;
-  const elements: React.ReactElement[] = [];
-  data.forEach((row) => {
-    const bandStart = xScale(row.name as string);
-    if (bandStart == null) return;
-    perturbations.forEach((pert, i) => {
-      const label = row[`${pert}_sig_label`] as string | undefined;
-      if (!label) return;
-      const point = row[`${pert}_point`] as number | null | undefined;
-      const err = row[`${pert}_err`] as [number, number] | undefined;
-      if (point == null || !err) return;
-      const cx = bandStart + (bandwidth * (i + 0.5)) / n;
-      const isPos = point >= 0;
-      const yTip = isPos
-        ? (yScale(point + err[1]) ?? 0) - 6
-        : (yScale(point - err[0]) ?? 0) + 14;
-      elements.push(
-        <text
-          key={`sig-${row.name}-${pert}`}
-          x={cx}
-          y={yTip}
-          fill={amberColor}
-          fontSize={14}
-          fontWeight={700}
-          textAnchor="middle"
-        >
-          {label}
-        </text>,
-      );
-    });
-  });
-  return <g>{elements}</g>;
-}
+// YAxis domain is [-0.5, 0.5] (range = 1.0); chart container is h-[440px]
+// with top:24 / bottom:70 margins -> plot area height = 346px.
+// pxPerUnit = 346 / 1.0 = 346.
+const Y_PX_PER_UNIT = 346;
 
 export function PerturbationBarChart({ metric, metricLabel, systems, domain }: PerturbationBarChartProps) {
   const colors = useThemeColors();
@@ -250,9 +210,50 @@ export function PerturbationBarChart({ metric, metricLabel, systems, domain }: P
               {perturbations.map((p) => (
                 <Bar key={p} dataKey={`${p}_point`} fill={colorFor(p, colors)} radius={[2, 2, 0, 0]}>
                   <ErrorBar dataKey={`${p}_err`} direction="y" width={4} strokeWidth={1} stroke={colors.text.muted} />
+                  <LabelList
+                    dataKey={`${p}_sig_label`}
+                    content={(props: unknown) => {
+                      const cp = props as {
+                        x?: number;
+                        y?: number;
+                        width?: number;
+                        height?: number;
+                        value?: string;
+                        index?: number;
+                      };
+                      const label = cp.value;
+                      if (!label || cp.x == null || cp.y == null || cp.width == null || cp.height == null || cp.index == null) {
+                        return null;
+                      }
+                      const row = data[cp.index];
+                      const point = row?.[`${p}_point`] as number | null | undefined;
+                      const err = row?.[`${p}_err`] as [number, number] | undefined;
+                      if (point == null || !err) return null;
+                      const cx = cp.x + cp.width / 2;
+                      const isPos = point >= 0;
+                      // For positive bars cp.y is the bar's top (at point value);
+                      // upper CI extends err[1] units above -> err[1] * pxPerUnit pixels.
+                      // For negative bars cp.y is at the zero line, cp.height extends down;
+                      // lower CI cap is at cp.y + cp.height + err[0] * pxPerUnit.
+                      const yPos = isPos
+                        ? cp.y - err[1] * Y_PX_PER_UNIT - 6
+                        : cp.y + cp.height + err[0] * Y_PX_PER_UNIT + 14;
+                      return (
+                        <text
+                          x={cx}
+                          y={yPos}
+                          fill={colors.accent.amber}
+                          fontSize={14}
+                          fontWeight={700}
+                          textAnchor="middle"
+                        >
+                          {label}
+                        </text>
+                      );
+                    }}
+                  />
                 </Bar>
               ))}
-              <StarsLayer data={data} amberColor={colors.accent.amber} />
             </BarChart>
           </ResponsiveContainer>
         </div>
