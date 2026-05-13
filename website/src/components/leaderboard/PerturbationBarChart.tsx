@@ -142,6 +142,7 @@ export function PerturbationBarChart({ metric, metricLabel, systems, domain }: P
                 dataKey="name"
                 stroke={colors.text.muted}
                 tick={{ fill: colors.text.secondary, fontSize: 10 }}
+                tickFormatter={(v: string) => v.replace(/ \(ElevenAgents\)$/, '')}
                 interval={0}
                 angle={-30}
                 textAnchor="end"
