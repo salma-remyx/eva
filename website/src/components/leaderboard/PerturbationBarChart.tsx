@@ -214,38 +214,39 @@ export function PerturbationBarChart({ metric, metricLabel, systems, domain }: P
                     dataKey={`${p}_sig_label`}
                     content={(props: unknown) => {
                       const cp = props as {
-                        x?: number;
-                        y?: number;
-                        width?: number;
-                        height?: number;
+                        viewBox?: { x?: number; y?: number; width?: number; height?: number };
                         value?: string;
                         index?: number;
                       };
                       const label = cp.value;
-                      if (!label || cp.x == null || cp.y == null || cp.width == null || cp.height == null || cp.index == null) {
+                      const vb = cp.viewBox;
+                      if (
+                        !label ||
+                        !vb ||
+                        vb.x == null ||
+                        vb.y == null ||
+                        vb.width == null ||
+                        vb.height == null ||
+                        cp.index == null
+                      ) {
                         return null;
                       }
                       const row = data[cp.index];
                       const point = row?.[`${p}_point`] as number | null | undefined;
                       const err = row?.[`${p}_err`] as [number, number] | undefined;
                       if (point == null || !err) return null;
-                      const cx = cp.x + cp.width / 2;
-                      // Derive px-per-data-unit from this bar's own geometry — exact,
-                      // immune to chart-layout details. Fall back to the chart-level
-                      // constant only when the bar has near-zero value.
+                      const cx = vb.x + vb.width / 2;
+                      // Derive px-per-data-unit from this bar's own geometry.
                       const pxPerUnit = Math.abs(point) > 1e-6
-                        ? cp.height / Math.abs(point)
+                        ? vb.height / Math.abs(point)
                         : Y_PX_PER_UNIT;
-                      // Anchor everything to the lower CI cap's pixel position, then
-                      // place the star below that. For positive bars where the lower
-                      // CI cap can fall inside the visible bar, drop the star below
-                      // the bar's bottom (zero line) instead so it never overlaps.
+                      // Place the star just above the upper CI cap for positive bars
+                      // and just below the lower CI cap for negative bars — always
+                      // outside the bar+CI structure.
                       const isPos = point >= 0;
-                      const lowerCapPx = isPos
-                        ? cp.y + err[0] * pxPerUnit
-                        : cp.y + cp.height + err[0] * pxPerUnit;
-                      const barBottomPx = cp.y + cp.height;
-                      const yPos = Math.max(lowerCapPx, barBottomPx) + 14;
+                      const yPos = isPos
+                        ? vb.y - err[1] * pxPerUnit - 6
+                        : vb.y + vb.height + err[0] * pxPerUnit + 14;
                       return (
                         <text
                           x={cx}
