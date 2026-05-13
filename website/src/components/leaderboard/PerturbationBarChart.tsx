@@ -142,7 +142,11 @@ export function PerturbationBarChart({ metric, metricLabel, systems, domain }: P
                 dataKey="name"
                 stroke={colors.text.muted}
                 tick={{ fill: colors.text.secondary, fontSize: 10 }}
-                tickFormatter={(v: string) => v.replace(/ \(ElevenAgents\)$/, '')}
+                tickFormatter={(v: string) =>
+                  v.startsWith('Scribe v2.2 Realtime')
+                    ? 'Scribe + Gemini 3 Flash + Conversational v3'
+                    : v
+                }
                 interval={0}
                 angle={-30}
                 textAnchor="end"
