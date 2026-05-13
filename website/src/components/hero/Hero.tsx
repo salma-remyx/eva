@@ -9,7 +9,6 @@ const DOMAINS = [
     blurb: 'Customers calling a customer-service line to rebook disrupted flights — IRROPS rebooking, voluntary changes, cancellations, and vouchers.',
     tools: 15,
     scenarios: 50,
-    conversations: 250,
   },
   {
     id: 'itsm',
@@ -18,7 +17,6 @@ const DOMAINS = [
     blurb: 'Employees calling IT support to resolve enterprise IT and service-management issues.',
     tools: 59,
     scenarios: 80,
-    conversations: 400,
   },
   {
     id: 'medical-hr',
@@ -27,7 +25,6 @@ const DOMAINS = [
     blurb: 'Healthcare workers calling HR for benefits, scheduling, leave, and policy questions.',
     tools: 47,
     scenarios: 83,
-    conversations: 415,
   },
 ];
 
@@ -37,11 +34,14 @@ export function Hero() {
       <div className="max-w-5xl mx-auto text-center">
         <div>
           <h1
-            className="text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold mb-2 leading-tight bg-clip-text text-transparent"
+            className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-3 leading-tight bg-clip-text text-transparent"
             style={{ backgroundImage: 'linear-gradient(to right, #7C3AED, #818CF8, #60A5FA)' }}
           >
-            A New End-to-end Framework for<br />Evaluating Voice Agents (EVA)
+            EVA-Bench
           </h1>
+          <p className="text-xl sm:text-2xl lg:text-[1.75rem] font-semibold text-text-secondary max-w-3xl mx-auto mb-4 leading-tight">
+            A New End-to-end Framework for Evaluating Voice Agents
+          </p>
           <p className="text-sm sm:text-base font-bold text-[#A78BFA] max-w-3xl mx-auto mb-2.5">
             Tara Bogavelli, Gabrielle Gauthier Melançon, Katrina Stankiewicz, Oluwanifemi Bamgbose, Fanny Riols, Hoang Nguyen, Raghav Mehndiratta, Lindsay Brin, Hari Subramani, Joseph Marinier*
           </p>
@@ -75,7 +75,7 @@ export function Hero() {
                     <div className="text-base font-semibold text-text-primary">{d.label}</div>
                   </div>
                   <p className="text-xs text-text-secondary leading-relaxed mb-3 text-center">{d.blurb}</p>
-                  <div className="grid grid-cols-3 gap-2 mt-auto">
+                  <div className="grid grid-cols-2 gap-2 mt-auto">
                     <div className="rounded-lg bg-bg-primary px-2 py-2 text-center">
                       <div className="text-xl font-bold text-text-primary">{d.tools}</div>
                       <div className="text-[10px] text-text-muted">Tools</div>
@@ -83,10 +83,6 @@ export function Hero() {
                     <div className="rounded-lg bg-bg-primary px-2 py-2 text-center">
                       <div className="text-xl font-bold text-text-primary">{d.scenarios}</div>
                       <div className="text-[10px] text-text-muted">Scenarios</div>
-                    </div>
-                    <div className="rounded-lg bg-bg-primary px-2 py-2 text-center">
-                      <div className="text-xl font-bold text-text-primary">{d.conversations}</div>
-                      <div className="text-[10px] text-text-muted leading-tight">Conversations</div>
                     </div>
                   </div>
                 </div>
