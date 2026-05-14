@@ -196,16 +196,13 @@ export function PerturbationBarChart({ metric, metricLabel, systems }: Perturbat
     for (const p of perturbations) {
       const v = getPertValue(s, metric, p, 'pooled');
       if (v) {
-        const label = tierLabel(v.corrected_p);
         row[`${p}_point`] = v.point;
         row[`${p}_err`] = [v.point - v.ci_lower, v.ci_upper - v.point];
-        row[`${p}_sig`] = label !== '';
-        row[`${p}_sig_label`] = label;
+        row[`${p}_sig_label`] = tierLabel(v.corrected_p);
         any = true;
       } else {
         row[`${p}_point`] = null;
         row[`${p}_err`] = undefined;
-        row[`${p}_sig`] = false;
         row[`${p}_sig_label`] = '';
       }
     }
@@ -220,9 +217,8 @@ export function PerturbationBarChart({ metric, metricLabel, systems }: Perturbat
     );
   }
 
-  // Compute group boundary indices: positions where the type changes from the previous row.
-  // The ReferenceLine x value is the `name` of the first row in the new group; recharts will
-  // draw the line at that category's tick.
+  // Group boundaries: each entry pairs the new-group's first row with the previous row,
+  // so SeparatorsLayer can place a dashed line at the midpoint of the gap between them.
   const separators: { name: string; prevName: string }[] = [];
   for (let i = 1; i < data.length; i++) {
     if (data[i].type !== data[i - 1].type) {
@@ -274,29 +270,36 @@ export function PerturbationBarChart({ metric, metricLabel, systems }: Perturbat
                 <Bar key={p} dataKey={`${p}_point`} fill={colorFor(p, colors)} radius={[2, 2, 0, 0]}>
                   <ErrorBar dataKey={`${p}_err`} direction="y" width={4} strokeWidth={1} stroke={colors.text.muted} />
                   <LabelList
-                    dataKey={`${p}_sig_label`}
+                    // Encode the row's significance + CI into cp.value via valueAccessor
+                    // rather than reading `data[cp.index]` in content: Bar drops zero-dimension
+                    // rectangles, so cp.index is into a filtered array and would misalign rows
+                    // after any all-zero row.
+                    valueAccessor={(entry: { payload?: ChartRow }) => {
+                      const r = entry?.payload;
+                      const label = r?.[`${p}_sig_label`] as string | undefined;
+                      const point = r?.[`${p}_point`] as number | null | undefined;
+                      const err = r?.[`${p}_err`] as [number, number] | undefined;
+                      if (!label || point == null || !err) return '';
+                      return `${label}|${point}|${err[0]}|${err[1]}`;
+                    }}
                     content={(props: unknown) => {
-                      const cp = props as {
-                        viewBox?: { x?: number; width?: number };
-                        value?: string;
-                        index?: number;
-                      };
-                      const label = cp.value;
+                      const cp = props as { viewBox?: { x?: number; width?: number }; value?: string };
                       const vb = cp.viewBox;
-                      if (!label || !vb || vb.x == null || vb.width == null || cp.index == null) {
+                      if (!cp.value || !vb || vb.x == null || vb.width == null) return null;
+                      const [label, pointStr, errLoStr, errHiStr] = cp.value.split('|');
+                      const point = parseFloat(pointStr);
+                      const errLo = parseFloat(errLoStr);
+                      const errHi = parseFloat(errHiStr);
+                      if (!Number.isFinite(point) || !Number.isFinite(errLo) || !Number.isFinite(errHi)) {
                         return null;
                       }
-                      const row = data[cp.index];
-                      const point = row?.[`${p}_point`] as number | null | undefined;
-                      const err = row?.[`${p}_err`] as [number, number] | undefined;
-                      if (point == null || !err) return null;
                       return (
                         <StarMark
                           vb={{ x: vb.x, width: vb.width }}
                           label={label}
                           point={point}
-                          ciLower={point - err[0]}
-                          ciUpper={point + err[1]}
+                          ciLower={point - errLo}
+                          ciUpper={point + errHi}
                           amberColor={colors.accent.amber}
                         />
                       );
