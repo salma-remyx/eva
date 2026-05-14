@@ -240,15 +240,20 @@ export function PerturbationBarChart({ metric, metricLabel, systems, domain }: P
                       const pxPerUnit = Math.abs(point) > 1e-6
                         ? vb.height / Math.abs(point)
                         : Y_PX_PER_UNIT;
-                      // Always place the star above the highest visible extent
-                      // of the bar+CI structure: for positive bars that's the
-                      // upper CI cap; for negative bars whose CI doesn't cross
-                      // zero, that's the zero line (= vb.y).
+                      // Star sits at whichever is higher on screen:
+                      //   (a) 8 px above the upper CI cap, or
+                      //   (b) 14 px above the bar's top edge (so a short CI
+                      //       cap that lands inside the bar never lets the
+                      //       star fall inside the bar).
+                      // For negative bars, "top edge" is the zero line (vb.y),
+                      // which keeps stars well away from the x-axis even for
+                      // deeply negative deltas.
                       const isPos = point >= 0;
                       const pointPx = isPos ? vb.y : vb.y + vb.height;
                       const upperCapPx = pointPx - err[1] * pxPerUnit;
-                      const topOfStructurePx = isPos ? upperCapPx : Math.min(vb.y, upperCapPx);
-                      const yPos = topOfStructurePx - 8;
+                      const aboveCap = upperCapPx - 8;
+                      const aboveBarTop = vb.y - 14;
+                      const yPos = Math.min(aboveCap, aboveBarTop);
                       return (
                         <text
                           x={cx}
