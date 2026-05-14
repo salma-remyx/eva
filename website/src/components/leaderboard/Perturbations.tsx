@@ -89,7 +89,7 @@ export function Perturbations({ systems, domain }: PerturbationsProps) {
               );
             })}
             <div className="text-xs text-text-muted ml-auto">
-              <span className="text-amber-400 font-bold">*</span> significant after correction (reject = true)
+              <span className="text-amber-400 font-bold">*</span> significant perturbation effect
             </div>
           </div>
           {METRICS.map((m) => {
