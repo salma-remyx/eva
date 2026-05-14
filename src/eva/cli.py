@@ -5,9 +5,12 @@ Used by both the `eva` console script (installed via pip/uv) and `python main.py
 """
 
 import asyncio
+import faulthandler
 import sys
 
 from pydantic import ValidationError
+
+faulthandler.enable()  # Print Python stack trace on segfaults (exit 139)
 
 
 def main():
