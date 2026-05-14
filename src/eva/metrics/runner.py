@@ -150,7 +150,7 @@ class MetricsRunner:
 
         config_data = json.loads(config_path.read_text())
 
-        # Determine pipeline type from config (fallback to False for legacy runs)
+        # Determine pipeline type from config
         model_data = config_data.get("model", {})
         self._pipeline_type = get_pipeline_type(model_data) if model_data else PipelineType.CASCADE
 
@@ -240,7 +240,7 @@ class MetricsRunner:
         for record_id, record_dir in self._discover_record_dirs(self.run_dir, self.record_ids):
             result_path = record_dir / "result.json"
             if not result_path.exists():
-                logger.info(f"process_records: {record_id} has no result.json, skipping")
+                logger.debug(f"process_records: {record_id} has no result.json, skipping")
                 continue
             try:
                 result_data = json.loads(result_path.read_text())
@@ -332,6 +332,12 @@ class MetricsRunner:
         - Normal mode: only computes metrics not yet present on disk.
         - Rerun mode: only recomputes metrics that failed; never reruns already-succeeded metrics.
         """
+        # If the conversation worker never produced result.json, the record cannot
+        # be evaluated — skip cleanly instead of letting _load_context raise.
+        if not (record_dir / "result.json").exists():
+            logger.info(f"run_and_save_record: {record_id} has no result.json, skipping")
+            return None
+
         metrics_path = record_dir / "metrics.json"
 
         # Read existing metrics from disk if available
