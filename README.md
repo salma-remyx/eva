@@ -2,9 +2,9 @@
 
 > *Most voice agent benchmarks evaluate either what the agent **does** or how it **sounds** — EVA evaluates both.*
 
-[![Blog Post](https://img.shields.io/badge/Blog-Post-blue?style=flat-square&logo=huggingface)](https://huggingface.co/blog/ServiceNow-AI/eva)
+[![Arxiv](https://img.shields.io/badge/arXiv-2605.13841-b31b1b?style=flat-square&logo=arxiv)](https://arxiv.org/abs/2605.13841)
 [![Website](https://img.shields.io/badge/Website-EVA-green?style=flat-square&logo=googlechrome)](https://servicenow.github.io/eva/)
-[![Leaderboard](https://img.shields.io/badge/Leaderboard-Rankings-orange?style=flat-square&logo=trophy)](https://servicenow.github.io/eva/#early-results)
+[![Leaderboard](https://img.shields.io/badge/Leaderboard-Rankings-orange?style=flat-square&logo=trophy)](https://servicenow.github.io/eva/#results)
 [![Dataset](https://img.shields.io/badge/Dataset-HuggingFace-yellow?style=flat-square&logo=huggingface)](https://huggingface.co/datasets/ServiceNow-AI/eva)
 [![Demo](https://img.shields.io/badge/Demo-See%20It-purple?style=flat-square&logo=rocket)](https://servicenow.github.io/eva/#demo)
 
