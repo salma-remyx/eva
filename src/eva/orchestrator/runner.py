@@ -10,7 +10,7 @@ from typing import Any
 from eva.metrics.legacy_aliases import rename_metric_keys, rename_metric_list
 from eva.metrics.runner import MetricsRunner, MetricsRunResult
 from eva.models.agents import AgentConfig
-from eva.models.config import PipelineConfig, RunConfig
+from eva.models.config import PipelineType, RunConfig
 from eva.models.record import EvaluationRecord
 from eva.models.results import ConversationResult, RunResult
 from eva.orchestrator.port_pool import PortPool
@@ -125,7 +125,7 @@ class BenchmarkRunner:
         (self.output_dir / "records").mkdir(exist_ok=True)
 
         # Resolve exact models used (captures defaults from services.py + any alias labels)
-        if isinstance(self.config.model, PipelineConfig):
+        if self.config.model.pipeline_type == PipelineType.CASCADE:
             stt_params = self.config.model.stt_params
             tts_params = self.config.model.tts_params
             self.config.resolved_models = {
@@ -221,13 +221,10 @@ class BenchmarkRunner:
                     async with semaphore:
                         result, audio_task = await self._run_conversation(record, output_id)
 
-                    # Phase 2: Save result.json outside the semaphore
-                    if isinstance(result, ConversationResult):
-                        result_path = self.output_dir / "records" / output_id / "result.json"
-                        result_path.parent.mkdir(parents=True, exist_ok=True)
-                        await asyncio.to_thread(result_path.write_text, result.model_dump_json(indent=2))
+                    # result.json is now written by the worker itself (inside the
+                    # semaphore) so it survives task cancellation and process signals.
 
-                    # Phase 3: If the conversation didn't complete, skip validation.
+                    # Phase 2: If the conversation didn't complete, skip validation.
                     # validate_one() handles the gate (conversation_valid_end); returning
                     # vr=None signals "not_finished" to the classification loop below.
                     if not (isinstance(result, ConversationResult) and result.completed):
@@ -257,10 +254,11 @@ class BenchmarkRunner:
                     logger.warning(f"Skipping {output_id} as invalid: {exc}")
                     return output_id, exc, False, None
                 except Exception as exc:
-                    # Anything else (KeyError, TypeError, programming bugs, etc.) is
-                    # surfaced loudly so it doesn't get silently swallowed.
+                    # Log loudly but return instead of raising — asyncio.gather does
+                    # not use return_exceptions, so a raise here kills result.json
+                    # writes for every other record still in flight.
                     logger.error(f"Pipeline error for {output_id}: {exc}", exc_info=True)
-                    raise
+                    return output_id, exc, False, None
 
             pipeline_results = await asyncio.gather(
                 *(_run_and_pipeline(output_id_to_record[oid], oid) for oid in pending_output_ids),
