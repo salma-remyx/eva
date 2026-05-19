@@ -17,11 +17,10 @@ Using a realistic **bot-to-bot architecture**, EVA runs fully automated evaluati
 
 ### 📊 What's included
 - **Metrics** for both EVA-A and EVA-X, fully documented and validated with judge prompts, code, etc.
-- **50 airline scenarios** spanning flight rebooking, cancellations, vouchers, and more
-- **Results** for 20 cascade and audio-native systems (speech-to-speech models, large audio language models) — see [Experiment Setup](docs/experiment_setup.md) for model configurations.
+- **213 enteprise scenarios** across 3 domains targeting voice-specific failure modes
+- **Results** for 12 cascade and audio-native systems (speech-to-speech models, large audio language models) — see [Experiment Setup](docs/experiment_setup.md) for model configurations.
+- **Perturbation suite** that can apply a wide range of background noises, user accents, simulated connection degradation, and combined perturbations to test voice agents on realistic audio conditions.
 
-### 🔍 Key finding
-Agents that score well on task completion tend to score worse on conversational experience — and vice versa. **The accuracy–experience tradeoff is real, consistent, and previously unmeasured.**
 
 <details>
 <summary><h2>Quick Start</h2></summary>
