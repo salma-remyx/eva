@@ -57,7 +57,7 @@ class ParsedEnvExample:
 
 def _is_section_rule(line: str) -> bool:
     s = line.strip()
-    return s.startswith("#") and set(s.lstrip("#").strip()) == {"="} and len(s) > 5
+    return bool(re.match(r"^\s*#\s*={3,}\s*$", s))
 
 
 def _consume_quoted_continuation(lines: list[str], start_idx: int, value_head: str) -> int:
