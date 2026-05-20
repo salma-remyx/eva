@@ -21,7 +21,7 @@ from eva.metrics.versioning import _CURRENT_METRIC_VERSION
 from eva.models.config import PipelineType, get_pipeline_type
 from eva.models.record import EvaluationRecord
 from eva.models.results import ConversationResult, MetricScore, PassAtKResult, RecordMetrics
-from eva.utils.culture import resolve_scenario_db, resolve_user_config, resolve_user_goal
+from eva.utils.culture import get_language_addendum, resolve_scenario_db, resolve_user_config, resolve_user_goal
 from eva.utils.hash_utils import get_dict_hash
 from eva.utils.logging import get_logger
 from eva.utils.pass_at_k import (
@@ -184,10 +184,15 @@ class MetricsRunner:
         if "role" not in agent_config:
             raise ValueError(f"Agent config missing 'role' field: {agent_config_path}")
 
+        instructions = agent_config["instructions"]
+        addendum = get_language_addendum(self._run_language)
+        if addendum:
+            instructions = f"{instructions}\n\n{addendum}"
+
         return {
             "id": agent_config.get("id"),
             "role": agent_config["role"],
-            "instructions": agent_config["instructions"],
+            "instructions": instructions,
             "tools": agent_config["tools"],
         }
 
@@ -616,6 +621,7 @@ class MetricsRunner:
             agent_tools=agent_tools,
             agent_id=self._agent_config["id"],
             current_date_time=record.current_date_time,
+            language=self._run_language,
             # Basic stats from result
             num_turns=result.num_turns,
             tools_called=result.tools_called,

@@ -271,6 +271,7 @@ class PipecatAssistantServer(AbstractAssistantServer):
                 alm_client = create_audio_llm_client(
                     self.pipeline_config.audio_llm,
                     self.pipeline_config.audio_llm_params,
+                    language=self.language,
                 )
                 # Note: audio_llm_audio_collector and audio_llm_processor are created
                 # after context/user_aggregator below (they need those references)

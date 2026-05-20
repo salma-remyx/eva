@@ -299,10 +299,25 @@ class LanguageType(StrEnum):
     english = "en"
     spanish = "es"
     french = "fr"
+    canadian_french = "fr-CA"
     german = "de"
     portuguese = "pt"
     japanese = "ja"
     mandarin = "zh"
+    korean = "ko"
+
+
+LANGUAGE_DISPLAY_NAMES: dict[LanguageType, str] = {
+    LanguageType.english: "English",
+    LanguageType.spanish: "Spanish",
+    LanguageType.french: "French",
+    LanguageType.canadian_french: "Canadian French",
+    LanguageType.german: "German",
+    LanguageType.portuguese: "Portuguese",
+    LanguageType.japanese: "Japanese",
+    LanguageType.mandarin: "Mandarin Chinese",
+    LanguageType.korean: "Korean",
+}
 
 
 class PerturbationConfig(BaseModel):

@@ -333,7 +333,7 @@ judge:
       - Using parameter values explicitly stated by the user
       - Using parameter values returned by a prior tool response (e.g., reusing an ID or record returned by an earlier lookup in a subsequent call)
       - Using reasonable defaults that are standard for the tool (e.g., a date format conversion)
-      - Standard domain mappings from user-stated information (e.g., "Chicago O'Hare" → "ORD", "Miami" → "MIA"; or other unambiguous geographic, enterprise, or industry-standard mappings present in the agent's domain) — unambiguous mappings are considered grounded
+      - Standard domain mappings from user-stated information (e.g., "Chicago O'Hare" → "ORD"; "sore throat and fever" → ICD-10 code "J06.9"; or other unambiguous geographic, enterprise, or industry-standard mappings present in the agent's domain) — unambiguous mappings are considered grounded
       - Parameters grounded in policy entitlements derived from prior tool results (e.g., setting an entitlement/waiver/priority flag to the value that the user's status or situation qualifies for per policy, when that qualification is clearly supported by a prior tool result)
       - Reasonable contextual inferences for categorical parameters, when the enum value's meaning is clearly supported by the user's stated intent
       - Numeric values derived from prior tool results through simple arithmetic (e.g., summing line items, subtracting used amounts from a balance, or computing a total from prior results)
@@ -511,6 +511,7 @@ judge:
       The conversation ended due to: {conversation_end}
         
       ## User Simulator Instructions
+      The user in this conversation was expected to communicate in {language_display_name} throughout.
       The following is the full system prompt the user simulator was given for this conversation, including the user's persona, goal, decision tree, must-have criteria, and end-of-call rules. This is the source of truth for what the user-sim was told to do. Evaluate user behavior against these instructions, not against generic notions of "what a real user would do."
       ```
       {user_simulator_instructions}
@@ -606,7 +607,7 @@ judge:
         - Markdown tables
         - Repeated Punctuation/Symbols: Strings of characters (e.g., ----- or *****) that are typically used for visual emphasis
       2. Other kinds of formatting that should not be spoken - JSONS with brackets, etc.
-      3. Missing spaces between words that would cause a TTS system to fail (eg. eighttwentypm instead of eight twenty PM). Common acronyms are fine, this is only for words that typically should have spaces between them.
+      3. Missing spaces between words that would cause a TTS system to fail (eg. eighttwentypm instead of eight twenty PM). Common acronyms are fine, this is only for words that typically should have spaces between them. Note: Chinese, Japanese, and Korean text does not use spaces between characters by convention — do NOT flag CJK text for missing spaces.
       4. Emojis
 
       ## Instructions
@@ -728,9 +729,9 @@ judge:
 
         ## Entity Categories to Listen For
         - Confirmation codes (e.g., ZK3FFW, FAR0UM) — especially when spelled out letter by letter
-        - Flight numbers (e.g., SkyWay 410, SW302)
+        - Domain-specific record identifiers (e.g., flight numbers like SkyWay 410, ticket/incident numbers like INC-4821, employee IDs like EMP-092)
         - Dollar amounts (e.g., $15, $1,285.00) — "fifteen" vs "fifty" matters
-        - Seat numbers (e.g., 21C, 14A)
+        - Short alphanumeric codes (e.g., seat numbers like 21C, room codes like B-204, extension numbers like x4521)
         - Reference/voucher IDs (e.g., REF-8JVSDF-001) — verify each segment is distinguishable
         - Times (e.g., 3:55 PM, 10:30 AM)
         - Dates (e.g., March 25th, February 3rd)
@@ -806,7 +807,7 @@ judge:
         - **Numeric values**: Dollar amounts, quantities, percentages (e.g., "$150" vs "$115")
         - **Addresses**: Street numbers, street names, cities (e.g., "123 Main Street" vs "124 Main Street")
         - **Contact information**: Phone numbers, email addresses (e.g., "tom_cobb@gmail.com")
-        - **Flight/route numbers**: "UA204" vs "UA240"
+        - **Domain-specific record identifiers** (flight numbers, ticket IDs, order codes, case numbers): "UA204" vs "UA240", "INC-8821" vs "INC-8281"
         - **Serial numbers and other identifiers**
 
         ### Error Types

@@ -595,6 +595,7 @@ def get_openai_session_properties(system_prompt: str, params: dict, pipecat_tool
 def create_audio_llm_client(
     model: str,
     params: dict[str, Any],
+    language: str | None = None,
 ) -> BaseALMClient:
     """Create an audio-LLM API client.
 
@@ -607,6 +608,8 @@ def create_audio_llm_client(
         params: Model-specific parameters. Required for vLLM: url (or urls).
                 Required for Gemini: api_key, model.
                 Optional: temperature, max_tokens, sample_rate, num_channels, sample_width.
+        language: BCP 47 language tag (e.g. 'en', 'fr'). Used to build the
+                  client's default transcription prompt.
 
     Returns:
         Configured audio-LLM client.
@@ -639,6 +642,7 @@ def create_audio_llm_client(
             project=project,
             location=location,
             thinking_level=params.get("thinking_level", "minimal"),
+            language=language,
         )
         logger.info(f"Using Gemini audio-LLM: {gemini_model} ({'vertex' if project and location else 'api_key'})")
         return client
@@ -656,6 +660,7 @@ def create_audio_llm_client(
             sample_rate=params.get("sample_rate", 16000),
             num_channels=params.get("num_channels", 1),
             sample_width=params.get("sample_width", 2),
+            language=language,
         )
         logger.info(f"Using {model} vLLM audio-LLM: {base_url}")
         return client

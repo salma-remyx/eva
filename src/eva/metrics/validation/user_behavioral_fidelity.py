@@ -98,6 +98,7 @@ class UserBehavioralFidelityMetric(ConversationTextJudgeMetric):
             "modification_tools": json.dumps(modification_tools, indent=2),
             "conversation_end": conversation_end,
             "user_simulator_instructions": _render_user_simulator_instructions(context),
+            "language_display_name": context.language_display_name,
         }
 
     def build_metric_score(

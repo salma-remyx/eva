@@ -23,7 +23,7 @@ from eva.metrics.utils import (
     validate_rating,
 )
 from eva.metrics.versioning import _CURRENT_PROMPT_HASH, hash_prompt_template
-from eva.models.config import PipelineType
+from eva.models.config import LANGUAGE_DISPLAY_NAMES, LanguageType, PipelineType
 from eva.models.results import MetricScore
 from eva.utils.llm_client import LLMClient
 from eva.utils.logging import get_logger
@@ -90,6 +90,7 @@ class MetricContext:
         assistant_interrupted_turns: set[int] | None = None,
         user_interrupted_turns: set[int] | None = None,
         pipeline_type: PipelineType = PipelineType.CASCADE,
+        language: str = "en",
     ):
         self.record_id = record_id
 
@@ -123,6 +124,11 @@ class MetricContext:
         self.agent_tools = agent_tools
         self.agent_id = agent_id
         self.current_date_time = current_date_time
+        self.language = language
+        try:
+            self.language_display_name = LANGUAGE_DISPLAY_NAMES[LanguageType(language)]
+        except (ValueError, KeyError):
+            self.language_display_name = language
 
         # Processed log data
         self.transcribed_assistant_turns = transcribed_assistant_turns or {}

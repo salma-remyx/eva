@@ -69,16 +69,29 @@ TRANSLATION_BATCH = 25
 ADDENDUM_TEMPLATE = (
     "Always respond to the user in {language_name}{native_suffix}, regardless of the instructions given or tool outputs received."
     " However, tool calls and tool names must always be done using ascii characters, except parameters like people's first"
-    " or last names which may be in non-ascii, native script."
+    " or last names which may be in non-ascii, native script. You may need to try both scripts when looking up by name."
 )
+
+
+BUCKET_SIZE = 40  # Each name array: indices [0:BUCKET_SIZE] = ASCII, [BUCKET_SIZE:2*BUCKET_SIZE] = native script.
 
 
 def _seeded_index(seed: str, n: int) -> int:
     """Deterministic index in ``[0, n)`` keyed by ``seed``."""
     if n <= 0:
         raise ValueError("Empty name array")
-    h = int(hashlib.sha256(seed.encode("utf-8")).hexdigest(), 16)
+    h = int(hashlib.sha256(seed.encode()).hexdigest(), 16)
     return h % n
+
+
+def _use_native_script(record_id: str) -> bool:
+    """Fixed, language-independent assignment: ~half of records get native-script names.
+
+    Seeded only on record_id so the same record always picks the same script tier
+    regardless of which language is being added.
+    """
+    h = int(hashlib.sha256(f"script:{record_id}".encode()).hexdigest(), 16)
+    return (h % 2) == 1
 
 
 def _gender_to_bucket(gender: str) -> str:
@@ -91,24 +104,45 @@ def _gender_to_bucket(gender: str) -> str:
 
 
 async def _generate_names(language_name: str, llm: LLMClient) -> dict[str, list[str]]:
-    prompt = (
-        f"Generate culturally authentic {language_name} names for a synthetic dataset.\n"
-        "Return JSON with EXACTLY these keys: male_first, female_first, last.\n"
-        "- 40 male first names, 40 female first names, 40 last names.\n"
-        "- Mix romanized forms with native-script forms (do NOT force ASCII).\n"
-        "- Include common everyday names, not only famous people.\n"
-        "- No duplicates within a list. No honorifics or titles.\n"
-        'Response format: {"male_first": [...], "female_first": [...], "last": [...]}'
+    """Two separate requests — one for romanized/ASCII names, one for native-script names.
+
+    Final arrays are [ascii_half] + [native_half] so indices always align with BUCKET_SIZE.
+    """
+
+    def _make_prompt(script_instruction: str) -> str:
+        return (
+            f"Generate culturally authentic {language_name} names for a synthetic dataset.\n"
+            "Return JSON with EXACTLY these keys: male_first, female_first, last.\n"
+            f"Each list must have EXACTLY {BUCKET_SIZE} names.\n"
+            f"Script: {script_instruction}\n"
+            "Rules:\n"
+            "- No duplicates within a list. No honorifics or titles.\n"
+            "- Include common everyday names, not only famous people.\n"
+            f'Response format: {{"male_first": [...{BUCKET_SIZE} items...], "female_first": [...{BUCKET_SIZE} items...], "last": [...{BUCKET_SIZE} items...]}}'
+        )
+
+    ascii_prompt = _make_prompt("Latin alphabet only, no diacritics (romanized/ASCII forms).")
+    native_prompt = _make_prompt(
+        "Native script only (e.g. kanji for Japanese, Cyrillic for Russian, Arabic script, Devanagari, etc.). "
+        "For languages that only use Latin script (e.g. French, Spanish), use full diacritics."
     )
-    text, _ = await llm.generate_text(
-        [{"role": "user", "content": prompt}],
-        response_format={"type": "json_object"},
+
+    (ascii_text, _), (native_text, _) = await asyncio.gather(
+        llm.generate_text([{"role": "user", "content": ascii_prompt}], response_format={"type": "json_object"}),
+        llm.generate_text([{"role": "user", "content": native_prompt}], response_format={"type": "json_object"}),
     )
-    data = extract_and_load_json(text)
+
+    ascii_data = extract_and_load_json(ascii_text)
+    native_data = extract_and_load_json(native_text)
+    result: dict[str, list[str]] = {}
     for key in ("male_first", "female_first", "last"):
-        if not isinstance(data.get(key), list) or not data[key]:
-            raise ValueError(f"Name generation missing/empty key {key!r}: {data}")
-    return data
+        for label, data in (("ascii", ascii_data), ("native", native_data)):
+            lst = data.get(key)
+            if not isinstance(lst, list) or len(lst) != BUCKET_SIZE:
+                raise ValueError(f"Name generation ({label}): expected {BUCKET_SIZE} items for {key!r}, got {lst!r}")
+        result[key] = ascii_data[key] + native_data[key]
+
+    return result
 
 
 async def _translate_utterances(utterances: list[str], language_name: str, llm: LLMClient) -> list[str]:
@@ -141,24 +175,23 @@ async def _translate_utterances(utterances: list[str], language_name: str, llm: 
 async def _romanize_names(names: dict[str, list[str]], language_name: str, llm: LLMClient) -> dict[str, list[str]]:
     """Return an ASCII-romanized parallel copy of ``names`` (same shape, same order).
 
-    Names that are already ASCII are passed through unchanged. Non-ASCII script
-    is transliterated according to common conventions for the language.
+    Only the native-script half (indices BUCKET_SIZE onwards) is sent to the LLM.
+    The ASCII half is already correct and is copied through unchanged.
     """
-    flat: list[str] = []
+    flat_native: list[str] = []
     spans: dict[str, tuple[int, int]] = {}
     for key in ("male_first", "female_first", "last"):
-        start = len(flat)
-        flat.extend(names[key])
-        spans[key] = (start, len(flat))
+        start = len(flat_native)
+        flat_native.extend(names[key][BUCKET_SIZE:])
+        spans[key] = (start, len(flat_native))
 
     prompt = (
         f"Romanize each name below into ASCII using standard {language_name} transliteration.\n"
         "Rules:\n"
-        "- If a name is already ASCII, return it unchanged.\n"
         "- Preserve order exactly; no additions, no removals, no duplicates collapsed.\n"
-        "- Single-token output per input (no titles, no diacritics in output).\n"
+        "- Single token per input (no titles, no diacritics in output).\n"
         '- Return JSON: {"romanized": ["...", "..."]}\n\n'
-        f"Names:\n" + "\n".join(f"{i + 1}. {n}" for i, n in enumerate(flat))
+        "Names:\n" + "\n".join(f"{i + 1}. {n}" for i, n in enumerate(flat_native))
     )
     text, _ = await llm.generate_text(
         [{"role": "user", "content": prompt}],
@@ -166,9 +199,10 @@ async def _romanize_names(names: dict[str, list[str]], language_name: str, llm: 
     )
     data = extract_and_load_json(text)
     rom = data.get("romanized")
-    if not isinstance(rom, list) or len(rom) != len(flat):
-        raise ValueError(f"Expected {len(flat)} romanized names, got: {rom!r}")
-    return {key: rom[spans[key][0] : spans[key][1]] for key in spans}
+    if not isinstance(rom, list) or len(rom) != len(flat_native):
+        raise ValueError(f"Expected {len(flat_native)} romanized names, got: {rom!r}")
+    # Reconstruct: ASCII half unchanged, native half romanized — indices stay aligned.
+    return {key: names[key][:BUCKET_SIZE] + rom[spans[key][0] : spans[key][1]] for key in spans}
 
 
 def _load_names_file(path: Path) -> dict[str, list[str]]:
@@ -276,8 +310,10 @@ async def add_culture(
 
         if language not in rec["culture_overrides"]:
             seed = f"{rec['id']}|{language}"
-            first_idx = _seeded_index(seed + "|first", len(names[bucket]))
-            last_idx = _seeded_index(seed + "|last", len(names["last"]))
+            # Script tier is fixed per record_id across all languages (~50/50 ASCII vs native).
+            offset = BUCKET_SIZE if _use_native_script(rec["id"]) else 0
+            first_idx = offset + _seeded_index(seed + "|first", BUCKET_SIZE)
+            last_idx = offset + _seeded_index(seed + "|last", BUCKET_SIZE)
             rec["culture_overrides"][language] = {
                 "first_name": names[bucket][first_idx],
                 "last_name": names["last"][last_idx],

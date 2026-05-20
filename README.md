@@ -166,7 +166,7 @@ The editor covers all variables grouped by tab (API keys, voice pipeline, model 
 
 To run EVA in a language other than English, follow these steps:
 
-**1. Register the language code** — add a new entry to the `LanguageType` enum in [`src/eva/models/config.py`](src/eva/models/config.py):
+**1. Register the language code** — add a new entry to the `LanguageType` enum in [`src/eva/models/config.py`](src/eva/models/config.py), and the language display name right below it:
 
 ```python
 class LanguageType(StrEnum):
@@ -185,6 +185,15 @@ class LanguageType(StrEnum):
 #x EVA_LANGUAGE=it
 #v EVA_IT_USER_M=your_elevenlabs_agent_id_male
 ```
+
+To make it visible in the config app, also modify 
+```bash
+#e en,es,fr,de,pt,ja,zh
+#x perturbation_mode=Language
+EVA_LANGUAGE=fr
+```
+
+The `#e` line defines the available options for the `EVA_LANGUAGE` variable in the config editor. Add your new language code (e.g., `it`) to this list.
 
 **3. Run `add_culture_data.py`** — this generates culturally appropriate names and translated utterances for every record in every domain dataset, writes a "respond in X" addendum to `configs/agents/language_addenda.yaml`, and translates the assistant's opening greeting into `configs/agents/initial_messages.yaml`:
 
