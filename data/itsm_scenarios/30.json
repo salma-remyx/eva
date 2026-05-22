@@ -463,8 +463,16 @@
       "BLD3": {
         "name": "Downtown Engineering Center",
         "name_aliases": [
-          "Downtown",
-          "Engineering Center"
+          "downtown",
+          "engineering center",
+          "centre d’ingénierie du centre-ville",
+          "ingénierie centre-ville",
+          "bâtiment ingénierie centre-ville"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "downtown",
+          "engineering center"
         ]
       }
     },
@@ -520,8 +528,16 @@
       "PZA": {
         "name": "Alpha Garage",
         "name_aliases": [
-          "Alpha",
-          "Main Garage"
+          "alpha",
+          "main garage",
+          "garage alpha",
+          "parking alpha",
+          "le garage alpha"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "alpha",
+          "main garage"
         ]
       }
     }

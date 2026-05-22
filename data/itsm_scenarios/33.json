@@ -417,7 +417,14 @@
       "BLD3": {
         "name": "Downtown",
         "name_aliases": [
-          "Downtown Building"
+          "downtown building",
+          "centre-ville",
+          "bâtiment du centre-ville",
+          "site centre-ville"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "downtown building"
         ]
       }
     },
@@ -479,7 +486,13 @@
       "PZC": {
         "name": "Central Garage",
         "name_aliases": [
-          "Central Parking"
+          "central parking",
+          "garage central",
+          "parking central"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "central parking"
         ]
       }
     }
@@ -530,10 +543,14 @@
       "department_restrictions": [],
       "name": "Salesforce",
       "name_aliases": [
-        "SFDC"
+        "sfdc"
       ],
       "requires_manager_approval": true,
-      "vendor": "Salesforce"
+      "vendor": "Salesforce",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "sfdc"
+      ]
     },
     "APP-1040": {
       "available_access_levels": [
@@ -545,7 +562,9 @@
       "name": "Slack",
       "name_aliases": [],
       "requires_manager_approval": false,
-      "vendor": "Slack"
+      "vendor": "Slack",
+      "name_aliases_translatable": false,
+      "name_aliases_base": []
     },
     "LIC-2001": {
       "catalog_id": "LIC-2001",
@@ -556,9 +575,13 @@
       ],
       "name": "Microsoft Project",
       "name_aliases": [
-        "MS Project"
+        "ms project"
       ],
-      "vendor": "Microsoft"
+      "vendor": "Microsoft",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "ms project"
+      ]
     }
   },
   "tickets": {},

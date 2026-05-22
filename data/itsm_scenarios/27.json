@@ -426,8 +426,16 @@
       "BLD3": {
         "name": "Downtown Engineering Center",
         "name_aliases": [
-          "Downtown",
-          "Engineering Center"
+          "downtown",
+          "engineering center",
+          "centre d’ingénierie du centre-ville",
+          "ingénierie centre-ville",
+          "bâtiment ingénierie centre-ville"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "downtown",
+          "engineering center"
         ]
       }
     },
@@ -496,8 +504,14 @@
       "PZA": {
         "name": "A Garage",
         "name_aliases": [
-          "Garage A",
-          "Main Garage"
+          "garage a",
+          "main garage",
+          "parking a"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "garage a",
+          "main garage"
         ]
       }
     }
@@ -554,7 +568,11 @@
         "slack messenger"
       ],
       "requires_manager_approval": false,
-      "vendor": "Slack"
+      "vendor": "Slack",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "slack messenger"
+      ]
     },
     "LIC-2001": {
       "catalog_id": "LIC-2001",
@@ -565,9 +583,13 @@
       ],
       "name": "JetBrains IntelliJ IDEA",
       "name_aliases": [
-        "IntelliJ"
+        "intellij"
       ],
-      "vendor": "JetBrains"
+      "vendor": "JetBrains",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "intellij"
+      ]
     }
   },
   "tickets": {},

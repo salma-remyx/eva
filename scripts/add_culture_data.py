@@ -65,6 +65,14 @@ INITIAL_MESSAGES_PATH = REPO_ROOT / "configs" / "agents" / "initial_messages.yam
 
 DEFAULT_MODEL = "gpt-5.2"
 TRANSLATION_BATCH = 25
+ALIAS_BATCH = 50  # Max unique names per alias-translation LLM call.
+
+# Paths within a scenario JSON that may contain name_aliases entries.
+_ALIAS_PATHS: list[tuple[str, ...]] = [
+    ("facilities", "buildings"),
+    ("facilities", "zones"),
+    ("software_catalog",),
+]
 
 # Template filled at runtime from --language-name (and optionally --native-name).
 ADDENDUM_TEMPLATE = (
@@ -270,6 +278,134 @@ def _update_addenda(language: str, addendum: str) -> None:
     ADDENDA_PATH.write_text(yaml.safe_dump(existing, allow_unicode=True, sort_keys=True), encoding="utf-8")
 
 
+def _get_nested(obj: dict[str, Any], keys: tuple[str, ...]) -> dict[str, Any]:
+    for k in keys:
+        obj = obj.get(k, {})
+    return obj
+
+
+def _iter_alias_entries(data: dict[str, Any]) -> list[tuple[tuple[str, ...], str, dict[str, Any]]]:
+    results = []
+    for path in _ALIAS_PATHS:
+        section = _get_nested(data, path)
+        for entry_key, entry in section.items():
+            if entry.get("name_aliases_translatable"):
+                results.append((path, entry_key, entry))
+    return results
+
+
+async def _translate_aliases(
+    name_to_base: dict[str, list[str]],
+    language_name: str,
+    llm: LLMClient,
+) -> dict[str, list[str]]:
+    """Return {canonical_name: [translated_aliases]} for all names in name_to_base.
+
+    Keyed by canonical name so correspondence is guaranteed regardless of batching.
+    Translations represent what speakers of language_name would naturally call each item —
+    not always a direct translation (e.g. colloquial shorthand may differ).
+    """
+    items = list(name_to_base.items())
+    result: dict[str, list[str]] = {}
+    for i in range(0, len(items), ALIAS_BATCH):
+        chunk = items[i : i + ALIAS_BATCH]
+        payload = dict(chunk)
+        prompt = (
+            f"You are helping localise a dataset for {language_name} speakers.\n\n"
+            "For each entry below, generate natural aliases that a native speaker would use "
+            "when referring to that item in a voice call. The input shows the canonical English "
+            "name and its English aliases as examples of the kind of shorthand and phrasing to "
+            "aim for — produce the equivalent in the target language. These are NOT always direct "
+            "translations; use culturally natural phrasing (colloquial names, common shorthand) "
+            "where appropriate.\n\n"
+            "Rules:\n"
+            f"- Generate aliases in {language_name} only; do not repeat the English base aliases.\n"
+            "- Each list must have at least 1 alias and at most 4 aliases.\n"
+            "- Use lowercase for all aliases if the language has case.\n"
+            "- The input keys are canonical English names — preserve them exactly as keys in the output.\n"
+            '- Return JSON: {"results": {"<canonical name>": ["alias1", "alias2", ...], ...}}\n\n'
+            f"Input:\n{json.dumps(payload, ensure_ascii=False, indent=2)}"
+        )
+        text, _ = await llm.generate_text(
+            [{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"},
+        )
+        data = extract_and_load_json(text)
+        batch_results = data.get("results")
+        if not isinstance(batch_results, dict):
+            raise ValueError(f"Expected dict under 'results', got: {batch_results!r}")
+        for name, _ in chunk:
+            if name not in batch_results:
+                raise ValueError(f"LLM did not return aliases for name {name!r}")
+            aliases = batch_results[name]
+            if not isinstance(aliases, list) or not aliases:
+                raise ValueError(f"Empty or invalid aliases for {name!r}: {aliases!r}")
+            result[name] = [a.lower().strip() for a in aliases]
+    return result
+
+
+async def add_scenario_aliases(
+    domain: str,
+    language: str,
+    language_name: str,
+    llm: LLMClient,
+    dry_run: bool,
+) -> None:
+    """Translate name_aliases for tagged translatable entries in scenario DB JSONs.
+
+    Idempotent: aliases already present in name_aliases are not re-added.
+    Requires migrate_aliases.py to have been run first (entries must have
+    name_aliases_translatable and name_aliases_base).
+    """
+    scenario_dir = DATA_DIR / f"{domain}_scenarios"
+    if not scenario_dir.exists():
+        logger.info(f"No scenario directory for domain={domain!r}, skipping alias translation")
+        return
+
+    files = sorted(scenario_dir.glob("*.json"))
+    if not files:
+        return
+
+    # Collect unique translatable names and their base aliases across all files.
+    name_to_base: dict[str, list[str]] = {}
+    for path in files:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        for _, _, entry in _iter_alias_entries(data):
+            name = entry["name"]
+            if name not in name_to_base:
+                name_to_base[name] = entry.get("name_aliases_base", entry.get("name_aliases", []))
+
+    if not name_to_base:
+        logger.info(f"No translatable alias entries found for domain={domain!r}")
+        return
+
+    logger.info(f"Translating aliases for {len(name_to_base)} unique names to {language_name}")
+    translated = await _translate_aliases(name_to_base, language_name, llm)
+
+    for path in files:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        changed = False
+
+        for _, _, entry in _iter_alias_entries(data):
+            new_aliases = translated.get(entry["name"], [])
+            existing = set(entry.get("name_aliases", []))
+            to_add = [a for a in new_aliases if a not in existing]
+            if to_add:
+                entry["name_aliases"].extend(to_add)
+                changed = True
+
+        if not changed:
+            continue
+
+        if dry_run:
+            logger.info(f"[dry-run] would update {path.name}")
+        else:
+            tmp = path.with_suffix(".json.tmp")
+            tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+            tmp.replace(path)
+            logger.info(f"Updated {path.name}")
+
+
 async def add_culture(
     domain: str,
     language: str,
@@ -411,6 +547,7 @@ async def amain(args: argparse.Namespace) -> int:
             addendum,
             args.record_id,
         )
+        await add_scenario_aliases(domain, args.language, args.language_name, llm, args.dry_run)
     return 0
 
 

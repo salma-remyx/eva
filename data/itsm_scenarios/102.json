@@ -412,8 +412,16 @@
         "building_code": "BLD5",
         "name": "Headquarters",
         "name_aliases": [
-          "HQ",
-          "Headquarters"
+          "hq",
+          "headquarters",
+          "siège",
+          "le siège",
+          "qg"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "hq",
+          "headquarters"
         ]
       }
     },
@@ -481,9 +489,15 @@
       "PZA": {
         "name": "North Garage",
         "name_aliases": [
-          "North Garage"
+          "north garage",
+          "garage nord",
+          "parking nord"
         ],
-        "zone_code": "PZA"
+        "zone_code": "PZA",
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "north garage"
+        ]
       }
     }
   },
@@ -539,7 +553,11 @@
         "slack"
       ],
       "requires_manager_approval": false,
-      "vendor": "Salesforce"
+      "vendor": "Salesforce",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "slack"
+      ]
     },
     "LIC-2001": {
       "catalog_id": "LIC-2001",
@@ -553,7 +571,12 @@
         "intellij",
         "idea"
       ],
-      "vendor": "JetBrains"
+      "vendor": "JetBrains",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "intellij",
+        "idea"
+      ]
     }
   },
   "tickets": {},

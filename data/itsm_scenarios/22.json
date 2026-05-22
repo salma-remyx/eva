@@ -405,8 +405,16 @@
       "BLD1": {
         "name": "Headquarters",
         "name_aliases": [
-          "HQ",
-          "Headquarters"
+          "hq",
+          "headquarters",
+          "siège",
+          "le siège",
+          "qg"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "hq",
+          "headquarters"
         ]
       }
     },
@@ -474,7 +482,13 @@
       "PZA": {
         "name": "North Garage",
         "name_aliases": [
-          "North Garage"
+          "north garage",
+          "garage nord",
+          "parking nord"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "north garage"
         ]
       }
     }
@@ -514,7 +528,11 @@
         "slack"
       ],
       "requires_manager_approval": false,
-      "vendor": "Salesforce"
+      "vendor": "Salesforce",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "slack"
+      ]
     },
     "LIC-1001": {
       "catalog_id": "LIC-1001",
@@ -525,10 +543,15 @@
       ],
       "name": "JetBrains IntelliJ IDEA",
       "name_aliases": [
-        "IntelliJ",
-        "IDEA"
+        "intellij",
+        "idea"
       ],
-      "vendor": "JetBrains"
+      "vendor": "JetBrains",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "intellij",
+        "idea"
+      ]
     }
   },
   "tickets": {},

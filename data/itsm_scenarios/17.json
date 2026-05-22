@@ -419,6 +419,14 @@
         "name": "Riverside Engineering Center",
         "name_aliases": [
           "engineering center",
+          "riverside",
+          "centre d’ingénierie riverside",
+          "ingénierie riverside",
+          "centre d’ingénierie au bord de l’eau"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "engineering center",
           "riverside"
         ]
       }
@@ -487,9 +495,15 @@
       "PZA": {
         "name": "North Garage",
         "name_aliases": [
-          "north garage"
+          "north garage",
+          "garage nord",
+          "parking nord"
         ],
-        "zone_code": "PZA"
+        "zone_code": "PZA",
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "north garage"
+        ]
       }
     }
   },

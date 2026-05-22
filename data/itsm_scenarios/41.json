@@ -415,6 +415,14 @@
         "name": "Downtown Engineering Center",
         "name_aliases": [
           "downtown",
+          "engineering center",
+          "centre d’ingénierie du centre-ville",
+          "ingénierie centre-ville",
+          "bâtiment ingénierie centre-ville"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "downtown",
           "engineering center"
         ]
       }
@@ -475,6 +483,12 @@
       "PZA": {
         "name": "North Garage",
         "name_aliases": [
+          "north garage",
+          "garage nord",
+          "parking nord"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
           "north garage"
         ]
       }

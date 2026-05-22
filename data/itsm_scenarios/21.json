@@ -418,8 +418,16 @@
       "BLD2": {
         "name": "Headquarters East",
         "name_aliases": [
-          "HQ East",
-          "East Building"
+          "hq east",
+          "east building",
+          "siège est",
+          "bâtiment est du siège",
+          "qg est"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "hq east",
+          "east building"
         ]
       }
     },
@@ -499,13 +507,27 @@
       "PZA": {
         "name": "Executive Garage",
         "name_aliases": [
-          "Executive Garage"
+          "executive garage",
+          "garage des cadres",
+          "parking direction",
+          "garage exécutif"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "executive garage"
         ]
       },
       "PZB": {
         "name": "North Surface Lot",
         "name_aliases": [
-          "North Lot"
+          "north lot",
+          "parking extérieur nord",
+          "parking nord extérieur",
+          "terrain nord"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "north lot"
         ]
       }
     }
@@ -546,7 +568,11 @@
         "slack"
       ],
       "requires_manager_approval": false,
-      "vendor": "Salesforce"
+      "vendor": "Salesforce",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "slack"
+      ]
     },
     "LIC-2001": {
       "catalog_id": "LIC-2001",
@@ -559,7 +585,11 @@
       "name_aliases": [
         "ms project"
       ],
-      "vendor": "Microsoft"
+      "vendor": "Microsoft",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "ms project"
+      ]
     }
   },
   "tickets": {},

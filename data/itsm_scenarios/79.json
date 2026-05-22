@@ -647,15 +647,30 @@
         "building_code": "BLD1",
         "name": "Downtown",
         "name_aliases": [
-          "Downtown Office"
+          "downtown office",
+          "centre-ville",
+          "bâtiment du centre-ville",
+          "site centre-ville"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "downtown office"
         ]
       },
       "BLD3": {
         "building_code": "BLD3",
         "name": "Headquarters",
         "name_aliases": [
-          "HQ",
-          "Head Office"
+          "hq",
+          "head office",
+          "siège",
+          "le siège",
+          "qg"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "hq",
+          "head office"
         ]
       }
     },
@@ -782,9 +797,15 @@
       "PZA": {
         "name": "Headquarters Garage A",
         "name_aliases": [
-          "Garage A"
+          "garage a",
+          "garage a du siège",
+          "parking a du siège"
         ],
-        "zone_code": "PZA"
+        "zone_code": "PZA",
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "garage a"
+        ]
       }
     }
   },

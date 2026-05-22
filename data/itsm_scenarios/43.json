@@ -418,8 +418,16 @@
         "building_code": "BLD1",
         "name": "Headquarters",
         "name_aliases": [
-          "HQ",
-          "Head Office"
+          "hq",
+          "head office",
+          "siège",
+          "le siège",
+          "qg"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "hq",
+          "head office"
         ]
       }
     },
@@ -515,9 +523,15 @@
       "PZA": {
         "name": "Headquarters Garage A",
         "name_aliases": [
-          "Garage A"
+          "garage a",
+          "garage a du siège",
+          "parking a du siège"
         ],
-        "zone_code": "PZA"
+        "zone_code": "PZA",
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "garage a"
+        ]
       }
     }
   },

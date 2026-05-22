@@ -786,6 +786,13 @@
         "building_code": "BLD1",
         "name": "Operations Center",
         "name_aliases": [
+          "ops center",
+          "centre des opérations",
+          "centre ops",
+          "ops"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
           "ops center"
         ]
       },
@@ -793,6 +800,14 @@
         "building_code": "BLD2",
         "name": "Downtown Office",
         "name_aliases": [
+          "downtown",
+          "finance building",
+          "bureaux du centre-ville",
+          "bureau centre-ville",
+          "bâtiment finance"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
           "downtown",
           "finance building"
         ]
@@ -897,16 +912,30 @@
       "PZA": {
         "name": "Garage A",
         "name_aliases": [
-          "main garage"
+          "main garage",
+          "garage a",
+          "parking a",
+          "le garage a"
         ],
-        "zone_code": "PZA"
+        "zone_code": "PZA",
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "main garage"
+        ]
       },
       "PZB": {
         "name": "Garage B",
         "name_aliases": [
-          "west garage"
+          "west garage",
+          "garage b",
+          "parking b",
+          "garage ouest"
         ],
-        "zone_code": "PZB"
+        "zone_code": "PZB",
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "west garage"
+        ]
       }
     }
   },
@@ -984,7 +1013,11 @@
         "slack app"
       ],
       "requires_manager_approval": false,
-      "vendor": "Slack Technologies"
+      "vendor": "Slack Technologies",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "slack app"
+      ]
     },
     "APP-1002": {
       "available_access_levels": [
@@ -999,7 +1032,11 @@
         "atlassian confluence"
       ],
       "requires_manager_approval": false,
-      "vendor": "Atlassian"
+      "vendor": "Atlassian",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "atlassian confluence"
+      ]
     },
     "LIC-2001": {
       "catalog_id": "LIC-2001",
@@ -1012,7 +1049,11 @@
       "name_aliases": [
         "ms project"
       ],
-      "vendor": "Microsoft"
+      "vendor": "Microsoft",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "ms project"
+      ]
     },
     "LIC-2002": {
       "catalog_id": "LIC-2002",
@@ -1025,7 +1066,11 @@
       "name_aliases": [
         "intellij"
       ],
-      "vendor": "JetBrains"
+      "vendor": "JetBrains",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "intellij"
+      ]
     }
   },
   "tickets": {

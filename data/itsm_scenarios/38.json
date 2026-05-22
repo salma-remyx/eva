@@ -406,8 +406,16 @@
         "building_code": "BLD2",
         "name": "Headquarters",
         "name_aliases": [
-          "HQ",
-          "Head Office"
+          "hq",
+          "head office",
+          "siège",
+          "le siège",
+          "qg"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "hq",
+          "head office"
         ]
       }
     },

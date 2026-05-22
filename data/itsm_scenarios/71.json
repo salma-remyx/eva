@@ -465,10 +465,18 @@
         },
         "name": "Headquarters",
         "name_aliases": [
-          "HQ",
-          "Head Office"
+          "hq",
+          "head office",
+          "siège",
+          "le siège",
+          "qg"
         ],
-        "parking_zones": {}
+        "parking_zones": {},
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "hq",
+          "head office"
+        ]
       }
     },
     "conference_rooms": {

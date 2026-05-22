@@ -465,8 +465,11 @@
         },
         "name": "Headquarters",
         "name_aliases": [
-          "HQ",
-          "Headquarters"
+          "hq",
+          "headquarters",
+          "siège",
+          "le siège",
+          "qg"
         ],
         "parking_zones": {
           "PZA": {
@@ -499,7 +502,12 @@
             },
             "zone_code": "PZE"
           }
-        }
+        },
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "hq",
+          "headquarters"
+        ]
       }
     },
     "conference_rooms": {},
@@ -588,17 +596,31 @@
         "covered": false,
         "name": "General Surface Lot",
         "name_aliases": [
-          "General Lot"
+          "general lot",
+          "parking général",
+          "terrain général",
+          "parking extérieur général"
         ],
-        "zone_code": "PZA"
+        "zone_code": "PZA",
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "general lot"
+        ]
       },
       "PZE": {
         "covered": true,
         "name": "Executive Garage",
         "name_aliases": [
-          "Executive Garage"
+          "executive garage",
+          "garage des cadres",
+          "parking direction",
+          "garage exécutif"
         ],
-        "zone_code": "PZE"
+        "zone_code": "PZE",
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "executive garage"
+        ]
       }
     }
   },

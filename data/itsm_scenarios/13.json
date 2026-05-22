@@ -273,7 +273,13 @@
         "building_code": "BLD4",
         "name": "East Campus",
         "name_aliases": [
-          "East Campus"
+          "east campus",
+          "campus est",
+          "site est"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "east campus"
         ]
       }
     },
@@ -324,9 +330,15 @@
       "PZE": {
         "name": "East Garage",
         "name_aliases": [
-          "East Garage"
+          "east garage",
+          "garage est",
+          "parking est"
         ],
-        "zone_code": "PZE"
+        "zone_code": "PZE",
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "east garage"
+        ]
       }
     }
   },
@@ -382,7 +394,11 @@
         "slack"
       ],
       "requires_manager_approval": false,
-      "vendor": "Salesforce"
+      "vendor": "Salesforce",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "slack"
+      ]
     },
     "LIC-2001": {
       "catalog_id": "LIC-2001",
@@ -393,10 +409,15 @@
       ],
       "name": "JetBrains IntelliJ IDEA",
       "name_aliases": [
-        "IntelliJ",
-        "IDEA"
+        "intellij",
+        "idea"
       ],
-      "vendor": "JetBrains"
+      "vendor": "JetBrains",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "intellij",
+        "idea"
+      ]
     }
   },
   "tickets": {},

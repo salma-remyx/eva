@@ -405,8 +405,16 @@
       "BLD5": {
         "name": "Headquarters",
         "name_aliases": [
-          "HQ",
-          "Head Office"
+          "hq",
+          "head office",
+          "siège",
+          "le siège",
+          "qg"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "hq",
+          "head office"
         ]
       }
     },
@@ -563,14 +571,28 @@
       "PZA": {
         "name": "South Garage",
         "name_aliases": [
-          "South Parking"
+          "south parking",
+          "garage sud",
+          "parking sud"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "south parking"
         ]
       },
       "PZB": {
         "name": "North Lot",
         "name_aliases": [
-          "North Parking",
-          "North Lot at Headquarters"
+          "north parking",
+          "north lot at headquarters",
+          "parking nord",
+          "terrain nord",
+          "parking nord du siège"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "north parking",
+          "north lot at headquarters"
         ]
       }
     }
@@ -611,7 +633,11 @@
         "slack app"
       ],
       "requires_manager_approval": false,
-      "vendor": "Slack Technologies"
+      "vendor": "Slack Technologies",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "slack app"
+      ]
     },
     "LIC-2001": {
       "catalog_id": "LIC-2001",
@@ -624,7 +650,11 @@
       "name_aliases": [
         "office 365"
       ],
-      "vendor": "Microsoft"
+      "vendor": "Microsoft",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "office 365"
+      ]
     }
   },
   "tickets": {},

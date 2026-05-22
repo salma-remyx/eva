@@ -557,8 +557,16 @@
         "building_code": "BLD3",
         "name": "Downtown Engineering Center",
         "name_aliases": [
-          "Downtown",
-          "Engineering Center"
+          "downtown",
+          "engineering center",
+          "centre d’ingénierie du centre-ville",
+          "ingénierie centre-ville",
+          "bâtiment ingénierie centre-ville"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "downtown",
+          "engineering center"
         ]
       }
     },
@@ -635,10 +643,17 @@
       "PZA": {
         "name": "North Garage",
         "name_aliases": [
-          "Main Garage",
-          "North Parking"
+          "main garage",
+          "north parking",
+          "garage nord",
+          "parking nord"
         ],
-        "zone_code": "PZA"
+        "zone_code": "PZA",
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "main garage",
+          "north parking"
+        ]
       }
     }
   },
@@ -692,10 +707,14 @@
       "department_restrictions": [],
       "name": "Confluence",
       "name_aliases": [
-        "Atlassian Confluence"
+        "atlassian confluence"
       ],
       "requires_manager_approval": false,
-      "vendor": "Atlassian"
+      "vendor": "Atlassian",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "atlassian confluence"
+      ]
     },
     "APP-1002": {
       "available_access_levels": [
@@ -706,10 +725,14 @@
       "department_restrictions": [],
       "name": "Slack",
       "name_aliases": [
-        "Slack Enterprise"
+        "slack enterprise"
       ],
       "requires_manager_approval": false,
-      "vendor": "Slack"
+      "vendor": "Slack",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "slack enterprise"
+      ]
     },
     "LIC-2001": {
       "catalog_id": "LIC-2001",
@@ -720,9 +743,13 @@
       ],
       "name": "JetBrains IntelliJ IDEA",
       "name_aliases": [
-        "IntelliJ"
+        "intellij"
       ],
-      "vendor": "JetBrains"
+      "vendor": "JetBrains",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "intellij"
+      ]
     }
   },
   "tickets": {},

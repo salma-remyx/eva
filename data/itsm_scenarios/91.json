@@ -658,7 +658,14 @@
         "building_code": "BLD3",
         "name": "Downtown",
         "name_aliases": [
-          "Downtown Building"
+          "downtown building",
+          "centre-ville",
+          "bâtiment du centre-ville",
+          "site centre-ville"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "downtown building"
         ]
       }
     },
@@ -772,9 +779,16 @@
       "PZA": {
         "name": "Downtown Garage A",
         "name_aliases": [
-          "Garage A"
+          "garage a",
+          "garage a du centre-ville",
+          "parking a centre-ville",
+          "garage a en ville"
         ],
-        "zone_code": "PZA"
+        "zone_code": "PZA",
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "garage a"
+        ]
       }
     }
   },

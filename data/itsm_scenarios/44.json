@@ -652,8 +652,16 @@
       "BLD3": {
         "name": "Downtown",
         "name_aliases": [
-          "Downtown Building",
-          "Sales HQ"
+          "downtown building",
+          "sales hq",
+          "centre-ville",
+          "bâtiment du centre-ville",
+          "site centre-ville"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "downtown building",
+          "sales hq"
         ]
       }
     },
@@ -738,7 +746,13 @@
       "PZS": {
         "name": "South Garage",
         "name_aliases": [
-          "South Parking"
+          "south parking",
+          "garage sud",
+          "parking sud"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "south parking"
         ]
       }
     }
@@ -806,11 +820,16 @@
       "department_restrictions": [],
       "name": "Salesforce",
       "name_aliases": [
-        "CRM",
-        "Salesforce CRM"
+        "crm",
+        "salesforce crm"
       ],
       "requires_manager_approval": false,
-      "vendor": "Salesforce"
+      "vendor": "Salesforce",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "crm",
+        "salesforce crm"
+      ]
     },
     "APP-1002": {
       "available_access_levels": [
@@ -820,11 +839,16 @@
       "department_restrictions": [],
       "name": "Cisco AnyConnect",
       "name_aliases": [
-        "VPN",
-        "Corporate VPN"
+        "vpn",
+        "corporate vpn"
       ],
       "requires_manager_approval": false,
-      "vendor": "Cisco"
+      "vendor": "Cisco",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "vpn",
+        "corporate vpn"
+      ]
     },
     "LIC-2001": {
       "catalog_id": "LIC-2001",
@@ -835,9 +859,13 @@
       ],
       "name": "Microsoft 365 E3",
       "name_aliases": [
-        "Office 365"
+        "office 365"
       ],
-      "vendor": "Microsoft"
+      "vendor": "Microsoft",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "office 365"
+      ]
     }
   },
   "tickets": {},

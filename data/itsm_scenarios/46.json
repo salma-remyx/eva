@@ -573,7 +573,10 @@
         "name": "Downtown Engineering Center",
         "name_aliases": [
           "downtown",
-          "engineering center"
+          "engineering center",
+          "centre d’ingénierie du centre-ville",
+          "ingénierie centre-ville",
+          "bâtiment ingénierie centre-ville"
         ],
         "parking_zones": {
           "PZA": {
@@ -591,7 +594,12 @@
             },
             "zone_code": "PZA"
           }
-        }
+        },
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "downtown",
+          "engineering center"
+        ]
       }
     },
     "conference_rooms": {
@@ -663,6 +671,12 @@
       "PZA": {
         "name": "Garage A",
         "name_aliases": [
+          "garage a",
+          "parking a",
+          "le garage a"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
           "garage a"
         ]
       }

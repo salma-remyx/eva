@@ -406,8 +406,16 @@
         "building_code": "BLD1",
         "name": "Headquarters",
         "name_aliases": [
-          "HQ",
-          "Headquarters"
+          "hq",
+          "headquarters",
+          "siège",
+          "le siège",
+          "qg"
+        ],
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "hq",
+          "headquarters"
         ]
       }
     },
@@ -515,9 +523,15 @@
       "PZA": {
         "name": "Headquarters Garage A",
         "name_aliases": [
-          "Garage A"
+          "garage a",
+          "garage a du siège",
+          "parking a du siège"
         ],
-        "zone_code": "PZA"
+        "zone_code": "PZA",
+        "name_aliases_translatable": true,
+        "name_aliases_base": [
+          "garage a"
+        ]
       }
     }
   },
@@ -557,7 +571,11 @@
         "slack"
       ],
       "requires_manager_approval": false,
-      "vendor": "Salesforce"
+      "vendor": "Salesforce",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "slack"
+      ]
     },
     "LIC-2001": {
       "catalog_id": "LIC-2001",
@@ -568,10 +586,15 @@
       ],
       "name": "JetBrains IntelliJ IDEA",
       "name_aliases": [
-        "IntelliJ",
-        "IDEA"
+        "intellij",
+        "idea"
       ],
-      "vendor": "JetBrains"
+      "vendor": "JetBrains",
+      "name_aliases_translatable": false,
+      "name_aliases_base": [
+        "intellij",
+        "idea"
+      ]
     }
   },
   "tickets": {},
