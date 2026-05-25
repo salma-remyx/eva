@@ -113,13 +113,29 @@ async def migrate(domain: str, llm: LLMClient, dry_run: bool) -> None:
     files = _scenario_files(domain)
     logger.info(f"Found {len(files)} scenario files for domain={domain!r}")
 
-    # Collect all unique canonical names that need classification.
+    # Collect all unique canonical names that need classification
+    # from both scenario files and the dataset JSONL.
     unique_names: set[str] = set()
     for path in files:
         data = json.loads(path.read_text(encoding="utf-8"))
         for _, _, entry in _iter_alias_entries(data):
-            if "name_aliases_base" not in entry:  # skip already-migrated
+            if "name_aliases_base" not in entry:
                 unique_names.add(entry["name"])
+
+    dataset_path = DATA_DIR / f"{domain}_dataset.jsonl"
+    if dataset_path.exists():
+        with dataset_path.open(encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                rec = json.loads(line)
+                db = rec.get("ground_truth", {}).get("expected_scenario_db")
+                if not db:
+                    continue
+                for _, _, entry in _iter_alias_entries(db):
+                    if "name_aliases_base" not in entry:
+                        unique_names.add(entry["name"])
 
     if not unique_names:
         logger.info("All entries already migrated — nothing to do.")
@@ -156,6 +172,42 @@ async def migrate(domain: str, llm: LLMClient, dry_run: bool) -> None:
             tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
             tmp.replace(path)
             logger.info(f"Updated {path.name}")
+
+    # Also update expected_scenario_db inside the dataset JSONL.
+    if dataset_path.exists():
+        records: list[dict] = []
+        dataset_changed = False
+        with dataset_path.open(encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    records.append(json.loads(line))
+
+        for rec in records:
+            db = rec.get("ground_truth", {}).get("expected_scenario_db")
+            if not db:
+                continue
+            for _, _, entry in _iter_alias_entries(db):
+                if "name_aliases_base" in entry:
+                    continue
+                name = entry["name"]
+                is_translatable = translatable_map.get(name, False)
+                entry["name_aliases_translatable"] = is_translatable
+                lowercased = [a.lower().strip() for a in entry["name_aliases"]]
+                entry["name_aliases"] = lowercased
+                entry["name_aliases_base"] = lowercased
+                dataset_changed = True
+
+        if dataset_changed:
+            if dry_run:
+                logger.info(f"[dry-run] would update {dataset_path.name}")
+            else:
+                tmp = dataset_path.with_suffix(dataset_path.suffix + ".tmp")
+                with tmp.open("w", encoding="utf-8") as f:
+                    for rec in records:
+                        f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+                tmp.replace(dataset_path)
+                logger.info(f"Updated {dataset_path.name}")
 
 
 async def amain(args: argparse.Namespace) -> int:

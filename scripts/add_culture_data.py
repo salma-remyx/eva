@@ -405,6 +405,40 @@ async def add_scenario_aliases(
             tmp.replace(path)
             logger.info(f"Updated {path.name}")
 
+    # Also update expected_scenario_db inside the dataset JSONL.
+    dataset_path = DATA_DIR / f"{domain}_dataset.jsonl"
+    if dataset_path.exists():
+        records: list[dict[str, Any]] = []
+        dataset_changed = False
+        with dataset_path.open(encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    records.append(json.loads(line))
+
+        for rec in records:
+            db = rec.get("ground_truth", {}).get("expected_scenario_db")
+            if not db:
+                continue
+            for _, _, entry in _iter_alias_entries(db):
+                new_aliases = translated.get(entry["name"], [])
+                existing = set(entry.get("name_aliases", []))
+                to_add = [a for a in new_aliases if a not in existing]
+                if to_add:
+                    entry["name_aliases"].extend(to_add)
+                    dataset_changed = True
+
+        if dataset_changed:
+            if dry_run:
+                logger.info(f"[dry-run] would update {dataset_path.name} with translated aliases")
+            else:
+                tmp = dataset_path.with_suffix(dataset_path.suffix + ".tmp")
+                with tmp.open("w", encoding="utf-8") as f:
+                    for rec in records:
+                        f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+                tmp.replace(dataset_path)
+                logger.info(f"Updated {dataset_path.name} with translated aliases")
+
 
 async def add_culture(
     domain: str,

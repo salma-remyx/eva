@@ -580,6 +580,9 @@ judge:
        **Binary Rating:**
       - **1 (Clean)**: The user's behavior did not corrupt the agent evaluation. None of the corruption types above occurred. Minor deviations from the user's instructions that did not affect database state are acceptable.
       - **0 (Corrupted)**: One or more corruption types occurred — the user's behavior caused the agent to be evaluated against an incorrect database state.
+
+      **Language:**
+      - Always provide analysis in English
       
       Respond in JSON format:
         {{
