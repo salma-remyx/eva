@@ -31,7 +31,7 @@
   },
   "ConversationProgressionJudgeMetric": {
     "name": "conversation_progression",
-    "prompt_hash": "f3240185faf6",
+    "prompt_hash": "174cdf93b398",
     "source_hash": "91b71c803d77",
     "version": "v0.1"
   },
@@ -43,7 +43,7 @@
   },
   "FaithfulnessJudgeMetric": {
     "name": "faithfulness",
-    "prompt_hash": "e36ecf4a01e3",
+    "prompt_hash": "a140859bd2e4",
     "source_hash": "82ab3e3244f5",
     "version": "v0.2"
   },
