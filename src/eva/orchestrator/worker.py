@@ -42,9 +42,13 @@ def _get_server_class(framework: str) -> type[AbstractAssistantServer]:
         from eva.assistant.elevenlabs_server import ElevenLabsAssistantServer
 
         return ElevenLabsAssistantServer
+    elif framework == "ultravox":
+        from eva.assistant.ultravox_server import UltravoxAssistantServer
+
+        return UltravoxAssistantServer
     else:
         raise ValueError(
-            f"Unknown framework: {framework!r}. Supported: pipecat, openai_realtime, gemini_live, elevenlabs"
+            f"Unknown framework: {framework!r}. Supported: pipecat, openai_realtime, gemini_live, elevenlabs, ultravox"
         )
 
 
