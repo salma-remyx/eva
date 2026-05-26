@@ -398,7 +398,8 @@
           "head office",
           "siège",
           "le siège",
-          "qg"
+          "qg",
+          "siège social"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -481,7 +482,8 @@
           "executive <last_name>ing",
           "garage des cadres",
           "parking direction",
-          "garage exécutif"
+          "garage exécutif",
+          "parking des cadres"
         ],
         "zone_code": "PZE",
         "name_aliases_translatable": true,

@@ -469,7 +469,8 @@
           "head office",
           "siège",
           "le siège",
-          "qg"
+          "qg",
+          "siège social"
         ],
         "parking_zones": {},
         "name_aliases_translatable": true,

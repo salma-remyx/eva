@@ -469,7 +469,8 @@
           "headquarters",
           "siège",
           "le siège",
-          "qg"
+          "qg",
+          "siège social"
         ],
         "parking_zones": {
           "PZA": {
@@ -599,7 +600,8 @@
           "general lot",
           "parking général",
           "terrain général",
-          "parking extérieur général"
+          "parking extérieur général",
+          "le parking général"
         ],
         "zone_code": "PZA",
         "name_aliases_translatable": true,
@@ -614,7 +616,8 @@
           "executive garage",
           "garage des cadres",
           "parking direction",
-          "garage exécutif"
+          "garage exécutif",
+          "parking des cadres"
         ],
         "zone_code": "PZE",
         "name_aliases_translatable": true,

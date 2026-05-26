@@ -400,7 +400,8 @@
         "name_aliases": [
           "east campus",
           "campus est",
-          "site est"
+          "site est",
+          "le campus est"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -474,7 +475,8 @@
         "name_aliases": [
           "east garage",
           "garage est",
-          "parking est"
+          "parking est",
+          "le garage à l’est"
         ],
         "zone_code": "PZE",
         "name_aliases_translatable": true,

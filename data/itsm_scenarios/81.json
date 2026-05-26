@@ -482,7 +482,8 @@
           "head office",
           "siège",
           "le siège",
-          "qg"
+          "qg",
+          "siège social"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -577,7 +578,9 @@
           "hq garage",
           "garage du siège",
           "parking du siège",
-          "garage qg"
+          "garage qg",
+          "garage du qg",
+          "parking du qg"
         ],
         "zone_code": "PZA",
         "name_aliases_translatable": true,

@@ -9,6 +9,7 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
+from pipecat.transcriptions.language import Language
 from pydub import AudioSegment
 
 from eva.metrics.utils import (
@@ -23,7 +24,7 @@ from eva.metrics.utils import (
     validate_rating,
 )
 from eva.metrics.versioning import _CURRENT_PROMPT_HASH, hash_prompt_template
-from eva.models.config import LANGUAGE_DISPLAY_NAMES, LanguageType, PipelineType
+from eva.models.config import LANGUAGE_DISPLAY_NAMES, PipelineType
 from eva.models.results import MetricScore
 from eva.utils.llm_client import LLMClient
 from eva.utils.logging import get_logger
@@ -126,7 +127,7 @@ class MetricContext:
         self.current_date_time = current_date_time
         self.language = language
         try:
-            self.language_display_name = LANGUAGE_DISPLAY_NAMES[LanguageType(language)]
+            self.language_display_name = LANGUAGE_DISPLAY_NAMES[Language(language)]
         except (ValueError, KeyError):
             self.language_display_name = language
 

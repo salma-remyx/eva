@@ -656,7 +656,10 @@
           "sales hq",
           "centre-ville",
           "bâtiment du centre-ville",
-          "site centre-ville"
+          "site centre-ville",
+          "le bâtiment du centre-ville",
+          "le site en ville",
+          "downtown"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -748,7 +751,8 @@
         "name_aliases": [
           "south parking",
           "garage sud",
-          "parking sud"
+          "parking sud",
+          "le parking au sud"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [

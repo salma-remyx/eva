@@ -534,7 +534,8 @@
           "headquarters",
           "siège",
           "le siège",
-          "qg"
+          "qg",
+          "siège social"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -657,7 +658,8 @@
           "north lot",
           "parking nord",
           "terrain nord",
-          "parking nord du siège"
+          "parking nord du siège",
+          "le parking nord"
         ],
         "zone_code": "PZN",
         "name_aliases_translatable": true,

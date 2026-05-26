@@ -164,38 +164,7 @@ The editor covers all variables grouped by tab (API keys, voice pipeline, model 
 
 ### Adding a Language
 
-To run EVA in a language other than English, follow these steps:
-
-**1. Register the language code** — add a new entry to the `LanguageType` enum in [`src/eva/models/config.py`](src/eva/models/config.py), and the language display name right below it:
-
-```python
-class LanguageType(StrEnum):
-    english = "en"
-    french  = "fr"   # already present
-    spanish = "es"   # already present
-    # add yours here, e.g.:
-    italian = "it"
-```
-
-**2. Add ElevenLabs agent IDs to `.env.example`** (and your `.env`) — add a conditional block for the new language code so the config editor exposes the fields:
-
-```bash
-#x EVA_LANGUAGE=it
-#v EVA_IT_USER_F=your_elevenlabs_agent_id_female
-#x EVA_LANGUAGE=it
-#v EVA_IT_USER_M=your_elevenlabs_agent_id_male
-```
-
-To make it visible in the config app, also modify 
-```bash
-#e en,es,fr,de,pt,ja,zh
-#x perturbation_mode=Language
-EVA_LANGUAGE=fr
-```
-
-The `#e` line defines the available options for the `EVA_LANGUAGE` variable in the config editor. Add your new language code (e.g., `it`) to this list.
-
-**3. Run `add_culture_data.py`** — this generates culturally appropriate names and translated utterances for every record in every domain dataset, writes a "respond in X" addendum to `configs/agents/language_addenda.yaml`, and translates the assistant's opening greeting into `configs/agents/initial_messages.yaml`:
+**1. Run `add_culture_data.py`** — generates culturally appropriate names and translated utterances for every record in every domain dataset, writes a "respond in X" addendum to `configs/agents/language_addenda.yaml`, translates the assistant's opening greeting into `configs/agents/initial_messages.yaml`, patches `.env.example` to expose the new language in the config editor, and registers the display name in `LANGUAGE_DISPLAY_NAMES`:
 
 ```bash
 PYTHONPATH=src python scripts/add_culture_data.py \
@@ -207,7 +176,14 @@ PYTHONPATH=src python scripts/add_culture_data.py \
 
 Re-running is safe — existing entries are skipped (idempotent). Use `--dry-run` to preview changes before writing.
 
-**4. Set `EVA_LANGUAGE` and run**:
+**2. Add your ElevenLabs agent IDs** — the script adds the variable stubs to `.env.example`; fill in the values in your `.env` (or use the config editor's **User Config** tab):
+
+```bash
+EVA_IT_USER_F=your_elevenlabs_agent_id_female
+EVA_IT_USER_M=your_elevenlabs_agent_id_male
+```
+
+**3. Set `EVA_LANGUAGE` and run**:
 
 ```bash
 EVA_LANGUAGE=it EVA_DOMAIN=airline python main.py

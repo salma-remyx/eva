@@ -291,7 +291,8 @@
           "headquarters",
           "siège",
           "le siège",
-          "qg"
+          "qg",
+          "siège social"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [

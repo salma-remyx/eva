@@ -40,6 +40,7 @@ import asyncio
 import hashlib
 import json
 import os
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -582,7 +583,169 @@ async def amain(args: argparse.Namespace) -> int:
             args.record_id,
         )
         await add_scenario_aliases(domain, args.language, args.language_name, llm, args.dry_run)
+
+    update_env_example(args.language, args.language_name, REPO_ROOT / ".env.example", args.dry_run)
+    update_language_display_names(
+        args.language, args.language_name, REPO_ROOT / "src" / "eva" / "models" / "config.py", args.dry_run
+    )
     return 0
+
+
+def _lang_to_env_prefix(language: str) -> str:
+    """Convert BCP 47 tag to a valid env-var prefix segment.
+
+    'fr' -> 'FR', 'es-MX' -> 'ES_MX'
+    """
+    return re.sub(r"[^A-Za-z0-9]+", "_", language).upper().strip("_")
+
+
+def update_language_display_names(language: str, language_name: str, config_path: Path, dry_run: bool) -> None:
+    """Add the new language to LANGUAGE_DISPLAY_NAMES in config.py if not already present.
+
+    Locates the dict by searching for its opening line, then finds the closing
+    brace and inserts a new entry before it.
+    """
+    if not config_path.exists():
+        logger.warning(f"{config_path} not found — skipping LANGUAGE_DISPLAY_NAMES update")
+        return
+
+    lang_attr = re.sub(r"[^A-Za-z0-9]+", "_", language).upper().strip("_")
+    new_key = f"Language.{lang_attr}"
+
+    lines = config_path.read_text(encoding="utf-8").splitlines()
+
+    # Idempotency check
+    if any(new_key in line for line in lines):
+        logger.info(f"{new_key} already present in LANGUAGE_DISPLAY_NAMES")
+        return
+
+    # Find the opening line of LANGUAGE_DISPLAY_NAMES
+    dict_start: int | None = None
+    for i, line in enumerate(lines):
+        if re.search(r"^LANGUAGE_DISPLAY_NAMES\s*:", line):
+            dict_start = i
+            break
+
+    if dict_start is None:
+        logger.warning("Could not find LANGUAGE_DISPLAY_NAMES in config.py — skipping")
+        return
+
+    # Find the closing brace of the dict (first line that is just '}' after dict_start)
+    close_idx: int | None = None
+    for i in range(dict_start + 1, len(lines)):
+        if lines[i].strip() == "}":
+            close_idx = i
+            break
+
+    if close_idx is None:
+        logger.warning("Could not find closing '}' of LANGUAGE_DISPLAY_NAMES — skipping")
+        return
+
+    indent = "    "
+    lines.insert(close_idx, f'{indent}{new_key}: "{language_name}",')
+
+    if dry_run:
+        logger.info(f"[dry-run] would add {new_key}: {language_name!r} to LANGUAGE_DISPLAY_NAMES")
+        return
+
+    config_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    logger.info(f"Added {new_key}: {language_name!r} to LANGUAGE_DISPLAY_NAMES in {config_path}")
+
+
+def update_env_example(language: str, language_name: str, env_example_path: Path, dry_run: bool) -> None:
+    """Patch .env.example to include the new language in EVA_LANGUAGE options.
+
+    Idempotent: no-op if the language is already present.
+    Uses text search rather than line numbers so it is robust to file growth.
+    """
+    if not env_example_path.exists():
+        logger.warning(f"{env_example_path} not found — skipping .env.example update")
+        return
+
+    lines = env_example_path.read_text(encoding="utf-8").splitlines()
+    prefix = _lang_to_env_prefix(language)
+
+    # ── 1. Update the #e line for EVA_LANGUAGE ──────────────────────────────
+    # Annotation lines appear BEFORE the variable definition, so we find the
+    # '#v EVA_LANGUAGE=' line and then scan backwards for the '#e ' line.
+    language_var_idx: int | None = None
+    for i, line in enumerate(lines):
+        if line.strip().startswith("#v EVA_LANGUAGE="):
+            language_var_idx = i
+            break
+
+    enum_line_idx: int | None = None
+    if language_var_idx is not None:
+        for i in range(language_var_idx - 1, -1, -1):
+            stripped = lines[i].strip()
+            if stripped.startswith("#e "):
+                enum_line_idx = i
+                break
+            # Stop scanning back once we hit a blank line or an unrelated variable
+            if not stripped or (stripped.startswith("#v ") or (not stripped.startswith("#") and "=" in stripped)):
+                break
+
+    if enum_line_idx is None:
+        logger.warning("Could not find '#e' options line for EVA_LANGUAGE in .env.example — skipping enum update")
+    else:
+        existing_opts = [o.strip() for o in lines[enum_line_idx].split(" ", 1)[1].split(",") if o.strip()]
+        # Use the base language code (e.g. 'es' from 'es-MX') for the enum option
+        # because the #e list holds the values the selectbox will show.
+        lang_code = language.lower()
+        if lang_code not in existing_opts:
+            existing_opts.append(lang_code)
+            lines[enum_line_idx] = "#e " + ",".join(existing_opts)
+            logger.info(f"Added '{lang_code}' to EVA_LANGUAGE options in .env.example")
+        else:
+            logger.info(f"'{lang_code}' already present in EVA_LANGUAGE options")
+
+    # ── 2. Insert agent ID pair before "Default user simulator agents" ───────
+    var_f = f"EVA_{prefix}_USER_F"
+    var_m = f"EVA_{prefix}_USER_M"
+
+    # Check idempotency
+    existing_text = "\n".join(lines)
+    if f"#v {var_f}=" in existing_text or f"{var_f}=" in existing_text:
+        logger.info(f"{var_f} already present in .env.example — skipping agent ID insertion")
+    else:
+        # Find the anchor: first line that starts the "Language agent IDs" comment,
+        # then advance past it to insert at the end of that subsection.
+        anchor_idx: int | None = None
+        for i, line in enumerate(lines):
+            if re.search(r"#\s*-+\s*Language agent IDs", line):
+                # Advance past the header line to insert after it
+                anchor_idx = i + 1
+                break
+
+        if anchor_idx is None:
+            logger.warning(
+                "Could not find '# --- Language agent IDs ---' in .env.example — appending agent ID pair at end of file"
+            )
+            anchor_idx = len(lines)
+
+        new_block = [
+            f"#i ElevenLabs agent ID — {language_name}, female voice.",
+            "#d string",
+            "#x perturbation_mode=Language",
+            f"#x EVA_LANGUAGE={language.lower()}",
+            f"#v {var_f}=",
+            "",
+            f"#i ElevenLabs agent ID — {language_name}, male voice.",
+            "#d string",
+            "#x perturbation_mode=Language",
+            f"#x EVA_LANGUAGE={language.lower()}",
+            f"#v {var_m}=",
+            "",
+        ]
+        lines[anchor_idx:anchor_idx] = new_block
+        logger.info(f"Inserted {var_f} / {var_m} blocks into .env.example")
+
+    if dry_run:
+        logger.info("[dry-run] .env.example changes not written")
+        return
+
+    env_example_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    logger.info(f"Updated {env_example_path}")
 
 
 def main() -> int:

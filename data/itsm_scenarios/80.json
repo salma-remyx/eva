@@ -409,7 +409,9 @@
           "engineering center",
           "centre d’ingénierie du centre-ville",
           "ingénierie centre-ville",
-          "bâtiment ingénierie centre-ville"
+          "bâtiment ingénierie centre-ville",
+          "le centre d’ingénierie en ville",
+          "ingénierie downtown"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -487,7 +489,8 @@
           "main garage",
           "garage a",
           "parking a",
-          "le garage a"
+          "le garage a",
+          "parking principal"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [

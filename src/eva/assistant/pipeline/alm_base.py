@@ -24,7 +24,9 @@ import wave
 from abc import ABC, abstractmethod
 from typing import Any
 
-from eva.models.config import LANGUAGE_DISPLAY_NAMES, LanguageType
+from pipecat.transcriptions.language import Language
+
+from eva.models.config import LANGUAGE_DISPLAY_NAMES
 
 # Default audio parameters (Ultravox: 16kHz PCM16 mono)
 DEFAULT_SAMPLE_RATE = 16000
@@ -57,7 +59,7 @@ def build_transcription_prompt(language: str | None = None) -> str:
     prompt = DEFAULT_TRANSCRIPTION_PROMPT
     if language and language != "en":
         try:
-            display_name = LANGUAGE_DISPLAY_NAMES[LanguageType(language)]
+            display_name = LANGUAGE_DISPLAY_NAMES[Language(language)]
         except (KeyError, ValueError):
             display_name = language
         prompt += f"\n- The audio is primarily in {display_name}. Transcribe in that language."

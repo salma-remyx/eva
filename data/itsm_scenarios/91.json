@@ -661,7 +661,10 @@
           "downtown building",
           "centre-ville",
           "bâtiment du centre-ville",
-          "site centre-ville"
+          "site centre-ville",
+          "le bâtiment du centre-ville",
+          "le site en ville",
+          "downtown"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -782,7 +785,8 @@
           "garage a",
           "garage a du centre-ville",
           "parking a centre-ville",
-          "garage a en ville"
+          "garage a en ville",
+          "garage a downtown"
         ],
         "zone_code": "PZA",
         "name_aliases_translatable": true,

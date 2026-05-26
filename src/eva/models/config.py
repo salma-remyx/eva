@@ -23,6 +23,7 @@ from typing import Any, ClassVar, Literal
 
 import yaml
 from litellm.types.router import DeploymentTypedDict
+from pipecat.transcriptions.language import Language
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -293,30 +294,18 @@ class BehaviorType(StrEnum):
     forgetful_disorganized = "forgetful_disorganized"
 
 
-class LanguageType(StrEnum):
-    """Language for the user simulator — selects a different ElevenLabs agent ID per language."""
-
-    english = "en"
-    spanish = "es"
-    french = "fr"
-    canadian_french = "fr-CA"
-    german = "de"
-    portuguese = "pt"
-    japanese = "ja"
-    mandarin = "zh"
-    korean = "ko"
-
-
-LANGUAGE_DISPLAY_NAMES: dict[LanguageType, str] = {
-    LanguageType.english: "English",
-    LanguageType.spanish: "Spanish",
-    LanguageType.french: "French",
-    LanguageType.canadian_french: "Canadian French",
-    LanguageType.german: "German",
-    LanguageType.portuguese: "Portuguese",
-    LanguageType.japanese: "Japanese",
-    LanguageType.mandarin: "Mandarin Chinese",
-    LanguageType.korean: "Korean",
+# Supported languages: keys are pipecat Language codes; presence in this dict
+# defines what's supported. Display names are used in prompts and logging.
+LANGUAGE_DISPLAY_NAMES: dict[Language, str] = {
+    Language.EN: "English",
+    Language.ES: "Spanish",
+    Language.FR: "French",
+    Language.FR_CA: "Canadian French",
+    Language.DE: "German",
+    Language.PT: "Portuguese",
+    Language.JA: "Japanese",
+    Language.ZH: "Mandarin Chinese",
+    Language.KO: "Korean",
 }
 
 
@@ -495,8 +484,8 @@ class RunConfig(BaseSettings):
     )
 
     # User simulator language — picks per-language ElevenLabs agent IDs
-    language: LanguageType = Field(
-        LanguageType.english,
+    language: Language = Field(
+        Language.EN,
         description=(
             "Language for the user simulator. When set to a non-English value, "
             "the matching EVA_{LANGUAGE}_USER_F and EVA_{LANGUAGE}_USER_M agent IDs must also be set. "
@@ -616,7 +605,7 @@ class RunConfig(BaseSettings):
         # self.model.pipeline_parts is only available if self.model is valid, which the above asserts.
         if "run_id" not in self.model_fields_set:
             suffix = "_".join(v for v in self.model.pipeline_parts.values() if v)
-            lang = self.language.value if self.language != LanguageType.english else "en"
+            lang = self.language.value if self.language != Language.EN else "en"
             self.run_id = f"{datetime.now(UTC):%Y-%m-%d_%H-%M-%S.%f}_{lang}_{suffix}"
 
         return self
@@ -645,7 +634,7 @@ class RunConfig(BaseSettings):
     @model_validator(mode="after")
     def _check_language_personas(self) -> "RunConfig":
         """When a non-English language is set, validate matching agent IDs and mutual exclusivity."""
-        if self.language == LanguageType.english:
+        if self.language == Language.EN:
             return self
 
         key = self.language.value.upper()

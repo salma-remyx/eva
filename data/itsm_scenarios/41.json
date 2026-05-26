@@ -418,7 +418,9 @@
           "engineering center",
           "centre d’ingénierie du centre-ville",
           "ingénierie centre-ville",
-          "bâtiment ingénierie centre-ville"
+          "bâtiment ingénierie centre-ville",
+          "le centre d’ingénierie en ville",
+          "ingénierie downtown"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -485,7 +487,8 @@
         "name_aliases": [
           "north garage",
           "garage nord",
-          "parking nord"
+          "parking nord",
+          "le garage au nord"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [

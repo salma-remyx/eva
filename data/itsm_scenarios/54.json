@@ -409,7 +409,8 @@
           "head office",
           "siège",
           "le siège",
-          "qg"
+          "qg",
+          "siège social"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -573,7 +574,8 @@
         "name_aliases": [
           "south parking",
           "garage sud",
-          "parking sud"
+          "parking sud",
+          "le parking au sud"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -587,7 +589,8 @@
           "north lot at headquarters",
           "parking nord",
           "terrain nord",
-          "parking nord du siège"
+          "parking nord du siège",
+          "le parking nord"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [

@@ -422,7 +422,8 @@
           "east building",
           "siège est",
           "bâtiment est du siège",
-          "qg est"
+          "qg est",
+          "le site est du siège"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -510,7 +511,8 @@
           "executive garage",
           "garage des cadres",
           "parking direction",
-          "garage exécutif"
+          "garage exécutif",
+          "parking des cadres"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -523,7 +525,9 @@
           "north lot",
           "parking extérieur nord",
           "parking nord extérieur",
-          "terrain nord"
+          "terrain nord",
+          "parking nord en surface",
+          "le parking nord"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [

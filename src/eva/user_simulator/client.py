@@ -17,8 +17,9 @@ from elevenlabs.conversational_ai.conversation import (
     Conversation,
     ConversationInitiationData,
 )
+from pipecat.transcriptions.language import Language
 
-from eva.models.config import LANGUAGE_DISPLAY_NAMES, LanguageType, PerturbationConfig
+from eva.models.config import LANGUAGE_DISPLAY_NAMES, PerturbationConfig
 from eva.user_simulator.audio_interface import ELEVENLABS_OUTPUT_RATE, BotToBotAudioInterface
 from eva.user_simulator.event_logger import ElevenLabsEventLogger
 from eva.user_simulator.perturbation import AudioPerturbator
@@ -192,7 +193,7 @@ class UserSimulator:
             # in the target language even if its voice agent could default to English.
             if self._language and self._language.lower() not in ("en", "english"):
                 try:
-                    lang_display = LANGUAGE_DISPLAY_NAMES[LanguageType(self._language)]
+                    lang_display = LANGUAGE_DISPLAY_NAMES[Language(self._language)]
                 except (ValueError, KeyError):
                     lang_display = self._language
                 directive = get_user_language_directive(self._language, lang_display)
