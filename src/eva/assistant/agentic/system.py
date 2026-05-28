@@ -206,7 +206,7 @@ class AgenticSystem:
 
                 # Store performance stats
                 reasoning_content_for_csv = llm_stats.get("reasoning_content") or ""
-                reasoning_tokens = llm_stats.get("reasoning_tokens", 0)
+                reasoning_tokens = llm_stats.get("reasoning_tokens", 0) or 0
 
                 # Log if reasoning tokens are present but no reasoning content
                 if reasoning_tokens > 0 and not reasoning_content_for_csv:
