@@ -42,17 +42,25 @@ import json
 import os
 import re
 import sys
+import unicodedata
 from pathlib import Path
 from typing import Any
 
 import yaml
 from dotenv import load_dotenv
+from pydantic import ValidationError
 
 from eva.utils.culture import FIRST_NAME_PLACEHOLDER, LAST_NAME_PLACEHOLDER
 from eva.utils.json_utils import extract_and_load_json
 from eva.utils.llm_client import LLMClient
 from eva.utils.logging import get_logger, setup_logging
 from eva.utils.router import init
+from eva.utils.wer_normalization.engine import GenericTextNormalizer, LanguageConfig
+from eva.utils.wer_normalization.locale_defaults import locale_defaults
+from eva.utils.wer_normalization.whisper_normalizer.basic import (
+    remove_symbols_and_diacritics,
+    remove_symbols_keep_marks,
+)
 
 setup_logging()
 logger = get_logger(__name__)
@@ -63,6 +71,8 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "data"
 ADDENDA_PATH = REPO_ROOT / "configs" / "agents" / "language_addenda.yaml"
 INITIAL_MESSAGES_PATH = REPO_ROOT / "configs" / "agents" / "initial_messages.yaml"
+WER_UTILS_PATH = REPO_ROOT / "src" / "eva" / "utils" / "wer_normalization" / "wer_utils.py"
+WER_CONFIGS_DIR = REPO_ROOT / "src" / "eva" / "utils" / "wer_normalization" / "configs"
 
 DEFAULT_MODEL = "gpt-5.2"
 TRANSLATION_BATCH = 25
@@ -588,6 +598,15 @@ async def amain(args: argparse.Namespace) -> int:
     update_language_display_names(
         args.language, args.language_name, REPO_ROOT / "src" / "eva" / "models" / "config.py", args.dry_run
     )
+    await update_wer_normalizer_config(
+        args.language,
+        args.language_name,
+        WER_UTILS_PATH,
+        WER_CONFIGS_DIR,
+        llm,
+        args.dry_run,
+        args.include_spelling_variation,
+    )
     return 0
 
 
@@ -597,6 +616,514 @@ def _lang_to_env_prefix(language: str) -> str:
     'fr' -> 'FR', 'es-MX' -> 'ES_MX'
     """
     return re.sub(r"[^A-Za-z0-9]+", "_", language).upper().strip("_")
+
+
+_WER_PROMPT = """You are configuring a number-word WER normalizer for {language_name} (BCP-47: {language}).
+
+The normalizer converts spelled-out numbers to digits for ASR/STT evaluation
+("twenty two" → "22"). It is a left-to-right state machine driven by vocabulary
+tables, with one optional preprocessor that handles units-before-tens languages.
+
+=== STEP 1: classify the number system ===
+
+Choose exactly one "family":
+  - "alphabetic_ltr": compositional left-to-right base-10. Tens word comes first,
+    then ones (English "twenty two", Spanish "veintidós", Hindi compositional ≥100).
+    French-style vigesimal (70=60+10, 80=4*20) is also this family — set vigesimal.
+  - "alphabetic_reversed_units": units come before tens, optionally glued by a
+    conjunction word (German "einundzwanzig", Dutch "eenentwintig", Arabic
+    "wahid wa-'ishrun", Hebrew "echad ve-esrim").
+  - "lexicalized_below_100": numbers 1-99 are mostly distinct words rather than
+    composed (Hindi/Bengali native form). Put every word 1-99 in "ones",
+    leave "tens" empty. Engine still handles 100+ compositionally.
+  - "cjk": positional with 万/億 grouping (ZH/JA/KO). NOT supported by this script —
+    return {{"family": "cjk", "reason": "..."}} and stop.
+  - "unsupported": any other system. Return {{"family": "unsupported", "reason": "..."}}.
+
+=== STEP 2: vocabulary (the bulk of your work) ===
+
+Return these dicts under "vocabulary":
+  - "zeros": list of words meaning zero (e.g. ["zero", "oh"]).
+  - "ones": {{word: int}} for cardinal small numbers. For alphabetic_ltr and
+    alphabetic_reversed_units, include 1-19 (or whatever range the language
+    composes lexically — French includes 1-16). For lexicalized_below_100,
+    include 1-99.
+  - "ones_extra": {{word: int}} additional surface forms (gender variants,
+    elided forms — e.g. French "une"=1, German "ein"=1 alongside "eins").
+  - "ones_suffixed": {{word: [int, suffix]}} for ordinals/plural forms.
+    Example: English "first": [1, "st"] → emits "1st". Optional; leave {{}} if
+    the language doesn't have clean suffix derivations.
+  - "tens": {{word: int}} multiples of 10. Empty {{}} for lexicalized_below_100.
+  - "tens_suffixed": same shape as ones_suffixed, for tens. Optional.
+  - "multipliers": {{word: int}} for "hundred", "thousand", "million", etc.
+    Include lakh=100000 and crore=10000000 for Indic languages.
+    IMPORTANT — Romance languages (Spanish, Portuguese) lexicalize hundreds
+    200-900 as single words (Spanish: doscientos, trescientos, cuatrocientos,
+    quinientos, seiscientos, setecientos, ochocientos, novecientos;
+    Portuguese: duzentos, trezentos, quatrocentos, ...). Put these in "ones"
+    with their numeric values (200, 300, ...), NOT in multipliers.
+  - "multipliers_suffixed": optional, same shape.
+
+=== STEP 3: connective words ===
+
+  - "conjunction_word": the spoken word that joins large+small in this language
+    ("and"/"et"/"und"/"wa"/"y"). null if numbers never use one.
+  - "decimal_word": the spoken decimal separator ("point"/"virgule"/"komma"). null if none.
+
+=== STEP 4: structural flags ===
+
+  - "split_hyphenated_numbers": true if the language writes numbers like
+    "quatre-vingt-dix" that must be split into tokens. False otherwise.
+  - "vigesimal": only for languages with French-style 70=60+10 / 80=4*20 forms.
+    Format: {{"trigger_words": ["vingt"], "residuals": [4,5,6,7,8,9]}}.
+    null for all other languages.
+
+=== STEP 5: test cases ===
+
+Return "test_cases" as a list of 15 [spelled_form, digit_form] pairs that exercise:
+  small (1-9), teens, tens, 21/22 (the units-before-tens edge if applicable),
+  100, 121, 1000, 1500, a decimal, and any language-specific quirk.
+  Example: ["twenty two", "22"], ["one hundred and one", "101"].
+
+=== OUTPUT FORMAT ===
+
+Return one JSON object with keys: family, vocabulary, conjunction_word,
+decimal_word, split_hyphenated_numbers, vigesimal, test_cases. Optionally a
+"reason" field. No markdown, no commentary."""
+
+
+_TEXT_RULES_PROMPT = """For {language_name} (BCP-47: {language}), provide two short
+lists used to clean STT transcripts before WER comparison. These are plain
+data — do NOT write regex syntax; we wrap them server-side.
+
+=== filler_words ===
+A list of non-lexical hesitation/disfluency words that should be removed
+before comparison. English equivalents: um, uh, hmm, mhm, er, ah.
+Include only true fillers — NOT real content words that happen to be short.
+Cap at ~12 entries.
+
+Each entry: a single token in the native script of the language. Any
+script is fine (Latin, Cyrillic, Devanagari, Arabic, Hebrew, Hangul,
+CJK, etc.). No spaces, no digits, no punctuation. Diacritics are OK
+(they'll be normalized upstream, you don't need to strip them).
+
+Examples:
+  French:   ["euh", "ben", "bah", "hein", "hum"]
+  German:   ["äh", "ähm", "hm", "naja"]
+  Spanish:  ["eh", "este", "bueno", "pues"]
+  Russian:  ["ну", "э", "эм", "вот"]
+  Hindi:    ["अरे", "हाँ", "वो", "मतलब"]
+  Arabic:   ["يعني", "اه", "ام"]
+  Japanese: ["えーと", "あの", "まあ"]
+
+=== abbreviations ===
+Map of {{abbreviation: spelled_out_form}} for titles/honorifics likely to
+appear in STT output in either form. The normalizer rewrites the
+abbreviation to its expansion so both forms collapse during WER scoring.
+
+Constraints:
+  - both sides: single tokens in the native script, no spaces, no dots,
+    no digits, no punctuation
+  - cap at ~15 entries
+  - only include titles/honorifics genuinely common in this language
+
+Examples:
+  English: {{"mr": "mister", "mrs": "missus", "dr": "doctor", "prof": "professor"}}
+  French:  {{"m": "monsieur", "mme": "madame", "mlle": "mademoiselle", "dr": "docteur"}}
+  German:  {{"hr": "herr", "fr": "frau", "dr": "doktor"}}
+  Spanish: {{"sr": "señor", "sra": "señora", "dr": "doctor"}}
+  Hindi:   {{"डॉ": "डॉक्टर", "श्री": "श्रीमान"}}
+
+If the language doesn't have widely-abbreviated honorifics, return an empty dict.
+
+=== OUTPUT ===
+Return JSON: {{"filler_words": [...], "abbreviations": {{...}}}}.
+No markdown, no commentary."""
+
+
+def _is_letters_only(s: str) -> bool:
+    """True iff ``s`` is non-empty and every character is a Unicode letter.
+
+    Covers Latin, Cyrillic, Greek, Arabic, Hebrew, Devanagari, Bengali,
+    Tamil, Thai, Hangul, CJK ideographs, etc. Excludes digits, whitespace,
+    punctuation, symbols, and combining marks (the runtime stripper removes
+    combining marks anyway, so post-stripped tokens are pure letters).
+    """
+    if not s:
+        return False
+    return all(unicodedata.category(c).startswith("L") for c in s)
+
+
+def _normalize_rule_token(raw: str, preserve_marks: bool) -> str | None:
+    """Lowercase + script-aware strip a candidate token, then validate.
+
+    Mirrors the upstream text pipeline (which uses ``remove_symbols_keep_marks``
+    for Indic/Arabic/Hebrew/Thai and ``remove_symbols_and_diacritics`` for
+    everything else) so vocab entries match runtime text.
+    """
+    if not isinstance(raw, str):
+        return None
+    strip_fn = remove_symbols_keep_marks if preserve_marks else remove_symbols_and_diacritics
+    cleaned = strip_fn(raw.strip().lower(), keep="")
+    return cleaned if _is_letters_only(cleaned) else None
+
+
+def _build_text_rules(rules: dict, preserve_marks: bool) -> tuple[str, dict[str, str]]:
+    """Convert LLM data → (ignore_patterns, replacers) with regex compile-check.
+
+    Filler words become a single ``\\b(w1|w2|...)\\b`` alternation. Abbreviations
+    become individual ``\\b<abbr>\\b`` → expansion replacers. Entries that are
+    not pure Unicode letters after lowercase + diacritic strip are dropped.
+    """
+    fillers: list[str] = []
+    for w in rules.get("filler_words") or []:
+        tok = _normalize_rule_token(w, preserve_marks)
+        if tok:
+            fillers.append(tok)
+
+    ignore_pattern = ""
+    if fillers:
+        # Deduplicate while preserving order
+        fillers = list(dict.fromkeys(fillers))
+        ignore_pattern = rf"\b({'|'.join(re.escape(w) for w in fillers)})\b"
+
+    replacers: dict[str, str] = {}
+    for abbr, expansion in (rules.get("abbreviations") or {}).items():
+        a = _normalize_rule_token(abbr, preserve_marks)
+        e = _normalize_rule_token(expansion, preserve_marks)
+        if not a or not e:
+            continue
+        replacers[rf"\b{re.escape(a)}\b"] = e
+
+    if ignore_pattern:
+        try:
+            re.compile(ignore_pattern)
+        except re.error as exc:
+            logger.warning(f"Dropping invalid ignore_patterns regex: {exc}")
+            ignore_pattern = ""
+    for pat in list(replacers):
+        try:
+            re.compile(pat)
+        except re.error as exc:
+            logger.warning(f"Dropping invalid replacer regex {pat!r}: {exc}")
+            replacers.pop(pat, None)
+
+    return ignore_pattern, replacers
+
+
+def _build_full_config(language: str, llm_data: dict) -> dict:
+    """Build a complete LanguageConfig-shaped dict from LLM output + defaults.
+
+    Merges LLM-creative output, locale defaults, and deterministic defaults.
+
+    The LLM is asked for the small creative surface; everything else is
+    injected here so we never depend on LLM correctness for structural fields.
+    """
+    family = llm_data.get("family")
+    vocab = llm_data.get("vocabulary") or {}
+    vig = llm_data.get("vigesimal")
+
+    cfg: dict = {
+        "code": language,
+        "zeros": vocab.get("zeros", []),
+        "ones": vocab.get("ones", {}),
+        "ones_extra": vocab.get("ones_extra", {}),
+        "ones_suffixed": vocab.get("ones_suffixed", {}),
+        "tens": vocab.get("tens", {}),
+        "tens_suffixed": vocab.get("tens_suffixed", {}),
+        "multipliers": vocab.get("multipliers", {}),
+        "multipliers_suffixed": vocab.get("multipliers_suffixed", {}),
+        # Connectives
+        "conjunction_word": llm_data.get("conjunction_word"),
+        "decimal_word": llm_data.get("decimal_word"),
+        # Structural flags
+        "reversed_units": family == "alphabetic_reversed_units",
+        "split_hyphenated_numbers": bool(llm_data.get("split_hyphenated_numbers")),
+        # Vigesimal (only when explicitly requested)
+        "vigesimal_trigger_words": (vig or {}).get("trigger_words", []),
+        "vigesimal_multiplier": 20,
+        "vigesimal_residuals": (vig or {}).get("residuals", []),
+        # English-specific behavioural flags — safe defaults
+        "high_ones_residuals": [0],
+        "ones_continuation_on_prev_ones": False,
+        "conjunction_ignore_prev": ["multipliers", "tens"] if llm_data.get("conjunction_word") else [],
+        "repeat_words": {},
+        "half_pattern": None,
+        "half_replacement": None,
+        "one_word": None,
+        "one_plural_suffix": "",
+        "cents_connector": None,
+        # Currency/sign — left empty; user curates if needed
+        "preceding_prefixers": {},
+        "following_prefixers": {},
+        "suffixers": {},
+        # Outer text normalizer — populated by a separate LLM call (see
+        # _generate_wer_config). Stay empty until that call merges them in.
+        "ignore_patterns": "",
+        "replacers": {},
+        "strip_space_before_apostrophe": False,
+        "ordinal_suffix_pattern": "",
+        "spelling_map_path": None,
+    }
+    cfg.update(locale_defaults(language))
+    return cfg
+
+
+async def _generate_wer_config(
+    language: str,
+    language_name: str,
+    configs_dir: Path,
+    llm: LLMClient,
+    dry_run: bool,
+) -> None:
+    """Ask the LLM for the linguistic part of a WER config; inject everything else.
+
+    Pipeline:
+      1. Single LLM call returns {family, vocabulary, connectives, flags, test_cases}.
+      2. If family is "cjk" or "unsupported", abort with a clear message.
+      3. Merge with deterministic defaults + BCP-47 locale defaults.
+      4. Validate against LanguageConfig.
+      5. Round-trip every test case through the resulting normalizer; report
+         pass rate. Write the config regardless so the user has a starting point.
+    """
+    prompt = _WER_PROMPT.format(language_name=language_name, language=language)
+    text, _ = await llm.generate_text(
+        [{"role": "user", "content": prompt}],
+        response_format={"type": "json_object"},
+    )
+    llm_data = extract_and_load_json(text)
+
+    family = llm_data.get("family")
+    if family in {"cjk", "unsupported"}:
+        reason = llm_data.get("reason", "no reason given")
+        raise ValueError(
+            f"LLM classified {language_name!r} as {family!r} — this script only "
+            f"supports alphabetic families. Reason: {reason}. "
+            f"For CJK languages, add a dedicated normalizer class in cjk.py."
+        )
+    if family not in {"alphabetic_ltr", "alphabetic_reversed_units", "lexicalized_below_100"}:
+        raise ValueError(f"LLM returned unexpected family {family!r}")
+
+    cfg = _build_full_config(language, llm_data)
+
+    rules_prompt = _TEXT_RULES_PROMPT.format(language_name=language_name, language=language)
+    try:
+        rules_text, _ = await llm.generate_text(
+            [{"role": "user", "content": rules_prompt}],
+            response_format={"type": "json_object"},
+        )
+        rules_data = extract_and_load_json(rules_text)
+        ignore_pattern, replacers = _build_text_rules(
+            rules_data, preserve_marks=bool(cfg.get("preserve_combining_marks"))
+        )
+        cfg["ignore_patterns"] = ignore_pattern
+        cfg["replacers"] = replacers
+        logger.info(
+            f"Text rules for {language}: {len(replacers)} abbreviations, "
+            f"{'filler regex set' if ignore_pattern else 'no fillers'}"
+        )
+    except Exception as exc:
+        logger.warning(
+            f"Text-rules generation for {language} failed ({exc}); "
+            f"config will have empty ignore_patterns and replacers."
+        )
+
+    try:
+        validated = LanguageConfig.model_validate(cfg)
+    except ValidationError as exc:
+        raise ValueError(f"Generated WER config for {language!r} failed schema validation:\n{exc}") from exc
+    if validated.code != language:
+        raise ValueError(f"Internal: code mismatch {validated.code!r} vs {language!r}")
+
+    test_cases = llm_data.get("test_cases") or []
+    pass_count, failures = _run_wer_round_trip_tests(validated, test_cases)
+    total = len(test_cases)
+    if total:
+        logger.info(f"Round-trip tests for {language}: {pass_count}/{total} passed")
+        for spelled, digits, spelled_norm, digits_norm in failures:
+            logger.warning(f"  FAIL: {spelled!r} -> {spelled_norm!r}  vs  {digits!r} -> {digits_norm!r}")
+        if pass_count < total:
+            logger.warning(
+                f"Config will still be written. Inspect {language}.json and fix vocabulary "
+                f"entries for failing cases above."
+            )
+
+    out = configs_dir / f"{language}.json"
+    if dry_run:
+        logger.info(f"[dry-run] would write WER config to {out}")
+        return
+
+    configs_dir.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(cfg, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    logger.info(f"Wrote WER normalizer config to {out}")
+
+
+def _run_wer_round_trip_tests(config: LanguageConfig, test_cases: list) -> tuple[int, list[tuple[str, str, str, str]]]:
+    """Verify normalize(spelled) == normalize(digits) under the full pipeline.
+
+    Temporarily registers the new normalizer in ``wer_utils.NORMALIZERS`` and
+    calls ``normalize_text``, so the same post-processing (leading-zero strip,
+    bare-decimal collapse, etc.) that runs at WER time is applied here.
+    """
+    from eva.utils.wer_normalization import wer_utils  # local import: avoid load-time cycle
+
+    normalizer = GenericTextNormalizer(config)
+    prior = wer_utils.NORMALIZERS.get(config.code)
+    wer_utils.NORMALIZERS[config.code] = normalizer
+    try:
+        passed = 0
+        failures: list[tuple[str, str, str, str]] = []
+        for pair in test_cases:
+            if not (isinstance(pair, list) and len(pair) == 2):
+                continue
+            spelled, digits = str(pair[0]), str(pair[1])
+            try:
+                sn = wer_utils.normalize_text(spelled, config.code)
+                dn = wer_utils.normalize_text(digits, config.code)
+            except Exception as exc:
+                failures.append((spelled, digits, f"<error: {exc}>", ""))
+                continue
+            if sn.strip() == dn.strip():
+                passed += 1
+            else:
+                failures.append((spelled, digits, sn, dn))
+        return passed, failures
+    finally:
+        if prior is not None:
+            wer_utils.NORMALIZERS[config.code] = prior
+        else:
+            wer_utils.NORMALIZERS.pop(config.code, None)
+
+
+async def _generate_spelling_map(
+    language: str,
+    language_name: str,
+    configs_dir: Path,
+    llm: LLMClient,
+    dry_run: bool,
+) -> None:
+    """Generate a spelling-variation map ``{variant: canonical}`` for ``language``.
+
+    This is analogous to ``en_spelling.json`` (British→American equivalences).
+    Only warranted for languages with significant regional spelling divergence.
+    """
+    prompt = f"""You are generating a spelling-variation normalization map for {language_name} (BCP-47: {language}).
+
+This map is used during WER evaluation to collapse regional spelling variants into a
+single canonical form, so that both sides of a word-error-rate comparison normalize
+to the same string (e.g. English "colour" → "color").
+
+=== TASK ===
+Return a JSON object where each key is a regional/variant spelling and each value is
+the preferred canonical form to normalize to.
+
+Only include pairs where:
+- Both forms are correct spellings of the same word in real usage.
+- The variant and canonical forms are genuinely different strings.
+- The variant is likely to appear in STT output or reference transcripts.
+
+Aim for completeness: include all systematic spelling divergences you know of for
+{language_name} (e.g. orthographic reform variants, regional differences between
+major dialect regions, common alternative spellings recognized by major dictionaries).
+
+=== FORMAT ===
+Return ONLY a flat JSON object: {{"variant_spelling": "canonical_spelling", ...}}
+No markdown, no nesting, no surrounding text.
+
+If {language_name} has no significant spelling variants (i.e. spelling is standardized
+with fewer than ~10 meaningful pairs), return an empty object: {{}}"""
+
+    text, _ = await llm.generate_text(
+        [{"role": "user", "content": prompt}],
+        response_format={"type": "json_object"},
+    )
+    data = extract_and_load_json(text)
+    if not isinstance(data, dict) or not all(isinstance(k, str) and isinstance(v, str) for k, v in data.items()):
+        raise ValueError(f"Spelling map for {language!r} is not a flat {{str: str}} dict: {type(data)}")
+
+    out = configs_dir / f"{language}_spelling.json"
+    if dry_run:
+        logger.info(f"[dry-run] would write spelling map ({len(data)} entries) to {out}")
+        return
+
+    configs_dir.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(data, indent=2, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
+    logger.info(f"Wrote spelling map ({len(data)} entries) to {out}")
+
+
+async def update_wer_normalizer_config(
+    language: str,
+    language_name: str,
+    wer_utils_path: Path,
+    configs_dir: Path,
+    llm: LLMClient,
+    dry_run: bool,
+    include_spelling_variation: bool,
+) -> None:
+    """Generate the WER normalizer JSON config and register the language in wer_utils.py.
+
+    Steps:
+    1. Generate ``configs/{language}.json`` via LLM (validated against LanguageConfig schema).
+    2. Optionally generate ``configs/{language}_spelling.json`` when --include-spelling-variation.
+    3. Insert the language code into ``_CONFIG_DRIVEN_LANGUAGES`` in wer_utils.py.
+    """
+    config_path = configs_dir / f"{language}.json"
+    if config_path.exists():
+        logger.info(f"WER config already exists at {config_path} — skipping generation")
+    else:
+        logger.info(f"Generating WER normalizer config for {language_name}")
+        await _generate_wer_config(language, language_name, configs_dir, llm, dry_run)
+
+    if include_spelling_variation:
+        spelling_path = configs_dir / f"{language}_spelling.json"
+        if spelling_path.exists():
+            logger.info(f"Spelling map already exists at {spelling_path} — skipping")
+        else:
+            logger.info(f"Generating spelling-variation map for {language_name}")
+            await _generate_spelling_map(language, language_name, configs_dir, llm, dry_run)
+            # Point the config's spelling_map_path to the new file (patch in-place).
+            if not dry_run and config_path.exists():
+                cfg_data = json.loads(config_path.read_text(encoding="utf-8"))
+                cfg_data["spelling_map_path"] = f"{language}_spelling.json"
+                config_path.write_text(json.dumps(cfg_data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+                logger.info(f"Patched spelling_map_path in {config_path.name}")
+
+    _register_language_in_wer_utils(language, wer_utils_path, dry_run)
+
+
+def _register_language_in_wer_utils(language: str, wer_utils_path: Path, dry_run: bool) -> None:
+    """Insert ``language`` into ``_CONFIG_DRIVEN_LANGUAGES`` in wer_utils.py if absent."""
+    if not wer_utils_path.exists():
+        logger.warning(f"{wer_utils_path} not found — skipping _CONFIG_DRIVEN_LANGUAGES update")
+        return
+
+    source = wer_utils_path.read_text(encoding="utf-8")
+
+    # Idempotency: already present as a quoted string in the tuple
+    if re.search(rf'["\x27]{re.escape(language)}["\x27]', source):
+        logger.info(f"{language!r} already present in _CONFIG_DRIVEN_LANGUAGES")
+        return
+
+    # Match the tuple literal, e.g. ("en", "fr") or ("en",)
+    pattern = re.compile(r"(_CONFIG_DRIVEN_LANGUAGES\s*=\s*\()([^)]+)(\))")
+    m = pattern.search(source)
+    if not m:
+        logger.warning("Could not find _CONFIG_DRIVEN_LANGUAGES tuple in wer_utils.py — skipping")
+        return
+
+    existing = m.group(2).rstrip()
+    # Ensure trailing comma before appending
+    if not existing.rstrip().endswith(","):
+        existing = existing.rstrip() + ","
+    new_tuple_body = f'{existing} "{language}"'
+    new_source = source[: m.start(2)] + new_tuple_body + source[m.end(2) :]
+
+    if dry_run:
+        logger.info(f"[dry-run] would add {language!r} to _CONFIG_DRIVEN_LANGUAGES in wer_utils.py")
+        return
+
+    wer_utils_path.write_text(new_source, encoding="utf-8")
+    logger.info(f"Added {language!r} to _CONFIG_DRIVEN_LANGUAGES in {wer_utils_path}")
 
 
 def update_language_display_names(language: str, language_name: str, config_path: Path, dry_run: bool) -> None:
@@ -763,6 +1290,15 @@ def main() -> int:
     ap.add_argument("--dump-names", help="When auto-generating, also save the arrays here")
     ap.add_argument("--llm-model", default=DEFAULT_MODEL)
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument(
+        "--include-spelling-variation",
+        action="store_true",
+        help=(
+            "Also generate a {lang}_spelling.json mapping for regional spelling variants "
+            "(e.g. colour→color). Only needed for languages with significant orthographic "
+            "divergence between dialects. English already ships one; most others don't need it."
+        ),
+    )
     ap.add_argument(
         "--record-id",
         help="Only mutate the matching record id (across all selected domains). Useful for inspecting a single-row diff.",

@@ -653,7 +653,16 @@
           "site centre-ville",
           "le bâtiment du centre-ville",
           "le site en ville",
-          "downtown"
+          "downtown",
+          "el centro",
+          "edificio del centro",
+          "oficinas del centro",
+          "zona centro",
+          "innenstadt",
+          "innenstadtgebäude",
+          "downtown-gebäude",
+          "डाउनटाउन",
+          "डाउनटाउन बिल्डिंग"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -669,7 +678,16 @@
           "siège",
           "le siège",
           "qg",
-          "siège social"
+          "siège social",
+          "sede",
+          "central",
+          "oficinas centrales",
+          "zentrale",
+          "hauptsitz",
+          "हेडक्वार्टर",
+          "मुख्यालय",
+          "एचक्यू",
+          "एच क्यू"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -804,7 +822,17 @@
           "garage a",
           "garage a du siège",
           "parking a du siège",
-          "garage a au siège"
+          "garage a au siège",
+          "garaje a de la sede",
+          "parking a de la sede",
+          "aparcamiento a de la sede",
+          "zentrale garage a",
+          "parkhaus a an der zentrale",
+          "hq garage a",
+          "हेडक्वार्टर गैरेज ए",
+          "एचक्यू गैरेज ए",
+          "गैरेज ए",
+          "एच क्यू गैरेज ए"
         ],
         "zone_code": "PZA",
         "name_aliases_translatable": true,

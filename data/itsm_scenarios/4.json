@@ -790,7 +790,17 @@
           "centre des opérations",
           "centre ops",
           "ops",
-          "le centre opérationnel"
+          "le centre opérationnel",
+          "centro de operaciones",
+          "operaciones",
+          "centro ops",
+          "betriebszentrale",
+          "operations-center",
+          "ops-zentrum",
+          "operationszentrum",
+          "ऑपरेशंस सेंटर",
+          "ऑप्स सेंटर",
+          "ऑप्स"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -807,7 +817,18 @@
           "bureau centre-ville",
           "bâtiment finance",
           "le bureau en ville",
-          "les bureaux downtown"
+          "les bureaux downtown",
+          "oficinas del centro",
+          "oficina del centro",
+          "edificio de finanzas",
+          "büro downtown",
+          "innenstadtbüro",
+          "downtown-office",
+          "downtown-büro",
+          "finanzgebäude",
+          "डाउनटाउन ऑफिस",
+          "डाउनटाउन",
+          "फाइनेंस बिल्डिंग"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -919,7 +940,14 @@
           "garage a",
           "parking a",
           "le garage a",
-          "parking principal"
+          "parking principal",
+          "garaje a",
+          "aparcamiento a",
+          "parkhaus a",
+          "hauptgarage a",
+          "गैरेज ए",
+          "ए वाला गैरेज",
+          "मेन गैरेज"
         ],
         "zone_code": "PZA",
         "name_aliases_translatable": true,
@@ -934,7 +962,14 @@
           "garage b",
           "parking b",
           "garage ouest",
-          "parking ouest"
+          "parking ouest",
+          "garaje b",
+          "aparcamiento b",
+          "parkhaus b",
+          "westgarage",
+          "गैरेज बी",
+          "बी वाला गैरेज",
+          "वेस्ट गैरेज"
         ],
         "zone_code": "PZB",
         "name_aliases_translatable": true,

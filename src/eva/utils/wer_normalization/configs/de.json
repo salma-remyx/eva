@@ -1,0 +1,105 @@
+{
+  "code": "de",
+  "zeros": [
+    "null",
+    "nullen",
+    "zero"
+  ],
+  "ones": {
+    "eins": 1,
+    "zwei": 2,
+    "drei": 3,
+    "vier": 4,
+    "fünf": 5,
+    "sechs": 6,
+    "sieben": 7,
+    "acht": 8,
+    "neun": 9,
+    "zehn": 10,
+    "elf": 11,
+    "zwölf": 12,
+    "dreizehn": 13,
+    "vierzehn": 14,
+    "fünfzehn": 15,
+    "sechzehn": 16,
+    "siebzehn": 17,
+    "achtzehn": 18,
+    "neunzehn": 19
+  },
+  "ones_extra": {
+    "ein": 1,
+    "eine": 1,
+    "einen": 1,
+    "einem": 1,
+    "einer": 1,
+    "zwo": 2
+  },
+  "ones_suffixed": {},
+  "tens": {
+    "zwanzig": 20,
+    "dreißig": 30,
+    "vierzig": 40,
+    "fünfzig": 50,
+    "sechzig": 60,
+    "siebzig": 70,
+    "achtzig": 80,
+    "neunzig": 90
+  },
+  "tens_suffixed": {},
+  "multipliers": {
+    "hundert": 100,
+    "tausend": 1000,
+    "million": 1000000,
+    "millionen": 1000000,
+    "milliarde": 1000000000,
+    "milliarden": 1000000000
+  },
+  "multipliers_suffixed": {},
+  "conjunction_word": "und",
+  "decimal_word": "komma",
+  "reversed_units": true,
+  "split_hyphenated_numbers": false,
+  "vigesimal_trigger_words": [],
+  "vigesimal_multiplier": 20,
+  "vigesimal_residuals": [],
+  "high_ones_residuals": [
+    0
+  ],
+  "ones_continuation_on_prev_ones": false,
+  "conjunction_ignore_prev": [
+    "multipliers",
+    "tens"
+  ],
+  "repeat_words": {},
+  "half_pattern": null,
+  "half_replacement": null,
+  "one_word": null,
+  "one_plural_suffix": "",
+  "cents_connector": null,
+  "preceding_prefixers": {},
+  "following_prefixers": {},
+  "suffixers": {},
+  "ignore_patterns": "\\b(ah|ahm|hm|hmm|mhm|ahh|ohm|naja|tja|ahja|mm|puh)\\b",
+  "replacers": {
+    "\\bhr\\b": "herr",
+    "\\bfr\\b": "frau",
+    "\\bdr\\b": "doktor",
+    "\\bprof\\b": "professor",
+    "\\bing\\b": "ingenieur",
+    "\\bdipl\\b": "diplom",
+    "\\bmag\\b": "magister",
+    "\\bdir\\b": "direktor",
+    "\\bgen\\b": "general",
+    "\\bpras\\b": "prasident",
+    "\\bfrl\\b": "fraulein"
+  },
+  "strip_space_before_apostrophe": false,
+  "ordinal_suffix_pattern": "",
+  "spelling_map_path": null,
+  "letter_class": "a-zà-öø-ÿœæ",
+  "decimal_separator": "comma",
+  "thousand_separators": [
+    "dot",
+    "space"
+  ]
+}

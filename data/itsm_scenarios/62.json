@@ -468,7 +468,16 @@
           "ingénierie centre-ville",
           "bâtiment ingénierie centre-ville",
           "le centre d’ingénierie en ville",
-          "ingénierie downtown"
+          "ingénierie downtown",
+          "centro de ingeniería del centro",
+          "ingeniería del centro",
+          "edificio de ingeniería del centro",
+          "technikzentrum downtown",
+          "ingenieurzentrum downtown",
+          "downtown-technikzentrum",
+          "डाउनटाउन इंजीनियरिंग सेंटर",
+          "डाउनटाउन इंजीनियरिंग",
+          "डाउनटाउन वाला इंजीनियरिंग सेंटर"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -544,7 +553,14 @@
           "north garage",
           "garage nord",
           "parking nord",
-          "le garage au nord"
+          "le garage au nord",
+          "garaje norte",
+          "parking norte",
+          "aparcamiento norte",
+          "nordgarage",
+          "parkhaus nord",
+          "नॉर्थ गैरेज",
+          "उत्तर वाला गैरेज"
         ],
         "zone_code": "PZA",
         "name_aliases_translatable": true,

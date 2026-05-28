@@ -664,7 +664,16 @@
           "site centre-ville",
           "le bâtiment du centre-ville",
           "le site en ville",
-          "downtown"
+          "downtown",
+          "el centro",
+          "edificio del centro",
+          "oficinas del centro",
+          "zona centro",
+          "innenstadt",
+          "innenstadtgebäude",
+          "downtown-gebäude",
+          "डाउनटाउन",
+          "डाउनटाउन बिल्डिंग"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -786,7 +795,17 @@
           "garage a du centre-ville",
           "parking a centre-ville",
           "garage a en ville",
-          "garage a downtown"
+          "garage a downtown",
+          "garaje a del centro",
+          "parking a del centro",
+          "aparcamiento a del centro",
+          "downtown garage a",
+          "parkhaus a downtown",
+          "garage a in der innenstadt",
+          "garage a in downtown",
+          "डाउनटाउन गैरेज ए",
+          "डाउनटाउन वाला गैरेज ए",
+          "डाउनटाउन गैरेज"
         ],
         "zone_code": "PZA",
         "name_aliases_translatable": true,

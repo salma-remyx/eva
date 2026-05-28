@@ -423,7 +423,17 @@
           "centre d’ingénierie riverside",
           "ingénierie riverside",
           "centre d’ingénierie au bord de l’eau",
-          "ingénierie côté rivière"
+          "ingénierie côté rivière",
+          "centro de ingeniería de riverside",
+          "ingeniería de riverside",
+          "edificio de ingeniería de riverside",
+          "technikzentrum riverside",
+          "ingenieurzentrum riverside",
+          "riverside-technikzentrum",
+          "technikzentrum am fluss",
+          "रिवरसाइड इंजीनियरिंग सेंटर",
+          "रिवरसाइड इंजीनियरिंग",
+          "नदी किनारे वाला इंजीनियरिंग सेंटर"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -499,7 +509,14 @@
           "north garage",
           "garage nord",
           "parking nord",
-          "le garage au nord"
+          "le garage au nord",
+          "garaje norte",
+          "parking norte",
+          "aparcamiento norte",
+          "nordgarage",
+          "parkhaus nord",
+          "नॉर्थ गैरेज",
+          "उत्तर वाला गैरेज"
         ],
         "zone_code": "PZA",
         "name_aliases_translatable": true,

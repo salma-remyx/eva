@@ -412,7 +412,16 @@
           "ingénierie centre-ville",
           "bâtiment ingénierie centre-ville",
           "le centre d’ingénierie en ville",
-          "ingénierie downtown"
+          "ingénierie downtown",
+          "centro de ingeniería del centro",
+          "ingeniería del centro",
+          "edificio de ingeniería del centro",
+          "technikzentrum downtown",
+          "ingenieurzentrum downtown",
+          "downtown-technikzentrum",
+          "डाउनटाउन इंजीनियरिंग सेंटर",
+          "डाउनटाउन इंजीनियरिंग",
+          "डाउनटाउन वाला इंजीनियरिंग सेंटर"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -499,7 +508,15 @@
           "parking a principal",
           "garage principal a",
           "parking principal a",
-          "le garage a principal"
+          "le garage a principal",
+          "garaje a principal",
+          "aparcamiento a principal",
+          "hauptgarage a",
+          "parkhaus a",
+          "मेन गैरेज ए",
+          "गैरेज ए",
+          "ए वाला मेन गैरेज",
+          "मेन गैरेज"
         ],
         "zone_code": "PZA",
         "name_aliases_translatable": true,

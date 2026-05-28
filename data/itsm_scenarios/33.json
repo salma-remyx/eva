@@ -423,7 +423,16 @@
           "site centre-ville",
           "le bâtiment du centre-ville",
           "le site en ville",
-          "downtown"
+          "downtown",
+          "el centro",
+          "edificio del centro",
+          "oficinas del centro",
+          "zona centro",
+          "innenstadt",
+          "innenstadtgebäude",
+          "downtown-gebäude",
+          "डाउनटाउन",
+          "डाउनटाउन बिल्डिंग"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -492,7 +501,15 @@
           "central parking",
           "garage central",
           "parking central",
-          "le parking central"
+          "le parking central",
+          "garaje central",
+          "aparcamiento central",
+          "zentralgarage",
+          "parkhaus zentral",
+          "zentrales parkhaus",
+          "सेंट्रल गैरेज",
+          "सेंट्रल पार्किंग",
+          "बीच वाला गैरेज"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [

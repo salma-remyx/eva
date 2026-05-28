@@ -659,7 +659,16 @@
           "site centre-ville",
           "le bâtiment du centre-ville",
           "le site en ville",
-          "downtown"
+          "downtown",
+          "el centro",
+          "edificio del centro",
+          "oficinas del centro",
+          "zona centro",
+          "innenstadt",
+          "innenstadtgebäude",
+          "downtown-gebäude",
+          "डाउनटाउन",
+          "डाउनटाउन बिल्डिंग"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -752,7 +761,17 @@
           "south parking",
           "garage sud",
           "parking sud",
-          "le parking au sud"
+          "le parking au sud",
+          "garaje sur",
+          "parking sur",
+          "aparcamiento sur",
+          "südgarage",
+          "parkhaus süd",
+          "südparkhaus",
+          "parken süd",
+          "साउथ गैरेज",
+          "दक्षिण वाला गैरेज",
+          "साउथ पार्किंग"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [

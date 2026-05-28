@@ -530,7 +530,18 @@
           "bureau centre-ville",
           "bâtiment finance",
           "le bureau en ville",
-          "les bureaux downtown"
+          "les bureaux downtown",
+          "oficinas del centro",
+          "oficina del centro",
+          "edificio de finanzas",
+          "büro downtown",
+          "innenstadtbüro",
+          "downtown-office",
+          "downtown-büro",
+          "finanzgebäude",
+          "डाउनटाउन ऑफिस",
+          "डाउनटाउन",
+          "फाइनेंस बिल्डिंग"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -623,7 +634,14 @@
           "north garage",
           "garage nord",
           "parking nord",
-          "le garage au nord"
+          "le garage au nord",
+          "garaje norte",
+          "parking norte",
+          "aparcamiento norte",
+          "nordgarage",
+          "parkhaus nord",
+          "नॉर्थ गैरेज",
+          "उत्तर वाला गैरेज"
         ],
         "zone_code": "PZA",
         "name_aliases_translatable": true,

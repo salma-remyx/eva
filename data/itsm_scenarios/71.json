@@ -470,7 +470,16 @@
           "siège",
           "le siège",
           "qg",
-          "siège social"
+          "siège social",
+          "sede",
+          "central",
+          "oficinas centrales",
+          "zentrale",
+          "hauptsitz",
+          "हेडक्वार्टर",
+          "मुख्यालय",
+          "एचक्यू",
+          "एच क्यू"
         ],
         "parking_zones": {},
         "name_aliases_translatable": true,

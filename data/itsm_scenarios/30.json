@@ -469,7 +469,16 @@
           "ingénierie centre-ville",
           "bâtiment ingénierie centre-ville",
           "le centre d’ingénierie en ville",
-          "ingénierie downtown"
+          "ingénierie downtown",
+          "centro de ingeniería del centro",
+          "ingeniería del centro",
+          "edificio de ingeniería del centro",
+          "technikzentrum downtown",
+          "ingenieurzentrum downtown",
+          "downtown-technikzentrum",
+          "डाउनटाउन इंजीनियरिंग सेंटर",
+          "डाउनटाउन इंजीनियरिंग",
+          "डाउनटाउन वाला इंजीनियरिंग सेंटर"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -535,7 +544,16 @@
           "garage alpha",
           "parking alpha",
           "le garage alpha",
-          "parking principal"
+          "parking principal",
+          "garaje alfa",
+          "parking alfa",
+          "aparcamiento alfa",
+          "alpha-garage",
+          "parkhaus alpha",
+          "hauptgarage alpha",
+          "अल्फा गैरेज",
+          "अल्फा",
+          "मेन गैरेज"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [

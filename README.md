@@ -189,6 +189,16 @@ EVA_IT_USER_M=your_elevenlabs_agent_id_male
 EVA_LANGUAGE=it EVA_DOMAIN=airline python main.py
 ```
 
+#### WER normalization for new languages
+
+The `stt_wer` metric includes significant automation for normalizing spoken-form text before computing Word Error Rate. The automation covers number word-to-digit conversion, filler word removal, abbreviation expansion, and decimal/thousand separator handling. It is generated once per language via `add_culture_data.py` and stored in `src/eva/utils/wer_normalization/configs/`.
+
+Languages within the **Romance** (French, Spanish, Italian, Portuguese, Romanian, …), **Indic** (Hindi, Bengali, Punjabi, …), and **Sino-CJK** (Mandarin, Cantonese, Japanese, Korean) families receive particularly thorough coverage because the normalization engine has explicit support for their structural patterns (vigesimal forms, reversed units, positional kanji arithmetic, etc.). Languages outside these families should still benefit from the generic pipeline.
+
+`stt_wer` is a **diagnostic metric** — the benchmark runs and produces valid results even without any WER normalization config for a given language; the metric simply measures raw string distance in that case. You do not need to deeply curate the normalization to get useful benchmark output.
+
+That said, the auto-generated configs can be brittle. The LLM generation step is creative and may miss edge cases, produce inconsistent vocabulary, or generate rules that work for the test cases but fail on real transcripts. **Manual inspection of the generated config is recommended** before treating WER scores as authoritative for a new language. Not all languages can fit in the current normalization framework, and some may require custom rules and code changes.
+
 ### Exploring Results
 
 EVA includes a Streamlit analysis app for visualizing and comparing results:

@@ -535,7 +535,16 @@
           "siège",
           "le siège",
           "qg",
-          "siège social"
+          "siège social",
+          "sede",
+          "central",
+          "oficinas centrales",
+          "zentrale",
+          "hauptsitz",
+          "हेडक्वार्टर",
+          "मुख्यालय",
+          "एचक्यू",
+          "एच क्यू"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -659,7 +668,16 @@
           "parking nord",
           "terrain nord",
           "parking nord du siège",
-          "le parking nord"
+          "le parking nord",
+          "parking norte",
+          "aparcamiento norte",
+          "lote norte",
+          "nordparkplatz",
+          "parkplatz nord",
+          "nordparkplatz bei der zentrale",
+          "नॉर्थ लॉट",
+          "नॉर्थ पार्किंग",
+          "हेडक्वार्टर का नॉर्थ लॉट"
         ],
         "zone_code": "PZN",
         "name_aliases_translatable": true,

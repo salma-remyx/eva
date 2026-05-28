@@ -444,7 +444,21 @@
           "centre d’ingénierie harbor",
           "ingénierie harbor",
           "centre d’ingénierie du port",
-          "ingénierie du port"
+          "ingénierie du port",
+          "centro de ingeniería de harbor",
+          "ingeniería de harbor",
+          "edificio de ingeniería de harbor",
+          "technikzentrum harbor",
+          "ingenieurzentrum harbor",
+          "hafen-technikzentrum",
+          "centro de ingeniería del puerto",
+          "ingeniería del puerto",
+          "edificio de ingeniería del puerto",
+          "technikzentrum am hafen",
+          "हार्बर इंजीनियरिंग सेंटर",
+          "हार्बर इंजीनियरिंग",
+          "हार्बर वाला इंजीनियरिंग सेंटर",
+          "बंदरगाह वाला इंजीनियरिंग सेंटर"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -520,7 +534,14 @@
           "garage a",
           "garage nord",
           "parking nord",
-          "le garage au nord"
+          "le garage au nord",
+          "garaje norte",
+          "parking norte",
+          "aparcamiento norte",
+          "nordgarage",
+          "parkhaus nord",
+          "नॉर्थ गैरेज",
+          "उत्तर वाला गैरेज"
         ],
         "zone_code": "PZA",
         "name_aliases_translatable": true,

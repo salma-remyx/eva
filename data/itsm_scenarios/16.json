@@ -418,7 +418,16 @@
           "ingénierie centre-ville",
           "bâtiment ingénierie centre-ville",
           "le centre d’ingénierie en ville",
-          "ingénierie downtown"
+          "ingénierie downtown",
+          "centro de ingeniería del centro",
+          "ingeniería del centro",
+          "edificio de ingeniería del centro",
+          "technikzentrum downtown",
+          "ingenieurzentrum downtown",
+          "downtown-technikzentrum",
+          "डाउनटाउन इंजीनियरिंग सेंटर",
+          "डाउनटाउन इंजीनियरिंग",
+          "डाउनटाउन वाला इंजीनियरिंग सेंटर"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -497,7 +506,17 @@
           "garage a du centre-ville",
           "parking a centre-ville",
           "garage a en ville",
-          "garage a downtown"
+          "garage a downtown",
+          "garaje a del centro",
+          "parking a del centro",
+          "aparcamiento a del centro",
+          "downtown garage a",
+          "parkhaus a downtown",
+          "garage a in der innenstadt",
+          "garage a in downtown",
+          "डाउनटाउन गैरेज ए",
+          "डाउनटाउन वाला गैरेज ए",
+          "डाउनटाउन गैरेज"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [

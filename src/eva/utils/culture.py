@@ -128,9 +128,9 @@ def get_user_language_directive(language: str, language_display_name: str) -> st
     return (
         f"Speak ONLY in {language_display_name}. Do not switch to English even if the agent does. "
         "All translatable values should be translated when talking to the agent. "
-        "For example, if you are telling the agent about a location like 'downtown' or a date, "
-        "this should be translated. Distinct proper names (e.g. 'IntelliJ') "
-        "should be kept in their original form."
+        "For example, if you are telling the agent about a location like 'downtown office' and you are speaking Spanish, say 'oficina del centro'. "
+        "If you are talking about a date that you read as MM/DD/YYYY, you should say it in the culturally appropriate format like DD/MM/YYYY. "
+        "Distinct proper names (e.g. 'IntelliJ', 'Google') should be kept in their original form."
     )
 
 

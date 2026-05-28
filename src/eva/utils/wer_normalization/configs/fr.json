@@ -1,0 +1,259 @@
+{
+  "code": "fr",
+  "zeros": [
+    "zero",
+    "zéro"
+  ],
+  "ones": {
+    "un": 1,
+    "deux": 2,
+    "trois": 3,
+    "quatre": 4,
+    "cinq": 5,
+    "six": 6,
+    "sept": 7,
+    "huit": 8,
+    "neuf": 9,
+    "dix": 10,
+    "onze": 11,
+    "douze": 12,
+    "treize": 13,
+    "quatorze": 14,
+    "quinze": 15,
+    "seize": 16
+  },
+  "ones_extra": {
+    "une": 1
+  },
+  "ones_suffixed": {
+    "premier": [
+      1,
+      "er"
+    ],
+    "première": [
+      1,
+      "ère"
+    ],
+    "second": [
+      2,
+      "nd"
+    ],
+    "seconde": [
+      2,
+      "nde"
+    ],
+    "deuxième": [
+      2,
+      "ème"
+    ],
+    "troisième": [
+      3,
+      "ème"
+    ],
+    "quatreième": [
+      4,
+      "ème"
+    ],
+    "cinqième": [
+      5,
+      "ème"
+    ],
+    "sixième": [
+      6,
+      "ème"
+    ],
+    "septième": [
+      7,
+      "ème"
+    ],
+    "huitième": [
+      8,
+      "ème"
+    ],
+    "neufième": [
+      9,
+      "ème"
+    ],
+    "dixième": [
+      10,
+      "ème"
+    ],
+    "onzeième": [
+      11,
+      "ème"
+    ],
+    "douzeième": [
+      12,
+      "ème"
+    ],
+    "treizeième": [
+      13,
+      "ème"
+    ],
+    "quatorzeième": [
+      14,
+      "ème"
+    ],
+    "quinzeième": [
+      15,
+      "ème"
+    ],
+    "seizeième": [
+      16,
+      "ème"
+    ],
+    "cinquième": [
+      5,
+      "ème"
+    ],
+    "neuvième": [
+      9,
+      "ème"
+    ],
+    "unième": [
+      1,
+      "ème"
+    ]
+  },
+  "tens": {
+    "vingt": 20,
+    "vingts": 20,
+    "trente": 30,
+    "quarante": 40,
+    "cinquante": 50,
+    "soixante": 60
+  },
+  "tens_suffixed": {
+    "vingtième": [
+      20,
+      "ème"
+    ],
+    "trentième": [
+      30,
+      "ème"
+    ],
+    "quarantième": [
+      40,
+      "ème"
+    ],
+    "cinquantième": [
+      50,
+      "ème"
+    ],
+    "soixantième": [
+      60,
+      "ème"
+    ]
+  },
+  "multipliers": {
+    "cent": 100,
+    "cents": 100,
+    "mille": 1000,
+    "million": 1000000,
+    "millions": 1000000,
+    "milliard": 1000000000,
+    "milliards": 1000000000,
+    "billion": 1000000000000,
+    "billions": 1000000000000,
+    "trillion": 1000000000000000000,
+    "trillions": 1000000000000000000
+  },
+  "multipliers_suffixed": {
+    "centième": [
+      100,
+      "ème"
+    ],
+    "millième": [
+      1000,
+      "ème"
+    ],
+    "millionième": [
+      1000000,
+      "ème"
+    ],
+    "milliardième": [
+      1000000000,
+      "ème"
+    ]
+  },
+  "preceding_prefixers": {
+    "moins": "-",
+    "plus": "+"
+  },
+  "following_prefixers": {
+    "euro": "€",
+    "euros": "€",
+    "dollar": "$",
+    "dollars": "$",
+    "livre": "£",
+    "livres": "£",
+    "centime": "¢",
+    "centimes": "¢"
+  },
+  "suffixers": {
+    "pour": {
+      "cent": "%"
+    },
+    "pourcent": "%"
+  },
+  "conjunction_word": "et",
+  "conjunction_ignore_prev": [
+    "multipliers",
+    "tens"
+  ],
+  "repeat_words": {},
+  "decimal_word": "virgule",
+  "vigesimal_trigger_words": [
+    "vingt",
+    "vingts"
+  ],
+  "vigesimal_multiplier": 20,
+  "vigesimal_residuals": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "high_ones_residuals": [
+    0,
+    60,
+    80
+  ],
+  "ones_continuation_on_prev_ones": false,
+  "half_pattern": "\\bet\\s+demi(?:e)?\\b",
+  "half_replacement": "virgule cinq",
+  "split_hyphenated_numbers": true,
+  "letter_class": "a-zéèêëàâùûôîïç",
+  "ordinal_suffix_pattern": "er|ère|ème|nd|nde|e",
+  "one_word": "un",
+  "one_plural_suffix": "",
+  "cents_connector": "et",
+  "ignore_patterns": "\\b(euh|heu|hum|hmm|mm|mhm|mmm|uh|um|ah|oh|bah|ben)\\b",
+  "replacers": {
+    "\\bm\\.\\b": "monsieur ",
+    "\\bmme\\b": "madame ",
+    "\\bmlle\\b": "mademoiselle ",
+    "\\bdr\\b": "docteur ",
+    "\\bprof\\b": "professeur ",
+    "\\bst\\b": "saint ",
+    "\\bste\\b": "sainte ",
+    "\\bqq\\b": "quelques ",
+    "\\btjrs\\b": "toujours ",
+    "\\bstp\\b": "s'il te plaît ",
+    "\\bsvp\\b": "s'il vous plaît ",
+    "\\bpq\\b": "pourquoi ",
+    "\\bbcp\\b": "beaucoup ",
+    "\\bpcq\\b": "parce que "
+  },
+  "strip_space_before_apostrophe": false,
+  "thousand_separators": [
+    "dot",
+    "space"
+  ],
+  "decimal_separator": "comma",
+  "spelling_map_path": null
+}
