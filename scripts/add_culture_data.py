@@ -1,29 +1,58 @@
-"""Add a language/culture to an already-migrated dataset.
+"""Add a language/culture to an EVA dataset.
 
-For each record in ``data/<domain>_dataset.jsonl``:
-  1. Pick a culturally appropriate (first, last) name pair matching the record's
-     gender, deterministically seeded by record id + language.
-  2. Set ``record.culture_overrides[<lang>] = {first_name, last_name}``.
-  3. Translate ``user_goal.en_starting_utterance`` -> ``user_goal.<lang>_starting_utterance``
-     via LLM. Placeholders ``<FIRST_NAME>`` / ``<LAST_NAME>`` in the source are
-     preserved in the translation.
+Performs all one-time setup needed to run the benchmark in a new language:
 
-Also writes (or merges into) ``configs/agents/language_addenda.yaml`` with a short
-"respond in <language>" instruction appended to the agent prompt at runtime.
+  1. **Dataset records** — for each record in ``data/<domain>_dataset.jsonl``:
+       - Picks a culturally appropriate (first, last) name pair matching the
+         record's gender, deterministically seeded by record id + language.
+       - Sets ``record.culture_overrides[<lang>] = {first_name, last_name}``.
+       - Translates ``user_goal.en_starting_utterance`` into
+         ``user_goal.<lang>_starting_utterance`` via LLM, preserving
+         ``<FIRST_NAME>`` / ``<LAST_NAME>`` placeholders.
+       - Translates any scenario alias names (facility names, zones, etc.)
+         that appear in ``data/<domain>_scenarios/``.
 
-Idempotent: a record is skipped if it already has ``culture_overrides[<lang>]``
-and ``user_goal.<lang>_starting_utterance``.
+  2. **Agent config** — writes a "respond in <language>" addendum to
+     ``configs/agents/language_addenda.yaml`` and the agent's opening greeting
+     to ``configs/agents/initial_messages.yaml``.
 
-Prerequisites:
-  - Phase A migration has been run (records have ``culture_overrides.en`` and
-    ``user_goal.en_starting_utterance``).
-  - ``user_config.gender`` is present and one of ``man`` / ``woman`` for every record.
+  3. **WER normalizer** — generates ``wer_normalization/configs/<lang>.json``
+     via LLM (number vocabulary, filler words, abbreviations, etc.) and
+     optionally a spelling-variation map. New configs are auto-discovered at
+     runtime without any further code changes.
+
+  4. **Environment / display** — patches ``.env.example`` with the new
+     ``EVA_<LANG>_USER_*`` stubs and registers the display name in
+     ``LANGUAGE_DISPLAY_NAMES``.
+
+All steps are idempotent: existing entries are skipped.
 
 Name source (one of):
   --names-file path/to/names.json  containing
       {"male_first": [...], "female_first": [...], "last": [...]}
   --auto-generate-names   ask the LLM for 40+40+40 culturally authentic names
-                          (mix of romanized and native-script).
+                          (ASCII/romanized + native-script halves).
+
+Key arguments:
+  --language            BCP-47 tag (required), e.g. ``fr``, ``es-MX``
+  --language-name       Human-readable English name (required), e.g. ``French``
+  --native-name         Optional native name shown in the agent addendum, e.g. ``français``
+  --domain              Restrict to one domain (repeatable). Default: all domains.
+  --auto-generate-names Ask the LLM for 80 culturally authentic names per gender
+                        (40 romanized + 40 native-script). Mutually exclusive with
+                        --names-file.
+  --names-file          Path to a pre-built names JSON:
+                            {"male_first": [...], "female_first": [...], "last": [...]}
+  --dump-names          Save the LLM-generated name arrays to a file for reuse.
+  --include-spelling-variation
+                        Also generate a ``{lang}_spelling.json`` that maps regional
+                        spelling variants to a canonical form (e.g. ``colour`` →
+                        ``color``). Useful for languages with significant dialect
+                        orthography divergence. English ships one by default; most
+                        other languages don't need it.
+  --llm-model           Override the LLM used for generation (default: gpt-5.2).
+  --record-id           Mutate only a single record — useful for spot-checking a diff.
+  --dry-run             Print what would be written without touching any files.
 
 Usage:
   python scripts/add_culture_data.py --domain airline --language fr \\
@@ -31,6 +60,10 @@ Usage:
 
   python scripts/add_culture_data.py --domain itsm --language es-MX \\
       --language-name "Mexican Spanish" --names-file es_mx_names.json
+
+  # With regional spelling normalization (e.g. pt-BR vs pt-PT):
+  python scripts/add_culture_data.py --domain airline --language pt \\
+      --language-name Portuguese --auto-generate-names --include-spelling-variation
 """
 
 from __future__ import annotations
@@ -55,8 +88,9 @@ from eva.utils.json_utils import extract_and_load_json
 from eva.utils.llm_client import LLMClient
 from eva.utils.logging import get_logger, setup_logging
 from eva.utils.router import init
-from eva.utils.wer_normalization.engine import GenericTextNormalizer, LanguageConfig
+from eva.utils.wer_normalization.engine import LanguageConfig
 from eva.utils.wer_normalization.locale_defaults import locale_defaults
+from eva.utils.wer_normalization.wer_utils import normalize_text
 from eva.utils.wer_normalization.whisper_normalizer.basic import (
     remove_symbols_and_diacritics,
     remove_symbols_keep_marks,
@@ -71,7 +105,6 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "data"
 ADDENDA_PATH = REPO_ROOT / "configs" / "agents" / "language_addenda.yaml"
 INITIAL_MESSAGES_PATH = REPO_ROOT / "configs" / "agents" / "initial_messages.yaml"
-WER_UTILS_PATH = REPO_ROOT / "src" / "eva" / "utils" / "wer_normalization" / "wer_utils.py"
 WER_CONFIGS_DIR = REPO_ROOT / "src" / "eva" / "utils" / "wer_normalization" / "configs"
 
 DEFAULT_MODEL = "gpt-5.2"
@@ -601,7 +634,6 @@ async def amain(args: argparse.Namespace) -> int:
     await update_wer_normalizer_config(
         args.language,
         args.language_name,
-        WER_UTILS_PATH,
         WER_CONFIGS_DIR,
         llm,
         args.dry_run,
@@ -935,19 +967,6 @@ async def _generate_wer_config(
     if validated.code != language:
         raise ValueError(f"Internal: code mismatch {validated.code!r} vs {language!r}")
 
-    test_cases = llm_data.get("test_cases") or []
-    pass_count, failures = _run_wer_round_trip_tests(validated, test_cases)
-    total = len(test_cases)
-    if total:
-        logger.info(f"Round-trip tests for {language}: {pass_count}/{total} passed")
-        for spelled, digits, spelled_norm, digits_norm in failures:
-            logger.warning(f"  FAIL: {spelled!r} -> {spelled_norm!r}  vs  {digits!r} -> {digits_norm!r}")
-        if pass_count < total:
-            logger.warning(
-                f"Config will still be written. Inspect {language}.json and fix vocabulary "
-                f"entries for failing cases above."
-            )
-
     out = configs_dir / f"{language}.json"
     if dry_run:
         logger.info(f"[dry-run] would write WER config to {out}")
@@ -957,42 +976,36 @@ async def _generate_wer_config(
     out.write_text(json.dumps(cfg, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     logger.info(f"Wrote WER normalizer config to {out}")
 
+    test_cases = llm_data.get("test_cases") or []
+    pass_count, failures = _run_wer_round_trip_tests(language, test_cases)
+    total = len(test_cases)
+    if total:
+        logger.info(f"Round-trip tests for {language}: {pass_count}/{total} passed")
+        for spelled, digits, spelled_norm, digits_norm in failures:
+            logger.warning(f"  FAIL: {spelled!r} -> {spelled_norm!r}  vs  {digits!r} -> {digits_norm!r}")
+        if pass_count < total:
+            logger.warning(f"Inspect {language}.json and fix vocabulary entries for failing cases above.")
 
-def _run_wer_round_trip_tests(config: LanguageConfig, test_cases: list) -> tuple[int, list[tuple[str, str, str, str]]]:
-    """Verify normalize(spelled) == normalize(digits) under the full pipeline.
 
-    Temporarily registers the new normalizer in ``wer_utils.NORMALIZERS`` and
-    calls ``normalize_text``, so the same post-processing (leading-zero strip,
-    bare-decimal collapse, etc.) that runs at WER time is applied here.
-    """
-    from eva.utils.wer_normalization import wer_utils  # local import: avoid load-time cycle
-
-    normalizer = GenericTextNormalizer(config)
-    prior = wer_utils.NORMALIZERS.get(config.code)
-    wer_utils.NORMALIZERS[config.code] = normalizer
-    try:
-        passed = 0
-        failures: list[tuple[str, str, str, str]] = []
-        for pair in test_cases:
-            if not (isinstance(pair, list) and len(pair) == 2):
-                continue
-            spelled, digits = str(pair[0]), str(pair[1])
-            try:
-                sn = wer_utils.normalize_text(spelled, config.code)
-                dn = wer_utils.normalize_text(digits, config.code)
-            except Exception as exc:
-                failures.append((spelled, digits, f"<error: {exc}>", ""))
-                continue
-            if sn.strip() == dn.strip():
-                passed += 1
-            else:
-                failures.append((spelled, digits, sn, dn))
-        return passed, failures
-    finally:
-        if prior is not None:
-            wer_utils.NORMALIZERS[config.code] = prior
+def _run_wer_round_trip_tests(language: str, test_cases: list) -> tuple[int, list[tuple[str, str, str, str]]]:
+    """Verify normalize(spelled) == normalize(digits) under the full pipeline."""
+    passed = 0
+    failures: list[tuple[str, str, str, str]] = []
+    for pair in test_cases:
+        if not (isinstance(pair, list) and len(pair) == 2):
+            continue
+        spelled, digits = str(pair[0]), str(pair[1])
+        try:
+            sn = normalize_text(spelled, language)
+            dn = normalize_text(digits, language)
+        except Exception as exc:
+            failures.append((spelled, digits, f"<error: {exc}>", ""))
+            continue
+        if sn.strip() == dn.strip():
+            passed += 1
         else:
-            wer_utils.NORMALIZERS.pop(config.code, None)
+            failures.append((spelled, digits, sn, dn))
+    return passed, failures
 
 
 async def _generate_spelling_map(
@@ -1054,18 +1067,16 @@ with fewer than ~10 meaningful pairs), return an empty object: {{}}"""
 async def update_wer_normalizer_config(
     language: str,
     language_name: str,
-    wer_utils_path: Path,
     configs_dir: Path,
     llm: LLMClient,
     dry_run: bool,
     include_spelling_variation: bool,
 ) -> None:
-    """Generate the WER normalizer JSON config and register the language in wer_utils.py.
+    """Generate the WER normalizer JSON config for *language*.
 
     Steps:
     1. Generate ``configs/{language}.json`` via LLM (validated against LanguageConfig schema).
     2. Optionally generate ``configs/{language}_spelling.json`` when --include-spelling-variation.
-    3. Insert the language code into ``_CONFIG_DRIVEN_LANGUAGES`` in wer_utils.py.
     """
     config_path = configs_dir / f"{language}.json"
     if config_path.exists():
@@ -1087,43 +1098,6 @@ async def update_wer_normalizer_config(
                 cfg_data["spelling_map_path"] = f"{language}_spelling.json"
                 config_path.write_text(json.dumps(cfg_data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
                 logger.info(f"Patched spelling_map_path in {config_path.name}")
-
-    _register_language_in_wer_utils(language, wer_utils_path, dry_run)
-
-
-def _register_language_in_wer_utils(language: str, wer_utils_path: Path, dry_run: bool) -> None:
-    """Insert ``language`` into ``_CONFIG_DRIVEN_LANGUAGES`` in wer_utils.py if absent."""
-    if not wer_utils_path.exists():
-        logger.warning(f"{wer_utils_path} not found — skipping _CONFIG_DRIVEN_LANGUAGES update")
-        return
-
-    source = wer_utils_path.read_text(encoding="utf-8")
-
-    # Idempotency: already present as a quoted string in the tuple
-    if re.search(rf'["\x27]{re.escape(language)}["\x27]', source):
-        logger.info(f"{language!r} already present in _CONFIG_DRIVEN_LANGUAGES")
-        return
-
-    # Match the tuple literal, e.g. ("en", "fr") or ("en",)
-    pattern = re.compile(r"(_CONFIG_DRIVEN_LANGUAGES\s*=\s*\()([^)]+)(\))")
-    m = pattern.search(source)
-    if not m:
-        logger.warning("Could not find _CONFIG_DRIVEN_LANGUAGES tuple in wer_utils.py — skipping")
-        return
-
-    existing = m.group(2).rstrip()
-    # Ensure trailing comma before appending
-    if not existing.rstrip().endswith(","):
-        existing = existing.rstrip() + ","
-    new_tuple_body = f'{existing} "{language}"'
-    new_source = source[: m.start(2)] + new_tuple_body + source[m.end(2) :]
-
-    if dry_run:
-        logger.info(f"[dry-run] would add {language!r} to _CONFIG_DRIVEN_LANGUAGES in wer_utils.py")
-        return
-
-    wer_utils_path.write_text(new_source, encoding="utf-8")
-    logger.info(f"Added {language!r} to _CONFIG_DRIVEN_LANGUAGES in {wer_utils_path}")
 
 
 def update_language_display_names(language: str, language_name: str, config_path: Path, dry_run: bool) -> None:

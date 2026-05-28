@@ -164,7 +164,7 @@ The editor covers all variables grouped by tab (API keys, voice pipeline, model 
 
 ### Adding a Language
 
-**1. Run `add_culture_data.py`** — generates culturally appropriate names and translated utterances for every record in every domain dataset, writes a "respond in X" addendum to `configs/agents/language_addenda.yaml`, translates the assistant's opening greeting into `configs/agents/initial_messages.yaml`, patches `.env.example` to expose the new language in the config editor, and registers the display name in `LANGUAGE_DISPLAY_NAMES`:
+**1. Run `add_culture_data.py`** — handles all one-time setup: generates culturally appropriate names and translated utterances for every dataset record, writes a "respond in X" addendum to `configs/agents/language_addenda.yaml`, translates the assistant's opening greeting into `configs/agents/initial_messages.yaml`, generates a WER normalizer config, and patches `.env.example` with the new agent ID stubs.
 
 ```bash
 PYTHONPATH=src python scripts/add_culture_data.py \
@@ -175,6 +175,18 @@ PYTHONPATH=src python scripts/add_culture_data.py \
 ```
 
 Re-running is safe — existing entries are skipped (idempotent). Use `--dry-run` to preview changes before writing.
+
+For languages with significant regional spelling divergence (e.g. Portuguese, where pt-BR and pt-PT differ orthographically), pass `--include-spelling-variation` to also generate a spelling normalization map used during WER evaluation:
+
+```bash
+PYTHONPATH=src python scripts/add_culture_data.py \
+    --language pt \
+    --language-name Portuguese \
+    --auto-generate-names \
+    --include-spelling-variation
+```
+
+See the script's `--help` for the full argument reference.
 
 **2. Add your ElevenLabs agent IDs** — the script adds the variable stubs to `.env.example`; fill in the values in your `.env` (or use the config editor's **User Config** tab):
 
@@ -191,13 +203,7 @@ EVA_LANGUAGE=it EVA_DOMAIN=airline python main.py
 
 #### WER normalization for new languages
 
-The `stt_wer` metric includes significant automation for normalizing spoken-form text before computing Word Error Rate. The automation covers number word-to-digit conversion, filler word removal, abbreviation expansion, and decimal/thousand separator handling. It is generated once per language via `add_culture_data.py` and stored in `src/eva/utils/wer_normalization/configs/`.
-
-Languages within the **Romance** (French, Spanish, Italian, Portuguese, Romanian, …), **Indic** (Hindi, Bengali, Punjabi, …), and **Sino-CJK** (Mandarin, Cantonese, Japanese, Korean) families receive particularly thorough coverage because the normalization engine has explicit support for their structural patterns (vigesimal forms, reversed units, positional kanji arithmetic, etc.). Languages outside these families should still benefit from the generic pipeline.
-
-`stt_wer` is a **diagnostic metric** — the benchmark runs and produces valid results even without any WER normalization config for a given language; the metric simply measures raw string distance in that case. You do not need to deeply curate the normalization to get useful benchmark output.
-
-That said, the auto-generated configs can be brittle. The LLM generation step is creative and may miss edge cases, produce inconsistent vocabulary, or generate rules that work for the test cases but fail on real transcripts. **Manual inspection of the generated config is recommended** before treating WER scores as authoritative for a new language. Not all languages can fit in the current normalization framework, and some may require custom rules and code changes.
+There are some automatically generated rules for WER calculation which will be generated with the `add_culture_data.py` script. To see the full implications of this auto generation, see [metrics/stt_wer.md](docs/metrics/stt_wer.md).
 
 ### Exploring Results
 

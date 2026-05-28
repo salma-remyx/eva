@@ -1,22 +1,35 @@
 """WER text normalization utilities."""
 
 import re
+from pathlib import Path
 
 from jiwer import Compose, RemovePunctuation, Strip, ToLowerCase
 
 from eva.utils.logging import get_logger
-from eva.utils.wer_normalization.cjk import JapaneseTextNormalizer
+from eva.utils.wer_normalization.cjk import ChineseTextNormalizer, JapaneseTextNormalizer, KoreanTextNormalizer
 from eva.utils.wer_normalization.engine import GenericTextNormalizer, LanguageConfig
 from eva.utils.wer_normalization.whisper_normalizer import BasicTextNormalizer
 
 logger = get_logger(__name__)
 
-# Alphabetic-language normalizers are driven by JSON configs under
-# wer_normalization/configs/. CJK-style languages keep dedicated classes.
-_CONFIG_DRIVEN_LANGUAGES = ("en", "fr", "es", "de", "hi")
-NORMALIZERS = {lang: GenericTextNormalizer(LanguageConfig.load(lang)) for lang in _CONFIG_DRIVEN_LANGUAGES}
-NORMALIZERS["ja"] = JapaneseTextNormalizer()
-DEFAULT_NORMALIZER = BasicTextNormalizer()
+_CONFIGS_DIR = Path(__file__).parent / "configs"
+_DEFAULT_NORMALIZER = BasicTextNormalizer()
+
+
+def _make_normalizer(language: str) -> BasicTextNormalizer | GenericTextNormalizer:
+    """Return a normalizer for *language*, instantiated on demand."""
+    base = language.split("-")[0].lower()
+    if base == "ja":
+        return JapaneseTextNormalizer()
+    if base == "ko":
+        return KoreanTextNormalizer()
+    if base == "zh":
+        return ChineseTextNormalizer()
+    if (_CONFIGS_DIR / f"{base}.json").exists():
+        return GenericTextNormalizer(LanguageConfig.load(base))
+    logger.warning(f"No normalizer found for language {language}, using default normalizer")
+    return _DEFAULT_NORMALIZER
+
 
 # Basic transformations applied after Whisper normalization
 BASIC_TRANSFORMATIONS = Compose(
@@ -122,7 +135,7 @@ def normalize_text(text: str, language: str = "en") -> str:
         8. Remove space between numbers and suffixes (e.g., "3 rd" -> "3rd")
     """
     try:
-        normalizer = NORMALIZERS.get(language, DEFAULT_NORMALIZER)
+        normalizer = _make_normalizer(language)
         text = convert_unicode_to_characters(text)
         text = normalize_apostrophes(text)
         text = collapse_single_letters(text)
