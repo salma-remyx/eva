@@ -86,49 +86,53 @@ EVA_COMPOSITES: list[EVACompositeDefinition] = [
 ]
 
 
-def scenario_means_for_metric(
-    all_metrics: dict[str, RecordMetrics],
-    metric_name: str,
-) -> np.ndarray:
-    """Collapse trials → one value per scenario for a single metric.
+def _scenario_means(per_record_values: dict[str, float | None]) -> np.ndarray:
+    """Group per-record values by base scenario id and return per-scenario means.
 
-    Per-scenario value = mean over trials of ``normalized_score`` (falling back
-    to ``score``). Scenarios where all trials are missing/errored are dropped.
-    For k=1 runs each record is its own scenario.
+    Scenarios where every record contributes None are dropped.
     """
     grouped: dict[str, list[float]] = {}
-    for record_id, record_metrics in all_metrics.items():
-        base_id, _ = parse_trial_record_id(record_id)
-        val = record_metrics.get_score(metric_name)
+    for record_id, val in per_record_values.items():
         if val is None:
             continue
+        base_id, _ = parse_trial_record_id(record_id)
         grouped.setdefault(base_id, []).append(float(val))
     if not grouped:
         return np.array([], dtype=float)
     return np.array([sum(vs) / len(vs) for vs in grouped.values()], dtype=float)
+
+
+def scenario_means_for_metric(
+    all_metrics: dict[str, RecordMetrics],
+    metric_name: str,
+) -> np.ndarray:
+    """Per-scenario mean over trials of one metric's score.
+
+    Uses ``normalized_score`` (falling back to ``score``). Scenarios where all
+    trials are missing/errored are dropped. For k=1 runs each record is its own
+    scenario.
+    """
+    return _scenario_means(
+        {record_id: record_metrics.get_score(metric_name) for record_id, record_metrics in all_metrics.items()}
+    )
 
 
 def _scenario_values_for_composite(
     all_metrics: dict[str, RecordMetrics],
     comp: EVACompositeDefinition,
 ) -> np.ndarray:
-    """Collapse trials → one value per scenario for a composite.
+    """Per-scenario mean over trials of a composite's per-trial value.
 
-    Per-scenario value = mean over trials of the per-trial composite value
-    stored in ``aggregate_metrics``. For pass/derived composites this is the
+    Reads from ``aggregate_metrics``. For pass/derived composites this is the
     scenario pass rate. Scenarios where all trials have ``None`` for this
     composite are dropped.
     """
-    grouped: dict[str, list[float]] = {}
-    for record_id, record_metrics in all_metrics.items():
-        base_id, _ = parse_trial_record_id(record_id)
-        val = record_metrics.aggregate_metrics.get(comp.name)
-        if val is None:
-            continue
-        grouped.setdefault(base_id, []).append(float(val))
-    if not grouped:
-        return np.array([], dtype=float)
-    return np.array([sum(vs) / len(vs) for vs in grouped.values()], dtype=float)
+    return _scenario_means(
+        {
+            record_id: record_metrics.aggregate_metrics.get(comp.name)
+            for record_id, record_metrics in all_metrics.items()
+        }
+    )
 
 
 def _check_threshold(value: float, operator: str, threshold: float) -> bool:

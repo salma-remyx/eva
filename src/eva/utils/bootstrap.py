@@ -48,10 +48,10 @@ def bootstrap_ci(
     seed: int,
     alpha: float = ALPHA,
 ) -> tuple[float, float]:
-    """95% percentile bootstrap CI on the mean (default alpha=0.05).
+    """95% bootstrap CI on the mean (default alpha=0.05).
 
     ``seed`` is keyword-only and required: callers must supply a deliberate
-    seed (typically from ``run_seed(run_dir.name)``) so behavior is defined.
+    seed (typically from ``run_seed(run_dir.name)``) so behavior is deterministic.
 
     Returns ``(lower, upper)``; ``(nan, nan)`` if the input is empty.
     """
