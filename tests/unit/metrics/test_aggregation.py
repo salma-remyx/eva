@@ -6,10 +6,10 @@ import pytest
 from eva.metrics.aggregation import (
     EVA_COMPOSITES,
     _check_threshold,
-    _scenario_means_for_metric,
     _scenario_values_for_composite,
     compute_record_aggregates,
     compute_run_level_aggregates,
+    scenario_means_for_metric,
 )
 from eva.metrics.runner import MetricsRunner
 from eva.models.results import MetricScore, PassAtKResult, RecordMetrics
@@ -20,6 +20,27 @@ from .conftest import make_record_metrics
 
 def _composite_by_name(name: str):
     return next(c for c in EVA_COMPOSITES if c.name == name)
+
+
+def _make_clean_records(n: int, passing: int) -> dict[str, RecordMetrics]:
+    """Return n records, ``passing`` of which pass EVA-A_pass."""
+    records: dict[str, RecordMetrics] = {}
+    for i in range(n):
+        is_pass = i < passing
+        r = make_record_metrics(
+            {
+                "task_completion": 1.0 if is_pass else 0.0,
+                "faithfulness": 0.5,
+                "agent_speech_fidelity": 0.95,
+                "conversation_progression": 0.5,
+                "turn_taking": 0.8,
+                "conciseness": 0.5,
+            },
+            record_id=f"1.1.{i}",
+        )
+        r.aggregate_metrics = compute_record_aggregates(r)
+        records[f"1.1.{i}"] = r
+    return records
 
 
 class TestCheckThreshold:
@@ -389,7 +410,7 @@ class TestScenarioGrouping:
     def test_per_metric_k1_record_equals_scenario(self):
         r1 = make_record_metrics({"task_completion": 1.0}, record_id="1.1.1")
         r2 = make_record_metrics({"task_completion": 0.5}, record_id="1.1.2")
-        vals = _scenario_means_for_metric({"1.1.1": r1, "1.1.2": r2}, "task_completion")
+        vals = scenario_means_for_metric({"1.1.1": r1, "1.1.2": r2}, "task_completion")
         np.testing.assert_allclose(sorted(vals.tolist()), [0.5, 1.0])
 
     def test_per_metric_k3_collapses_trials(self):
@@ -398,7 +419,7 @@ class TestScenarioGrouping:
         r1 = make_record_metrics({"task_completion": 0.5}, record_id="1.1.1/trial_1")
         r2 = make_record_metrics({"task_completion": 1.0}, record_id="1.1.1/trial_2")
         all_m = {"1.1.1/trial_0": r0, "1.1.1/trial_1": r1, "1.1.1/trial_2": r2}
-        vals = _scenario_means_for_metric(all_m, "task_completion")
+        vals = scenario_means_for_metric(all_m, "task_completion")
         np.testing.assert_allclose(vals.tolist(), [0.5])
 
     def test_per_metric_skips_errored_trials(self):
@@ -408,7 +429,7 @@ class TestScenarioGrouping:
             record_id="1.1.1/trial_1",
             metrics={"task_completion": MetricScore(name="task_completion", score=0.0, error="boom")},
         )
-        vals = _scenario_means_for_metric({"1.1.1/trial_0": r0, "1.1.1/trial_1": r1}, "task_completion")
+        vals = scenario_means_for_metric({"1.1.1/trial_0": r0, "1.1.1/trial_1": r1}, "task_completion")
         np.testing.assert_allclose(vals.tolist(), [1.0])  # mean over the 1 valid trial
 
     def test_per_metric_drops_all_none_scenarios(self):
@@ -423,7 +444,7 @@ class TestScenarioGrouping:
         )
         r2 = make_record_metrics({"task_completion": 0.5}, record_id="1.1.2/trial_0")
         all_m = {"1.1.1/trial_0": r0, "1.1.1/trial_1": r1, "1.1.2/trial_0": r2}
-        vals = _scenario_means_for_metric(all_m, "task_completion")
+        vals = scenario_means_for_metric(all_m, "task_completion")
         np.testing.assert_allclose(vals.tolist(), [0.5])
 
     def test_composite_k3_collapses_trials(self):
@@ -451,28 +472,8 @@ class TestScenarioGrouping:
 
 
 class TestRunLevelCompositeCIs:
-    def _make_clean_records(self, n: int, passing: int):
-        """Return n records, ``passing`` of which pass EVA-A_pass."""
-        records = {}
-        for i in range(n):
-            is_pass = i < passing
-            r = make_record_metrics(
-                {
-                    "task_completion": 1.0 if is_pass else 0.0,
-                    "faithfulness": 0.5,
-                    "agent_speech_fidelity": 0.95,
-                    "conversation_progression": 0.5,
-                    "turn_taking": 0.8,
-                    "conciseness": 0.5,
-                },
-                record_id=f"1.1.{i}",
-            )
-            r.aggregate_metrics = compute_record_aggregates(r)
-            records[f"1.1.{i}"] = r
-        return records
-
     def test_emits_ci_fields_for_all_composites(self):
-        records = self._make_clean_records(n=20, passing=10)
+        records = _make_clean_records(n=20, passing=10)
         result = compute_run_level_aggregates(records, seed=42)
         for comp_name in [
             "EVA-A_pass",
@@ -487,18 +488,18 @@ class TestRunLevelCompositeCIs:
             assert "mean_ci_n_scenarios" in result[comp_name], f"missing mean_ci_n_scenarios on {comp_name}"
 
     def test_ci_brackets_point_estimate(self):
-        records = self._make_clean_records(n=50, passing=25)
+        records = _make_clean_records(n=50, passing=25)
         result = compute_run_level_aggregates(records, seed=42)
         entry = result["EVA-A_pass"]
         assert entry["mean_ci_lower"] <= entry["mean"] <= entry["mean_ci_upper"]
 
     def test_n_scenarios_equals_count_for_k1(self):
-        records = self._make_clean_records(n=20, passing=10)
+        records = _make_clean_records(n=20, passing=10)
         result = compute_run_level_aggregates(records, seed=42)
         assert result["EVA-A_pass"]["mean_ci_n_scenarios"] == result["EVA-A_pass"]["count"]
 
     def test_within_run_determinism(self):
-        records = self._make_clean_records(n=20, passing=10)
+        records = _make_clean_records(n=20, passing=10)
         a = compute_run_level_aggregates(records, seed=42)
         b = compute_run_level_aggregates(records, seed=42)
         for comp_name in ["EVA-A_pass", "EVA-A_mean"]:
@@ -506,7 +507,7 @@ class TestRunLevelCompositeCIs:
             assert a[comp_name]["mean_ci_upper"] == b[comp_name]["mean_ci_upper"]
 
     def test_different_seeds_differ(self):
-        records = self._make_clean_records(n=20, passing=10)
+        records = _make_clean_records(n=20, passing=10)
         a = compute_run_level_aggregates(records, seed=42)
         b = compute_run_level_aggregates(records, seed=13)
         # At least one composite's CI bounds must differ across seeds.
@@ -677,34 +678,15 @@ class TestPerMetricCIs:
 
 
 class TestRunSeedIntegration:
-    def _make_clean_records(self, n: int, passing: int):
-        records = {}
-        for i in range(n):
-            is_pass = i < passing
-            r = make_record_metrics(
-                {
-                    "task_completion": 1.0 if is_pass else 0.0,
-                    "faithfulness": 0.5,
-                    "agent_speech_fidelity": 0.95,
-                    "conversation_progression": 0.5,
-                    "turn_taking": 0.8,
-                    "conciseness": 0.5,
-                },
-                record_id=f"1.1.{i}",
-            )
-            r.aggregate_metrics = compute_record_aggregates(r)
-            records[f"1.1.{i}"] = r
-        return records
-
     def test_within_run_byte_identical(self):
-        records = self._make_clean_records(n=20, passing=10)
+        records = _make_clean_records(n=20, passing=10)
         seed = run_seed("2026-04-16_18-55-44.848147_gpt-realtime-1.5")
         a = compute_run_level_aggregates(records, seed=seed)
         b = compute_run_level_aggregates(records, seed=seed)
         assert a == b
 
     def test_across_run_independence(self):
-        records = self._make_clean_records(n=20, passing=10)
+        records = _make_clean_records(n=20, passing=10)
         # Seed strings chosen empirically: the bimodal n=20 fixture gives a low-variance
         # bootstrap distribution where many seed pairs land on identical percentile bounds.
         # The "x"/"y" pair produces differing CI bounds for both EVA-A_pass and EVA-A_mean.

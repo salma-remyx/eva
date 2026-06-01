@@ -11,9 +11,9 @@ import yaml
 
 from eva.metrics.accuracy.agent_speech_fidelity_s2s import AgentSpeechFidelityS2SMetric
 from eva.metrics.aggregation import (
-    _scenario_means_for_metric,
     compute_record_aggregates,
     compute_run_level_aggregates,
+    scenario_means_for_metric,
 )
 from eva.metrics.base import BaseMetric, MetricContext
 from eva.metrics.legacy_aliases import rename_metric_keys
@@ -24,7 +24,7 @@ from eva.metrics.versioning import _CURRENT_METRIC_VERSION
 from eva.models.config import PipelineType, get_pipeline_type
 from eva.models.record import EvaluationRecord
 from eva.models.results import ConversationResult, MetricScore, PassAtKResult, RecordMetrics
-from eva.utils.bootstrap import BASE_SEED, assign_bootstrap_cis, bootstrap_ci, run_seed
+from eva.utils.bootstrap import BASE_SEED, assign_bootstrap_cis, assign_mean_ci, run_seed
 from eva.utils.hash_utils import get_dict_hash
 from eva.utils.logging import get_logger
 from eva.utils.pass_at_k import (
@@ -707,16 +707,7 @@ class MetricsRunner:
                     entry["per_turn_coverage"] = coverage
 
                 # Bootstrap CI on the per-scenario mean.
-                scenario_values = _scenario_means_for_metric(all_metrics, name)
-                if len(scenario_values) == 0:
-                    entry["mean_ci_lower"] = None
-                    entry["mean_ci_upper"] = None
-                    entry["mean_ci_n_scenarios"] = 0
-                else:
-                    lower, upper = bootstrap_ci(scenario_values, seed=seed)
-                    entry["mean_ci_lower"] = round(lower, 4)
-                    entry["mean_ci_upper"] = round(upper, 4)
-                    entry["mean_ci_n_scenarios"] = len(scenario_values)
+                assign_mean_ci(entry, scenario_means_for_metric(all_metrics, name), seed=seed)
 
                 entry["higher_is_better"] = _metric_higher_is_better(name)
                 metric_aggregates[name] = entry

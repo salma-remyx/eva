@@ -72,3 +72,26 @@ def assign_bootstrap_cis(
         lower, upper = bootstrap_ci(sample, seed=seed)
         target[f"{name}_ci_lower"] = round(lower, decimals)
         target[f"{name}_ci_upper"] = round(upper, decimals)
+
+
+def assign_mean_ci(
+    target: dict[str, Any],
+    scenario_values: np.ndarray,
+    *,
+    seed: int,
+    decimals: int = 4,
+) -> None:
+    """Write ``mean_ci_lower`` / ``mean_ci_upper`` / ``mean_ci_n_scenarios`` to ``target``.
+
+    Empty ``scenario_values`` yields ``None`` bounds and ``n_scenarios=0``; otherwise
+    writes a percentile bootstrap CI on the mean.
+    """
+    if len(scenario_values) == 0:
+        target["mean_ci_lower"] = None
+        target["mean_ci_upper"] = None
+        target["mean_ci_n_scenarios"] = 0
+        return
+    lower, upper = bootstrap_ci(scenario_values, seed=seed)
+    target["mean_ci_lower"] = round(lower, decimals)
+    target["mean_ci_upper"] = round(upper, decimals)
+    target["mean_ci_n_scenarios"] = len(scenario_values)

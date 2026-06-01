@@ -12,7 +12,7 @@ from typing import Literal
 import numpy as np
 
 from eva.models.results import RecordMetrics
-from eva.utils.bootstrap import BASE_SEED, assign_bootstrap_cis, bootstrap_ci
+from eva.utils.bootstrap import BASE_SEED, assign_bootstrap_cis, assign_mean_ci
 from eva.utils.pass_at_k import (
     compute_pass_at_k,
     compute_pass_power_k,
@@ -86,7 +86,7 @@ EVA_COMPOSITES: list[EVACompositeDefinition] = [
 ]
 
 
-def _scenario_means_for_metric(
+def scenario_means_for_metric(
     all_metrics: dict[str, RecordMetrics],
     metric_name: str,
 ) -> np.ndarray:
@@ -258,16 +258,7 @@ def compute_run_level_aggregates(
                 entry["success_rate"] = round(sum(1 for v in values if v >= 0.5) / len(values), 4)
 
         # Bootstrap CI on the per-scenario mean.
-        scenario_values = _scenario_values_for_composite(all_metrics, comp)
-        if len(scenario_values) == 0:
-            entry["mean_ci_lower"] = None
-            entry["mean_ci_upper"] = None
-            entry["mean_ci_n_scenarios"] = 0
-        else:
-            lower, upper = bootstrap_ci(scenario_values, seed=seed)
-            entry["mean_ci_lower"] = round(lower, 4)
-            entry["mean_ci_upper"] = round(upper, 4)
-            entry["mean_ci_n_scenarios"] = len(scenario_values)
+        assign_mean_ci(entry, _scenario_values_for_composite(all_metrics, comp), seed=seed)
 
         result[comp.name] = entry
 
