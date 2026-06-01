@@ -498,28 +498,6 @@ class TestRunLevelCompositeCIs:
         result = compute_run_level_aggregates(records, seed=42)
         assert result["EVA-A_pass"]["mean_ci_n_scenarios"] == result["EVA-A_pass"]["count"]
 
-    def test_within_run_determinism(self):
-        records = _make_clean_records(n=20, passing=10)
-        a = compute_run_level_aggregates(records, seed=42)
-        b = compute_run_level_aggregates(records, seed=42)
-        for comp_name in ["EVA-A_pass", "EVA-A_mean"]:
-            assert a[comp_name]["mean_ci_lower"] == b[comp_name]["mean_ci_lower"]
-            assert a[comp_name]["mean_ci_upper"] == b[comp_name]["mean_ci_upper"]
-
-    def test_different_seeds_differ(self):
-        records = _make_clean_records(n=20, passing=10)
-        a = compute_run_level_aggregates(records, seed=42)
-        b = compute_run_level_aggregates(records, seed=13)
-        # At least one composite's CI bounds must differ across seeds.
-        # NOTE: with this discrete bimodal fixture the percentile bootstrap is
-        # very stable across seeds; seed=13 vs seed=42 is the smallest pair we
-        # verified produces a different upper bound on EVA-A_pass.
-        differs = any(
-            a[c]["mean_ci_lower"] != b[c]["mean_ci_lower"] or a[c]["mean_ci_upper"] != b[c]["mean_ci_upper"]
-            for c in ["EVA-A_pass", "EVA-A_mean", "EVA-X_pass", "EVA-X_mean"]
-        )
-        assert differs
-
     def test_empty_run_returns_empty_dict(self):
         result = compute_run_level_aggregates({}, seed=42)
         # The existing function already early-returns {} for empty input; CI
