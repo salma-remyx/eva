@@ -12,7 +12,7 @@ from typing import Literal
 import numpy as np
 
 from eva.models.results import RecordMetrics
-from eva.utils.bootstrap import BASE_SEED, assign_bootstrap_cis, assign_mean_ci
+from eva.utils.bootstrap import BASE_SEED, bootstrap_ci_fields, mean_ci_fields
 from eva.utils.pass_at_k import (
     compute_pass_at_k,
     compute_pass_power_k,
@@ -258,7 +258,7 @@ def compute_run_level_aggregates(
                 entry["success_rate"] = round(sum(1 for v in values if v >= 0.5) / len(values), 4)
 
         # Bootstrap CI on the per-scenario mean.
-        assign_mean_ci(entry, _scenario_values_for_composite(all_metrics, comp), seed=seed)
+        entry.update(mean_ci_fields(_scenario_values_for_composite(all_metrics, comp), seed=seed))
 
         result[comp.name] = entry
 
@@ -327,14 +327,15 @@ def _compute_aggregate_pass_k(
                 "k": num_draws,
                 "count": count,
             }
-            assign_bootstrap_cis(
-                entry,
-                {
-                    "pass_at_1": pass_at_1_values,
-                    "pass_at_k": pass_at_k_values,
-                    "pass_power_k_observed": pass_power_k_observed_values,
-                },
-                seed=seed,
+            entry.update(
+                bootstrap_ci_fields(
+                    {
+                        "pass_at_1": pass_at_1_values,
+                        "pass_at_k": pass_at_k_values,
+                        "pass_power_k_observed": pass_power_k_observed_values,
+                    },
+                    seed=seed,
+                )
             )
             result[comp.name] = entry
 

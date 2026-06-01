@@ -24,7 +24,7 @@ from eva.metrics.versioning import _CURRENT_METRIC_VERSION
 from eva.models.config import PipelineType, get_pipeline_type
 from eva.models.record import EvaluationRecord
 from eva.models.results import ConversationResult, MetricScore, PassAtKResult, RecordMetrics
-from eva.utils.bootstrap import BASE_SEED, assign_bootstrap_cis, assign_mean_ci, run_seed
+from eva.utils.bootstrap import BASE_SEED, bootstrap_ci_fields, mean_ci_fields, run_seed
 from eva.utils.hash_utils import get_dict_hash
 from eva.utils.logging import get_logger
 from eva.utils.pass_at_k import (
@@ -707,7 +707,7 @@ class MetricsRunner:
                     entry["per_turn_coverage"] = coverage
 
                 # Bootstrap CI on the per-scenario mean.
-                assign_mean_ci(entry, scenario_means_for_metric(all_metrics, name), seed=seed)
+                entry.update(mean_ci_fields(scenario_means_for_metric(all_metrics, name), seed=seed))
 
                 entry["higher_is_better"] = _metric_higher_is_better(name)
                 metric_aggregates[name] = entry
@@ -739,14 +739,15 @@ class MetricsRunner:
                         "k": num_draws,
                         "count": count,
                     }
-                    assign_bootstrap_cis(
-                        pass_k_block,
-                        {
-                            "pass_at_1": pass_at_1_values,
-                            "pass_at_k": pass_at_k_values,
-                            "pass_power_k_observed": pass_power_k_obs_values,
-                        },
-                        seed=seed,
+                    pass_k_block.update(
+                        bootstrap_ci_fields(
+                            {
+                                "pass_at_1": pass_at_1_values,
+                                "pass_at_k": pass_at_k_values,
+                                "pass_power_k_observed": pass_power_k_obs_values,
+                            },
+                            seed=seed,
+                        )
                     )
                     metric_aggregates[name]["pass_k"] = pass_k_block
 
