@@ -1,6 +1,7 @@
 """Tests for WER text normalization utilities."""
 
 import pytest
+from pipecat.frames.frames import Language
 
 from eva.utils.wer_normalization.wer_utils import normalize_text
 
@@ -24,38 +25,38 @@ class TestWordDigitEquivalence:
     @pytest.mark.parametrize(
         "digits,words,language",
         [
-            ("3", "three", "en"),
-            ("12", "twelve", "en"),
-            ("21", "twenty one", "en"),
-            ("21", "twenty-one", "en"),
-            ("22", "twenty two", "en"),
-            ("42", "forty-two", "en"),
-            ("100", "one hundred", "en"),
-            ("1000", "one thousand", "en"),
-            ("2024", "two thousand twenty four", "en"),
-            ("2024", "twenty twenty four", "en"),
-            ("EMP343467", "E M P three four three four six seven", "en"),
-            ("1994-02-11", "nineteen ninety four, zero two, eleven", "en"),
+            ("3", "three", Language.EN),
+            ("12", "twelve", Language.EN),
+            ("21", "twenty one", Language.EN),
+            ("21", "twenty-one", Language.EN),
+            ("22", "twenty two", Language.EN),
+            ("42", "forty-two", Language.EN),
+            ("100", "one hundred", Language.EN),
+            ("1000", "one thousand", Language.EN),
+            ("2024", "two thousand twenty four", Language.EN),
+            ("2024", "twenty twenty four", Language.EN),
+            ("EMP343467", "E M P three four three four six seven", Language.EN),
+            ("1994-02-11", "nineteen ninety four, zero two, eleven", Language.EN),
             # Hyphen-separated digit IDs / phone numbers (very common when STT writes
             # "919-696-3901" while the user simulator says individual digits).
-            ("919-696-3901", "nine one nine six nine six three nine zero one", "en"),
-            ("899-787", "eight nine nine seven eight seven", "en"),
-            ("OVH-89B", "O V H eight nine B", "en"),
+            ("919-696-3901", "nine one nine six nine six three nine zero one", Language.EN),
+            ("899-787", "eight nine nine seven eight seven", Language.EN),
+            ("OVH-89B", "O V H eight nine B", Language.EN),
             # User simulator pronounces literal "dash" when spelling IDs;
             # STT writes a hyphen.
-            ("WZH-89B", "W Z H dash eight nine B", "en"),
-            ("3", "trois", "fr-FR"),
-            ("12", "douze", "fr-FR"),
-            ("21", "vingt et un", "fr-FR"),
-            ("30", "trente", "fr-FR"),
-            ("EMP343467", "E M P trois quatre trois quatre six sept", "fr-FR"),
-            ("100", "cent", "fr-FR"),
-            ("Au bâtiment Headquarters, à l'étage FL2.", "au bâtiment headquarters à l'étage fl deux", "fr-FR"),
+            ("WZH-89B", "W Z H dash eight nine B", Language.EN),
+            ("3", "trois", Language.FR_FR),
+            ("12", "douze", Language.FR_FR),
+            ("21", "vingt et un", Language.FR_FR),
+            ("30", "trente", Language.FR_FR),
+            ("EMP343467", "E M P trois quatre trois quatre six sept", Language.FR_FR),
+            ("100", "cent", Language.FR_FR),
+            ("Au bâtiment Headquarters, à l'étage FL2.", "au bâtiment headquarters à l'étage fl deux", Language.FR_FR),
         ],
     )
-    def test_digits_match_spelled_out(self, digits: str, words: str, language: str):
-        digits_normalized = normalize_text(digits, language=language)
-        words_normalized = normalize_text(words, language=language)
+    def test_digits_match_spelled_out(self, digits: str, words: str, language: Language):
+        digits_normalized = normalize_text(digits, language=language.value)
+        words_normalized = normalize_text(words, language=language.value)
         assert digits_normalized == words_normalized
 
     def test_spelled_dash_drops_in_id_readout(self):
@@ -92,7 +93,7 @@ class TestOrdinalNotConvertedToSaint:
         ],
     )
     def test_ordinals_preserved(self, text: str, expected: str):
-        assert normalize_text(text, "fr-FR") == expected
+        assert normalize_text(text, Language.FR_FR.value) == expected
 
     @pytest.mark.parametrize(
         "digits,words",

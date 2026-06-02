@@ -17,19 +17,20 @@ _DEFAULT_NORMALIZER = BasicTextNormalizer()
 
 
 def _make_normalizer(language: str) -> BasicTextNormalizer | GenericTextNormalizer:
-    """Return a normalizer for *language*, instantiated on demand."""
-    base = language.split("-")[0].lower()
+    """Return a normalizer for *language*, instantiated on demand.
+
+    ``language`` must be an exact pipecat Language value (e.g. ``Language.FR_FR.value``).
+    Config files are named after those values verbatim (``fr-FR.json``, ``en.json``).
+    """
+    base = language.split("-")[0]
     if base == "ja":
         return JapaneseTextNormalizer()
     if base == "ko":
         return KoreanTextNormalizer()
     if base == "zh":
         return ChineseTextNormalizer()
-    # Try full tag first (e.g. fr-FR.json), then base tag (e.g. fr.json).
-    full_tag = language.lower()
-    config_name = full_tag if (_CONFIGS_DIR / f"{full_tag}.json").exists() else base
-    if (_CONFIGS_DIR / f"{config_name}.json").exists():
-        return GenericTextNormalizer(LanguageConfig.load(config_name))
+    if (_CONFIGS_DIR / f"{language}.json").exists():
+        return GenericTextNormalizer(LanguageConfig.load(language))
     logger.warning(f"No normalizer found for language {language}, using default normalizer")
     return _DEFAULT_NORMALIZER
 
