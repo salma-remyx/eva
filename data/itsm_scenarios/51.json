@@ -557,8 +557,13 @@
         "building_code": "BLD3",
         "name": "Downtown Engineering Center",
         "name_aliases": [
+          "bâtiment ingénierie centre-ville",
+          "centre d’ingénierie du centre-ville",
+          "centre ingénierie centre-ville",
+          "centre technique du centre-ville",
           "downtown",
-          "engineering center"
+          "engineering center",
+          "site ingénierie centre-ville"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -640,8 +645,10 @@
       "PZA": {
         "name": "North Garage",
         "name_aliases": [
+          "garage nord",
           "main garage",
-          "north parking"
+          "north parking",
+          "parking nord"
         ],
         "zone_code": "PZA",
         "name_aliases_translatable": true,

@@ -417,7 +417,11 @@
       "BLD3": {
         "name": "Downtown",
         "name_aliases": [
-          "downtown building"
+          "bâtiment du centre-ville",
+          "centre-ville",
+          "downtown building",
+          "site centre-ville",
+          "site du centre-ville"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -483,7 +487,10 @@
       "PZC": {
         "name": "Central Garage",
         "name_aliases": [
-          "central parking"
+          "central parking",
+          "garage central",
+          "parc central",
+          "parking central"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [

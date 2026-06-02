@@ -412,7 +412,9 @@
         "building_code": "BLD7",
         "name": "East Campus",
         "name_aliases": [
-          "east campus"
+          "campus est",
+          "east campus",
+          "site est"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -505,7 +507,9 @@
       "PZA": {
         "name": "East Garage",
         "name_aliases": [
-          "east garage"
+          "east garage",
+          "garage est",
+          "parking est"
         ],
         "zone_code": "PZA",
         "name_aliases_translatable": true,

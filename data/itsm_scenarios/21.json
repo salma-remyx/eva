@@ -418,8 +418,14 @@
       "BLD2": {
         "name": "Headquarters East",
         "name_aliases": [
+          "aile est du siège",
+          "annexe est",
+          "annexe est du siège",
+          "bâtiment est du siège",
+          "east building",
           "hq east",
-          "east building"
+          "site est du siège",
+          "siège est"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -504,7 +510,14 @@
       "PZA": {
         "name": "Executive Garage",
         "name_aliases": [
-          "executive garage"
+          "executive garage",
+          "garage de la direction",
+          "garage direction",
+          "garage exécutif",
+          "parking de la direction",
+          "parking des dirigeants",
+          "parking direction",
+          "parking exécutif"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -514,7 +527,14 @@
       "PZB": {
         "name": "North Surface Lot",
         "name_aliases": [
-          "north lot"
+          "aire de stationnement nord",
+          "lot nord",
+          "north lot",
+          "parc nord",
+          "parking extérieur nord",
+          "parking nord",
+          "parking nord en surface",
+          "parking nord extérieur"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [

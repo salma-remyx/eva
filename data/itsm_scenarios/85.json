@@ -287,8 +287,13 @@
         "building_code": "BLD3",
         "name": "Headquarters",
         "name_aliases": [
+          "bureaux du siège",
+          "headquarters",
           "hq",
-          "headquarters"
+          "le siège",
+          "quartier général",
+          "siège",
+          "siège social"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -403,7 +408,14 @@
       "PZE": {
         "name": "Executive Garage",
         "name_aliases": [
-          "executive garage"
+          "executive garage",
+          "garage de la direction",
+          "garage direction",
+          "garage exécutif",
+          "parking de la direction",
+          "parking des dirigeants",
+          "parking direction",
+          "parking exécutif"
         ],
         "zone_code": "PZE",
         "name_aliases_translatable": true,

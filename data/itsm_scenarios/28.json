@@ -439,8 +439,15 @@
         "building_code": "BLD3",
         "name": "Harbor Engineering Center",
         "name_aliases": [
+          "centre d’ingénierie du port",
+          "centre d’ingénierie harbor",
+          "centre ingénierie harbor",
+          "centre technique du port",
+          "centre technique harbor",
           "engineering hq",
-          "harbor"
+          "harbor",
+          "site du port",
+          "site ingénierie harbor"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -513,7 +520,9 @@
       "PZA": {
         "name": "North Garage",
         "name_aliases": [
-          "garage a"
+          "garage a",
+          "garage nord",
+          "parking nord"
         ],
         "zone_code": "PZA",
         "name_aliases_translatable": true,

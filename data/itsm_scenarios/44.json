@@ -652,8 +652,12 @@
       "BLD3": {
         "name": "Downtown",
         "name_aliases": [
+          "bâtiment du centre-ville",
+          "centre-ville",
           "downtown building",
-          "sales hq"
+          "sales hq",
+          "site centre-ville",
+          "site du centre-ville"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -743,6 +747,8 @@
       "PZS": {
         "name": "South Garage",
         "name_aliases": [
+          "garage sud",
+          "parking sud",
           "south parking"
         ],
         "name_aliases_translatable": true,

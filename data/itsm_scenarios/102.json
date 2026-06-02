@@ -412,8 +412,13 @@
         "building_code": "BLD5",
         "name": "Headquarters",
         "name_aliases": [
+          "bureaux du siège",
+          "headquarters",
           "hq",
-          "headquarters"
+          "le siège",
+          "quartier général",
+          "siège",
+          "siège social"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -486,7 +491,9 @@
       "PZA": {
         "name": "North Garage",
         "name_aliases": [
-          "north garage"
+          "garage nord",
+          "north garage",
+          "parking nord"
         ],
         "zone_code": "PZA",
         "name_aliases_translatable": true,

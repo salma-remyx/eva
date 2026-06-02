@@ -54,27 +54,27 @@ class TestFrenchNumbers:
         ],
     )
     def test_digits_match_spelled_out(self, digits: str, words: str):
-        assert normalize_text(digits, "fr") == normalize_text(words, "fr")
+        assert normalize_text(digits, "fr-FR") == normalize_text(words, "fr-FR")
 
     def test_feminine_one(self):
         # "une" (feminine) must equal "un" / "1"
-        assert normalize_text("une", "fr") == normalize_text("1", "fr")
+        assert normalize_text("une", "fr-FR") == normalize_text("1", "fr-FR")
 
     def test_decimal_virgule(self):
         # "virgule" is the French decimal word
-        assert normalize_text("3,5", "fr") == normalize_text("trois virgule cinq", "fr")
+        assert normalize_text("3,5", "fr-FR") == normalize_text("trois virgule cinq", "fr-FR")
 
     def test_ordinal_premier(self):
         # "premier" has no diacritics so it survives the diacritic-stripping step
         # and is converted by the number normalizer to "1er".
-        assert normalize_text("premier", "fr") == normalize_text("1er", "fr")
+        assert normalize_text("premier", "fr-FR") == normalize_text("1er", "fr-FR")
 
     def test_ordinal_diacritics_recognized(self):
         # Ordinals containing diacritics (deuxième, centième …) are looked up
         # against the vocabulary in their accent-stripped form, so they
         # successfully resolve to the digit+suffix output (e.g. "2ème").
-        assert normalize_text("deuxième", "fr") == normalize_text("2ème", "fr")
-        assert normalize_text("2ème", "fr") == normalize_text("2eme", "fr")
+        assert normalize_text("deuxième", "fr-FR") == normalize_text("2ème", "fr-FR")
+        assert normalize_text("2ème", "fr-FR") == normalize_text("2eme", "fr-FR")
 
 
 # ===========================================================================
@@ -84,31 +84,31 @@ class TestFrenchNumbers:
 
 class TestFrenchTextNormalization:
     def test_filler_words_removed(self):
-        result = normalize_text("euh je voudrais un café", "fr")
+        result = normalize_text("euh je voudrais un café", "fr-FR")
         assert "euh" not in result
         # diacritics are stripped by the normalizer, so é → e
         assert "cafe" in result
 
     def test_abbreviations_expanded(self):
         # "mme" → "madame"
-        assert "madame" in normalize_text("mme dupont", "fr")
+        assert "madame" in normalize_text("mme dupont", "fr-FR")
 
     def test_thousand_separator_dot(self):
         # French uses period as thousand separator: 1.000 → 1000
-        assert normalize_text("1.000", "fr") == normalize_text("1000", "fr")
+        assert normalize_text("1.000", "fr-FR") == normalize_text("1000", "fr-FR")
 
     def test_thousand_separator_space(self):
         # French also uses space: 1 000 → 1000
-        assert normalize_text("1 000 euros", "fr") == normalize_text("1000 euros", "fr")
+        assert normalize_text("1 000 euros", "fr-FR") == normalize_text("1000 euros", "fr-FR")
 
     def test_decimal_comma_to_dot(self):
         # 1,5 → 1.5 before number processing
-        assert normalize_text("1,5", "fr") == normalize_text("1.5", "fr")
+        assert normalize_text("1,5", "fr-FR") == normalize_text("1.5", "fr-FR")
 
     def test_markup_removed(self):
         # Expressive tags like [laughs], [music] are STT artifacts — they are
         # stripped regardless of language and would never be translated.
-        result = normalize_text("bonjour [laughs] comment ca va", "fr")
+        result = normalize_text("bonjour [laughs] comment ca va", "fr-FR")
         assert "[laughs]" not in result
         assert "bonjour" in result
 
@@ -116,7 +116,7 @@ class TestFrenchTextNormalization:
         # The normalizer should keep diacritic letters (they go through
         # remove_symbols_and_diacritics which strips diacritics, so the
         # output should be ASCII-safe but still recognisable).
-        result = normalize_text("Au bâtiment Headquarters, à l'étage FL2.", "fr")
+        result = normalize_text("Au bâtiment Headquarters, à l'étage FL2.", "fr-FR")
         assert "batiment" in result or "bâtiment" in result  # diacritics may or may not be stripped
         assert "headquarters" in result
 

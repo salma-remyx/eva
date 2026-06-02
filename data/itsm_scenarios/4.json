@@ -786,7 +786,13 @@
         "building_code": "BLD1",
         "name": "Operations Center",
         "name_aliases": [
-          "ops center"
+          "bâtiment des opérations",
+          "centre des opérations",
+          "centre opérationnel",
+          "les opérations",
+          "ops",
+          "ops center",
+          "site des opérations"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -797,8 +803,14 @@
         "building_code": "BLD2",
         "name": "Downtown Office",
         "name_aliases": [
+          "bureau du centre-ville",
+          "bureaux du centre-ville",
+          "bâtiment finance",
+          "bâtiment finances",
+          "centre-ville",
           "downtown",
-          "finance building"
+          "finance building",
+          "site du centre-ville"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -906,7 +918,11 @@
       "PZA": {
         "name": "Garage A",
         "name_aliases": [
-          "main garage"
+          "garage a",
+          "garage principal",
+          "main garage",
+          "parking a",
+          "parking principal"
         ],
         "zone_code": "PZA",
         "name_aliases_translatable": true,
@@ -917,6 +933,10 @@
       "PZB": {
         "name": "Garage B",
         "name_aliases": [
+          "garage b",
+          "garage ouest",
+          "parking b",
+          "parking ouest",
           "west garage"
         ],
         "zone_code": "PZB",

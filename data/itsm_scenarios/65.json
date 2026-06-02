@@ -651,7 +651,11 @@
         "building_code": "BLD3",
         "name": "Downtown",
         "name_aliases": [
-          "downtown building"
+          "bâtiment du centre-ville",
+          "centre-ville",
+          "downtown building",
+          "site centre-ville",
+          "site du centre-ville"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -749,7 +753,14 @@
       "PZA": {
         "name": "Executive Garage",
         "name_aliases": [
-          "main garage"
+          "garage de la direction",
+          "garage direction",
+          "garage exécutif",
+          "main garage",
+          "parking de la direction",
+          "parking des dirigeants",
+          "parking direction",
+          "parking exécutif"
         ],
         "zone_code": "PZA",
         "name_aliases_translatable": true,

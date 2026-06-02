@@ -433,8 +433,13 @@
         },
         "name": "Headquarters",
         "name_aliases": [
+          "bureaux du siège",
+          "head office",
           "hq",
-          "head office"
+          "le siège",
+          "quartier général",
+          "siège",
+          "siège social"
         ],
         "parking_zones": {},
         "name_aliases_translatable": true,

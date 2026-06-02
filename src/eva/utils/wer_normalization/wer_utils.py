@@ -25,8 +25,11 @@ def _make_normalizer(language: str) -> BasicTextNormalizer | GenericTextNormaliz
         return KoreanTextNormalizer()
     if base == "zh":
         return ChineseTextNormalizer()
-    if (_CONFIGS_DIR / f"{base}.json").exists():
-        return GenericTextNormalizer(LanguageConfig.load(base))
+    # Try full tag first (e.g. fr-FR.json), then base tag (e.g. fr.json).
+    full_tag = language.lower()
+    config_name = full_tag if (_CONFIGS_DIR / f"{full_tag}.json").exists() else base
+    if (_CONFIGS_DIR / f"{config_name}.json").exists():
+        return GenericTextNormalizer(LanguageConfig.load(config_name))
     logger.warning(f"No normalizer found for language {language}, using default normalizer")
     return _DEFAULT_NORMALIZER
 
