@@ -44,13 +44,13 @@ class TestWordDigitEquivalence:
             # User simulator pronounces literal "dash" when spelling IDs;
             # STT writes a hyphen.
             ("WZH-89B", "W Z H dash eight nine B", "en"),
-            ("3", "trois", "fr"),
-            ("12", "douze", "fr"),
-            ("21", "vingt et un", "fr"),
-            ("30", "trente", "fr"),
-            ("EMP343467", "E M P trois quatre trois quatre six sept", "fr"),
-            ("100", "cent", "fr"),
-            ("Au bâtiment Headquarters, à l'étage FL2.", "au bâtiment headquarters à l'étage fl deux", "fr"),
+            ("3", "trois", "fr-FR"),
+            ("12", "douze", "fr-FR"),
+            ("21", "vingt et un", "fr-FR"),
+            ("30", "trente", "fr-FR"),
+            ("EMP343467", "E M P trois quatre trois quatre six sept", "fr-FR"),
+            ("100", "cent", "fr-FR"),
+            ("Au bâtiment Headquarters, à l'étage FL2.", "au bâtiment headquarters à l'étage fl deux", "fr-FR"),
         ],
     )
     def test_digits_match_spelled_out(self, digits: str, words: str, language: str):
@@ -92,7 +92,7 @@ class TestOrdinalNotConvertedToSaint:
         ],
     )
     def test_ordinals_preserved(self, text: str, expected: str):
-        assert normalize_text(text, "fr") == expected
+        assert normalize_text(text, "fr-FR") == expected
 
     @pytest.mark.parametrize(
         "digits,words",
