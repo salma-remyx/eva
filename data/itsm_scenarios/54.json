@@ -406,24 +406,7 @@
         "name": "Headquarters",
         "name_aliases": [
           "hq",
-          "head office",
-          "siège",
-          "le siège",
-          "qg",
-          "siège social",
-          "sede",
-          "central",
-          "oficinas centrales",
-          "zentrale",
-          "hauptsitz",
-          "हेडक्वार्टर",
-          "मुख्यालय",
-          "एचक्यू",
-          "एच क्यू",
-          "centrala",
-          "siedziba główna",
-          "siedziba",
-          "la sede"
+          "head office"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -585,26 +568,7 @@
       "PZA": {
         "name": "South Garage",
         "name_aliases": [
-          "south parking",
-          "garage sud",
-          "parking sud",
-          "le parking au sud",
-          "garaje sur",
-          "parking sur",
-          "aparcamiento sur",
-          "südgarage",
-          "parkhaus süd",
-          "südparkhaus",
-          "parken süd",
-          "साउथ गैरेज",
-          "दक्षिण वाला गैरेज",
-          "साउथ पार्किंग",
-          "garaż południowy",
-          "parking południowy",
-          "le parking du sud",
-          "süd-parkhaus",
-          "दक्षिण गैरेज",
-          "दक्षिण पार्किंग"
+          "south parking"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -615,27 +579,7 @@
         "name": "North Lot",
         "name_aliases": [
           "north parking",
-          "north lot at headquarters",
-          "parking nord",
-          "terrain nord",
-          "parking nord du siège",
-          "le parking nord",
-          "parking norte",
-          "aparcamiento norte",
-          "lote norte",
-          "nordparkplatz",
-          "parkplatz nord",
-          "nordparkplatz bei der zentrale",
-          "नॉर्थ लॉट",
-          "नॉर्थ पार्किंग",
-          "हेडक्वार्टर का नॉर्थ लॉट",
-          "północny parking",
-          "północny plac",
-          "parking północny przy centrali",
-          "parking nord en surface",
-          "parking norte de la sede",
-          "nord-lot",
-          "उत्तर लॉट"
+          "north lot at headquarters"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [

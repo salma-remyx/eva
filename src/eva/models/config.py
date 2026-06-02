@@ -298,16 +298,6 @@ class BehaviorType(StrEnum):
 # defines what's supported. Display names are used in prompts and logging.
 LANGUAGE_DISPLAY_NAMES: dict[Language, str] = {
     Language.EN: "English",
-    Language.ES: "Spanish",
-    Language.FR: "French",
-    Language.FR_CA: "Canadian French",
-    Language.DE: "German",
-    Language.PT: "Portuguese",
-    Language.JA: "Japanese",
-    Language.ZH: "Mandarin Chinese",
-    Language.KO: "Korean",
-    Language.HI: "Hindi",
-    Language.PL: "Polish",
 }
 
 

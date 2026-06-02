@@ -653,27 +653,7 @@
         "name": "Downtown",
         "name_aliases": [
           "downtown building",
-          "sales hq",
-          "centre-ville",
-          "bâtiment du centre-ville",
-          "site centre-ville",
-          "le bâtiment du centre-ville",
-          "le site en ville",
-          "downtown",
-          "el centro",
-          "edificio del centro",
-          "oficinas del centro",
-          "zona centro",
-          "innenstadt",
-          "innenstadtgebäude",
-          "downtown-gebäude",
-          "डाउनटाउन",
-          "डाउनटाउन बिल्डिंग",
-          "centrum",
-          "budynek w centrum",
-          "śródmieście",
-          "le site du centre-ville",
-          "शहर वाला ऑफिस"
+          "sales hq"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -763,26 +743,7 @@
       "PZS": {
         "name": "South Garage",
         "name_aliases": [
-          "south parking",
-          "garage sud",
-          "parking sud",
-          "le parking au sud",
-          "garaje sur",
-          "parking sur",
-          "aparcamiento sur",
-          "südgarage",
-          "parkhaus süd",
-          "südparkhaus",
-          "parken süd",
-          "साउथ गैरेज",
-          "दक्षिण वाला गैरेज",
-          "साउथ पार्किंग",
-          "garaż południowy",
-          "parking południowy",
-          "le parking du sud",
-          "süd-parkhaus",
-          "दक्षिण गैरेज",
-          "दक्षिण पार्किंग"
+          "south parking"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [

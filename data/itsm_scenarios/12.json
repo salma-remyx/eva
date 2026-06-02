@@ -480,24 +480,7 @@
         "name": "Headquarters",
         "name_aliases": [
           "hq",
-          "headquarters campus",
-          "siège",
-          "le siège",
-          "qg",
-          "siège social",
-          "sede",
-          "central",
-          "oficinas centrales",
-          "zentrale",
-          "hauptsitz",
-          "हेडक्वार्टर",
-          "मुख्यालय",
-          "एचक्यू",
-          "एच क्यू",
-          "centrala",
-          "siedziba główna",
-          "siedziba",
-          "la sede"
+          "headquarters campus"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -570,24 +553,7 @@
       "PZA": {
         "name": "North Garage",
         "name_aliases": [
-          "main garage",
-          "garage nord",
-          "parking nord",
-          "le garage au nord",
-          "garaje norte",
-          "parking norte",
-          "aparcamiento norte",
-          "nordgarage",
-          "parkhaus nord",
-          "नॉर्थ गैरेज",
-          "उत्तर वाला गैरेज",
-          "garaż północny",
-          "parking północny",
-          "garage im norden",
-          "le garage du nord",
-          "nord-parkhaus",
-          "उत्तर गैरेज",
-          "नॉर्थ पार्किंग"
+          "main garage"
         ],
         "zone_code": "PZA",
         "name_aliases_translatable": true,

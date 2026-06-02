@@ -417,27 +417,7 @@
       "BLD3": {
         "name": "Downtown",
         "name_aliases": [
-          "downtown building",
-          "centre-ville",
-          "bâtiment du centre-ville",
-          "site centre-ville",
-          "le bâtiment du centre-ville",
-          "le site en ville",
-          "downtown",
-          "el centro",
-          "edificio del centro",
-          "oficinas del centro",
-          "zona centro",
-          "innenstadt",
-          "innenstadtgebäude",
-          "downtown-gebäude",
-          "डाउनटाउन",
-          "डाउनटाउन बिल्डिंग",
-          "centrum",
-          "budynek w centrum",
-          "śródmieście",
-          "le site du centre-ville",
-          "शहर वाला ऑफिस"
+          "downtown building"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -503,22 +483,7 @@
       "PZC": {
         "name": "Central Garage",
         "name_aliases": [
-          "central parking",
-          "garage central",
-          "parking central",
-          "le parking central",
-          "garaje central",
-          "aparcamiento central",
-          "zentralgarage",
-          "parkhaus zentral",
-          "zentrales parkhaus",
-          "सेंट्रल गैरेज",
-          "सेंट्रल पार्किंग",
-          "बीच वाला गैरेज",
-          "garaż centralny",
-          "parking centralny",
-          "parkhaus mitte",
-          "केंद्रीय गैरेज"
+          "central parking"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [

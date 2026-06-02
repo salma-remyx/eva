@@ -408,24 +408,7 @@
         "name": "Headquarters",
         "name_aliases": [
           "hq",
-          "headquarters",
-          "siège",
-          "le siège",
-          "qg",
-          "siège social",
-          "sede",
-          "central",
-          "oficinas centrales",
-          "zentrale",
-          "hauptsitz",
-          "हेडक्वार्टर",
-          "मुख्यालय",
-          "एचक्यू",
-          "एच क्यू",
-          "centrala",
-          "siedziba główna",
-          "siedziba",
-          "la sede"
+          "headquarters"
         ],
         "name_aliases_translatable": true,
         "name_aliases_base": [
@@ -545,25 +528,7 @@
       "PZA": {
         "name": "Headquarters Garage A",
         "name_aliases": [
-          "garage a",
-          "garage a du siège",
-          "parking a du siège",
-          "garage a au siège",
-          "garaje a de la sede",
-          "parking a de la sede",
-          "aparcamiento a de la sede",
-          "zentrale garage a",
-          "parkhaus a an der zentrale",
-          "hq garage a",
-          "हेडक्वार्टर गैरेज ए",
-          "एचक्यू गैरेज ए",
-          "गैरेज ए",
-          "एच क्यू गैरेज ए",
-          "garaż a przy centrali",
-          "parking a przy centrali",
-          "garaż a",
-          "garage a bei der zentrale",
-          "मुख्यालय गैरेज ए"
+          "garage a"
         ],
         "zone_code": "PZA",
         "name_aliases_translatable": true,
