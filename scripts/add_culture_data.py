@@ -146,6 +146,7 @@ async def _generate_phone_format(language_name: str, language: str, llm: LLMClie
     """
     prompt = (
         f"For {language_name} ({language}), what is the standard mobile phone number format?\n"
+        "Make sure you're aware that the region is the defining factor (eg, pt-BR would use Brazlian phone numbers).\n"
         "Return JSON with:\n"
         "  calling_code: string (country calling code, no leading +)\n"
         "  mobile_groups: list where each element is either:\n"
@@ -778,10 +779,21 @@ async def amain(args: argparse.Namespace) -> int:
     return 0
 
 
+def _normalize_lang(language: str) -> str:
+    """Normalise to pipecat's BCP 47 casing: lowercase base, uppercase region.
+
+    'fr-ca' -> 'fr-CA', 'FR-CA' -> 'fr-CA', 'fr' -> 'fr'
+    """
+    parts = re.split(r"[-_]", language, maxsplit=1)
+    if len(parts) == 2:
+        return f"{parts[0].lower()}-{parts[1].upper()}"
+    return parts[0].lower()
+
+
 def _lang_to_env_prefix(language: str) -> str:
     """Convert BCP 47 tag to a valid env-var prefix segment.
 
-    'fr' -> 'FR', 'es-MX' -> 'ES_MX'
+    'fr' -> 'FR', 'fr-CA' -> 'FR_CA'
     """
     return re.sub(r"[^A-Za-z0-9]+", "_", language).upper().strip("_")
 
@@ -1529,6 +1541,8 @@ def main() -> int:
         help="Only mutate the matching record id (across all selected domains). Useful for inspecting a single-row diff.",
     )
     args = ap.parse_args()
+
+    args.language = _normalize_lang(args.language)
 
     if args.language == "en":
         print("Refusing to overwrite 'en' — that is owned by migrate_to_culture_schema.py", file=sys.stderr)

@@ -225,7 +225,7 @@ class UserSimulator:
             persona_id = self.persona_config["user_persona_id"]
             gender = _PERSONA_GENDER[persona_id]
             if self._language and self._language.lower() != "en":
-                env_var = f"EVA_{self._language.upper()}_USER_{gender}"
+                env_var = f"EVA_{self._language.upper().replace('-', '_')}_USER_{gender}"
             elif self._perturbation_config and self._perturbation_config.accent:
                 key = self._perturbation_config.accent.value.upper()
                 env_var = f"EVA_{key}_ACCENT_USER_{gender}"

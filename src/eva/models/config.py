@@ -298,7 +298,7 @@ class BehaviorType(StrEnum):
 # defines what's supported. Display names are used in prompts and logging.
 LANGUAGE_DISPLAY_NAMES: dict[Language, str] = {
     Language.EN: "English",
-    Language.FR_FR: "European French",
+    Language.FR: "European French",
     Language.FR_CA: "Canadian French",
 }
 
@@ -632,7 +632,7 @@ class RunConfig(BaseSettings):
         if self.language == Language.EN:
             return self
 
-        key = self.language.value.upper()
+        key = self.language.value.upper().replace("-", "_")
         missing = [
             f"EVA_{key}_USER_{gender}" for gender in ("F", "M") if not os.environ.get(f"EVA_{key}_USER_{gender}")
         ]

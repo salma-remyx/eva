@@ -19,7 +19,7 @@ _DEFAULT_NORMALIZER = BasicTextNormalizer()
 def _make_normalizer(language: str) -> BasicTextNormalizer | GenericTextNormalizer:
     """Return a normalizer for *language*, instantiated on demand.
 
-    ``language`` must be an exact pipecat Language value (e.g. ``Language.FR_FR.value``).
+    ``language`` must be an exact pipecat Language value (e.g. ``Language.FR.value``).
     Config files are named after those values verbatim (``fr-FR.json``, ``en.json``).
     """
     base = language.split("-")[0]
