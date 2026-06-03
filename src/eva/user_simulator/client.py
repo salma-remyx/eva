@@ -365,7 +365,7 @@ class UserSimulator:
             details_path = self.output_dir / "elevenlabs_conversation_details.json"
             try:
                 with open(details_path, "w") as f:
-                    json.dump(conv_details.model_dump(), f, indent=2, default=str)
+                    json.dump(conv_details.model_dump(), f, indent=2, default=str, ensure_ascii=False)
             except Exception as e:
                 logger.warning(f"Failed to write conversation details to {details_path}: {e}")
 

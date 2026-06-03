@@ -96,7 +96,7 @@ def _agent_tools_to_client_tools(
             # before forwarding to the domain tool handler.
             args = {k: v for k, v in parameters.items() if k != "tool_call_id"}
             result = await execute_tool_fn(_name, args)
-            return json.dumps(result) if isinstance(result, dict) else str(result)
+            return json.dumps(result, ensure_ascii=False) if isinstance(result, dict) else str(result)
 
         client_tools.register(func_name, _handle, is_async=True)
 

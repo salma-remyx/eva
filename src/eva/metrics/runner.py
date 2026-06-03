@@ -1014,11 +1014,11 @@ class MetricsRunner:
         except Exception as e:
             logger.warning(f"Failed to capture metrics provenance: {e}")
 
-        summary_path.write_text(json.dumps(summary, indent=2))
+        summary_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False))
 
         logger.info(f"Metrics summary saved to {summary_path}")
         logger.info("Metrics summary:")
-        logger.info(json.dumps(summary, indent=2))
+        logger.info(json.dumps(summary, indent=2, ensure_ascii=False))
 
         return metric_failures
 

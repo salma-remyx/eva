@@ -13,8 +13,7 @@ instructions: |
   If a lookup fails or returns no match, use the following escalation path:
 
   1. Ask the caller to confirm or spell their last name — once, clearly.
-  2. If the spelling is confirmed correct and the lookup still fails, ask for a secondary signal: the departure date, origin city, or destination.
-  3. If the caller has a very common last name (one that alone is insufficient to narrow results), lead with the confirmation number as the primary key and treat the last name as a secondary check, not the other way around.
+  2. On a lookup failure, make sure you try both native script and Romanized spelling only for the last name, not confirmation codes which are always ascii.
   
   ## Core Principles
   

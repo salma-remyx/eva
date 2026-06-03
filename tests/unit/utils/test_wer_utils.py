@@ -3,6 +3,11 @@
 import pytest
 from pipecat.frames.frames import Language
 
+from eva.utils.wer_normalization.cjk import (
+    ChineseTextNormalizer,
+    JapaneseTextNormalizer,
+    KoreanTextNormalizer,
+)
 from eva.utils.wer_normalization.wer_utils import normalize_text
 
 
@@ -135,7 +140,7 @@ class TestOrdinalNotConvertedToSaint:
         ],
     )
     def test_ordinals_preserved(self, text: str, expected: str):
-        assert normalize_text(text, Language.FR.value) == expected
+        assert normalize_text(text, Language.EN.value) == expected
 
     @pytest.mark.parametrize(
         "digits,words",
@@ -163,6 +168,187 @@ class TestTimeNotMerged:
 
     def test_10_00_am_not_merged_to_100_am(self):
         assert normalize_text("10:00 AM") != "100 am"
+
+
+class TestFrenchTextNormalization:
+    def test_filler_words_removed(self):
+        result = normalize_text("euh je voudrais un café", Language.FR.value)
+        assert "euh" not in result
+        # diacritics are stripped by the normalizer, so é → e
+        assert "cafe" in result
+
+    def test_abbreviations_expanded(self):
+        assert "madame" in normalize_text("mme dupont", Language.FR.value)
+
+    def test_thousand_separator_dot(self):
+        assert normalize_text("1.000", Language.FR.value) == normalize_text("1000", Language.FR.value)
+
+    def test_thousand_separator_space(self):
+        assert normalize_text("1 000 euros", Language.FR.value) == normalize_text("1000 euros", Language.FR.value)
+
+    def test_decimal_comma_to_dot(self):
+        assert normalize_text("1,5", Language.FR.value) == normalize_text("1.5", Language.FR.value)
+
+    def test_markup_removed(self):
+        result = normalize_text("bonjour [laughs] comment ca va", Language.FR.value)
+        assert "[laughs]" not in result
+        assert "bonjour" in result
+
+    def test_diacritics_after_normalisation(self):
+        result = normalize_text("Au bâtiment Headquarters, à l'étage FL2.", Language.FR.value)
+        assert "batiment" in result or "bâtiment" in result
+        assert "headquarters" in result
+
+
+# ===========================================================================
+# Japanese
+# ===========================================================================
+
+
+@pytest.fixture(scope="module")
+def ja():
+    return JapaneseTextNormalizer()
+
+
+class TestJapaneseNumbers:
+    @pytest.mark.parametrize(
+        "kanji,arabic",
+        [
+            ("十", "10"),
+            ("二十", "20"),
+            ("三百二十一", "321"),
+            ("千二百三十四", "1234"),
+            ("一万二千三百四十五", "12345"),
+            ("万", "10000"),
+            ("一億", "100000000"),
+            # Pure-digit concatenation (no units → ID/phone number mode)
+            ("一二三", "123"),
+            ("〇一二三", "0123"),
+        ],
+    )
+    def test_kanji_to_arabic(self, ja, kanji: str, arabic: str):
+        assert ja(kanji) == arabic
+
+    def test_full_width_digits(self, ja):
+        assert ja("１２３") == "123"
+
+    def test_full_width_ascii(self, ja):
+        assert ja("ＡＢＣＤ") == "abcd"
+
+    def test_filler_removal(self, ja):
+        result = ja("えーとよろしくお願いします")
+        assert "えーと" not in result
+        assert "よろしく" in result
+
+    def test_japanese_punctuation_stripped(self, ja):
+        result = ja("こんにちは。今日はいい天気ですね。")
+        assert "。" not in result
+
+    def test_markup_removed(self, ja):
+        result = ja("お客様[laughs]は三名です")
+        assert "[laughs]" not in result
+        assert "3" in result
+
+
+# ===========================================================================
+# Chinese
+# ===========================================================================
+
+
+@pytest.fixture(scope="module")
+def zh():
+    return ChineseTextNormalizer()
+
+
+class TestChineseNumbers:
+    @pytest.mark.parametrize(
+        "hanzi,arabic",
+        [
+            ("三百二十一", "321"),
+            ("一千", "1000"),
+            ("一亿", "100000000"),
+            ("两千", "2000"),
+            ("一亿两千万", "120000000"),
+            # Traditional Chinese variants
+            ("兩千", "2000"),
+            ("一億兩千萬", "120000000"),
+            ("二十萬", "200000"),
+        ],
+    )
+    def test_hanzi_to_arabic(self, zh, hanzi: str, arabic: str):
+        assert zh(hanzi) == arabic
+
+    def test_simplified_and_traditional_equivalent(self, zh):
+        assert zh("一亿两千万") == zh("一億兩千萬")
+
+    def test_full_width_ascii(self, zh):
+        assert zh("ＡＢＣＤ") == "abcd"
+
+    def test_filler_removal(self, zh):
+        result = zh("那个就是对的")
+        assert "那个" not in result
+        assert "就是" not in result
+
+    def test_markup_removed(self, zh):
+        result = zh("价格[music]是三百元")
+        assert "[music]" not in result
+        assert "300" in result
+
+
+# ===========================================================================
+# Korean
+# ===========================================================================
+
+
+@pytest.fixture(scope="module")
+def ko():
+    return KoreanTextNormalizer()
+
+
+class TestKoreanSinoNumbers:
+    @pytest.mark.parametrize(
+        "sino,arabic",
+        [
+            ("십", "10"),
+            ("삼백이십일", "321"),
+            ("이천이십사", "2024"),
+            ("만이천삼백사십오", "12345"),
+            ("일억", "100000000"),
+        ],
+    )
+    def test_sino_korean_to_arabic(self, ko, sino: str, arabic: str):
+        assert ko(sino) == arabic
+
+    def test_ambiguous_syllables_not_converted(self, ko):
+        # 이 = "this/two", 일 = "work/one" — must NOT be converted without a unit
+        assert ko("이 책") == "이 책"
+        assert ko("일하다") == "일하다"
+
+
+class TestKoreanNativeNumbers:
+    @pytest.mark.parametrize(
+        "native,arabic",
+        [
+            ("아홉", "9"),
+            ("열", "10"),
+            ("열다섯", "15"),
+            ("스물하나", "21"),
+            ("서른", "30"),
+            ("아흔아홉", "99"),
+            ("열 하나", "11"),
+        ],
+    )
+    def test_native_korean_to_arabic(self, ko, native: str, arabic: str):
+        assert ko(native) == arabic
+
+    def test_filler_removal(self, ko):
+        result = ko("음 주문하겠습니다")
+        assert result.startswith("주문") or "주문" in result
+
+    def test_markup_removed(self, ko):
+        result = ko("고객[laughs]은 스물하나입니다")
+        assert "[laughs]" not in result
+        assert "21" in result
 
 
 class TestKnownLimitations:

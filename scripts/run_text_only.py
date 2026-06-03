@@ -160,7 +160,7 @@ END_CALL_TOOL = [
 
 def resolve_paths(domain: str) -> tuple[Path, Path, Path]:
     """Resolve dataset, scenario-db-dir, and agent-config paths from a domain name."""
-    dataset = Path(f"data/{domain}_dataset.jsonl")
+    dataset = Path(f"data/{domain}_dataset.json")
     scenario_db_dir = Path(f"data/{domain}_scenarios")
     agent_config = Path(f"configs/agents/{domain}_agent.yaml")
 
@@ -444,7 +444,7 @@ def write_trace(
         elif msg_type == "assistant":
             lines.append(f"[AGENT] {value}")
         elif msg_type == "tool_call" and isinstance(value, dict):
-            params_str = json.dumps(value.get("parameters", {}), indent=None)
+            params_str = json.dumps(value.get("parameters", {}), indent=None, ensure_ascii=False)
             lines.append(f"  [TOOL] {value.get('tool')}({params_str})")
         elif msg_type == "tool_response" and isinstance(value, dict):
             resp = value.get("response") or value.get("error", "")
@@ -576,9 +576,9 @@ async def run_record(
     final_hash = get_dict_hash(final_db)
 
     with open(record_output_dir / "initial_scenario_db.json", "w") as f:
-        json.dump(initial_db, f, indent=2)
+        json.dump(initial_db, f, indent=2, ensure_ascii=False)
     with open(record_output_dir / "final_scenario_db.json", "w") as f:
-        json.dump(final_db, f, indent=2)
+        json.dump(final_db, f, indent=2, ensure_ascii=False)
 
     stats = audit_log.get_stats()
     conv_result = ConversationResult(
@@ -597,7 +597,7 @@ async def run_record(
         final_scenario_db_hash=final_hash,
     )
     with open(record_output_dir / "result.json", "w") as f:
-        json.dump(conv_result.model_dump(mode="json"), f, indent=2, default=str)
+        json.dump(conv_result.model_dump(mode="json"), f, indent=2, default=str, ensure_ascii=False)
 
     with open(record_output_dir / "audit_log.json") as f:
         audit_log_data = json.load(f)
@@ -929,11 +929,11 @@ async def main() -> None:
     # Save per-record results
     with open(output_dir / "summary.json", "w") as f:
         serializable = [{k: v for k, v in r.items() if k != "record_metrics"} for r in all_results]
-        json.dump(serializable, f, indent=2, default=str)
+        json.dump(serializable, f, indent=2, default=str, ensure_ascii=False)
 
     if rerun_history:
         with open(output_dir / "rerun_history.json", "w") as f:
-            json.dump(rerun_history, f, indent=2)
+            json.dump(rerun_history, f, indent=2, ensure_ascii=False)
 
     # ---- Metrics summary (across all records/trials) ----
     all_record_metrics: dict[str, RecordMetrics] = {}
@@ -1011,9 +1011,9 @@ async def main() -> None:
             }
 
         summary_path = output_dir / "metrics_summary.json"
-        summary_path.write_text(json.dumps(metrics_summary_data, indent=2))
+        summary_path.write_text(json.dumps(metrics_summary_data, indent=2, ensure_ascii=False))
         logger.info(f"Metrics summary saved to {summary_path}")
-        logger.info(json.dumps(metrics_summary_data, indent=2))
+        logger.info(json.dumps(metrics_summary_data, indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":

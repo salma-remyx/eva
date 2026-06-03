@@ -593,11 +593,13 @@ class GeminiLiveAssistantServer(AbstractAssistantServer):
                                 for fc in response.tool_call.function_calls:
                                     tool_name = fc.name
                                     tool_args = dict(fc.args) if fc.args else {}
-                                    logger.info(f"Tool call: {tool_name}({json.dumps(tool_args)})")
+                                    logger.info(f"Tool call: {tool_name}({json.dumps(tool_args, ensure_ascii=False)})")
 
                                     # Execute tool and record in audit log
                                     result = await self.execute_tool(tool_name, tool_args)
-                                    logger.debug(f"Tool result: {tool_name} -> {json.dumps(result)}")
+                                    logger.debug(
+                                        f"Tool result: {tool_name} -> {json.dumps(result, ensure_ascii=False)}"
+                                    )
 
                                     # Send result back to Gemini
                                     await session.send_tool_response(

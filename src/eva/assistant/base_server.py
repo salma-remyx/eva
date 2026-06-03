@@ -324,11 +324,11 @@ class AbstractAssistantServer(ABC):
         try:
             initial_db_path = self.output_dir / "initial_scenario_db.json"
             with open(initial_db_path, "w") as f:
-                json.dump(self.get_initial_scenario_db(), f, indent=2, sort_keys=True, default=str)
+                json.dump(self.get_initial_scenario_db(), f, indent=2, sort_keys=True, default=str, ensure_ascii=False)
 
             final_db_path = self.output_dir / "final_scenario_db.json"
             with open(final_db_path, "w") as f:
-                json.dump(self.get_final_scenario_db(), f, indent=2, sort_keys=True, default=str)
+                json.dump(self.get_final_scenario_db(), f, indent=2, sort_keys=True, default=str, ensure_ascii=False)
 
             logger.info(f"Saved scenario database states to {self.output_dir}")
         except Exception as e:

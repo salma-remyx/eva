@@ -240,7 +240,7 @@ class AgentSpeechFidelityS2SMetric(SpeechFidelityBaseMetric):
                 tool_name = entry.get("tool_name", "unknown")
                 content = entry.get("content", {})
                 if isinstance(content, (dict, list)):
-                    content_str = json.dumps(content, indent=None)
+                    content_str = json.dumps(content, indent=None, ensure_ascii=False)
                 else:
                     content_str = str(content)
                 lines.append(f"Turn {turn_id} - Tool Response ({tool_name}): {content_str}")

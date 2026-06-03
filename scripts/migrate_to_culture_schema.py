@@ -26,9 +26,9 @@ Idempotent: re-running is safe because placeholders never contain the literal
 names.
 
 Usage:
-    python scripts/migrate_to_culture_schema.py            # all data/*_dataset.jsonl
+    python scripts/migrate_to_culture_schema.py            # all data/*_dataset.json
     python scripts/migrate_to_culture_schema.py --dry-run  # report only
-    python scripts/migrate_to_culture_schema.py data/airline_dataset.jsonl
+    python scripts/migrate_to_culture_schema.py data/airline_dataset.json
 """
 
 from __future__ import annotations
@@ -198,7 +198,9 @@ def migrate_scenario_db(path: Path, first: str, last: str, dry_run: bool) -> tup
 
     # Replace phone value with placeholder in the (already name-replaced) string.
     if phone and phone in replaced:
-        replaced = replaced.replace(json.dumps(phone), json.dumps(PHONE_PLACEHOLDER))
+        replaced = replaced.replace(
+            json.dumps(phone, ensure_ascii=False), json.dumps(PHONE_PLACEHOLDER, ensure_ascii=False)
+        )
 
     changed = replaced != original
 
@@ -209,7 +211,9 @@ def migrate_scenario_db(path: Path, first: str, last: str, dry_run: bool) -> tup
         if not dry_run:
             tmp = path.with_suffix(path.suffix + ".tmp")
             # Re-pretty-print to keep diffs sane.
-            tmp.write_text(json.dumps(json.loads(replaced), ensure_ascii=False, indent=2), encoding="utf-8")
+            tmp.write_text(
+                json.dumps(json.loads(replaced, ensure_ascii=False), ensure_ascii=False, indent=2), encoding="utf-8"
+            )
             tmp.replace(path)
 
     return changed, phone
@@ -223,45 +227,44 @@ def migrate_file(path: Path, dry_run: bool) -> tuple[int, int, int]:
     scenario_dir = DATA_DIR / f"{domain}_scenarios"
 
     with path.open(encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            rec = json.loads(line)
-            rec_changed, first, last = migrate_record(rec)
-            changed_scen, phone = migrate_scenario_db(scenario_dir / f"{rec['id']}.json", first, last, dry_run)
-            if changed_scen:
-                scenario_changed += 1
-            # Resolve phone: prefer what was just extracted, fall back to already-stored value.
-            phone = phone or rec.get("culture_overrides", {}).get("en", {}).get("phone")
-            if phone:
-                if "phone" not in rec.get("culture_overrides", {}).get("en", {}):
-                    rec.setdefault("culture_overrides", {}).setdefault("en", {})["phone"] = phone
-                    rec_changed = True
-                # Replace the literal phone value in the record body (e.g. ground_truth.expected_scenario_db).
-                # Pop culture_overrides so the stored value isn't itself substituted.
-                culture = rec.pop("culture_overrides")
-                romanized = rec.pop("romanized_culture_overrides", {})
-                rec_str = json.dumps(rec, ensure_ascii=False)
-                new_rec_str = rec_str.replace(json.dumps(phone), json.dumps(PHONE_PLACEHOLDER))
-                if new_rec_str != rec_str:
-                    rec.clear()
-                    rec.update(json.loads(new_rec_str))
-                    rec_changed = True
-                else:
-                    rec.clear()
-                    rec.update(json.loads(rec_str))
-                rec["culture_overrides"] = culture
-                rec["romanized_culture_overrides"] = romanized
-            if rec_changed:
-                changed += 1
-            records.append(rec)
+        raw_records = json.load(f)
+    for rec in raw_records:
+        rec_changed, first, last = migrate_record(rec)
+        changed_scen, phone = migrate_scenario_db(scenario_dir / f"{rec['id']}.json", first, last, dry_run)
+        if changed_scen:
+            scenario_changed += 1
+        # Resolve phone: prefer what was just extracted, fall back to already-stored value.
+        phone = phone or rec.get("culture_overrides", {}).get("en", {}).get("phone")
+        if phone:
+            if "phone" not in rec.get("culture_overrides", {}).get("en", {}):
+                rec.setdefault("culture_overrides", {}).setdefault("en", {})["phone"] = phone
+                rec_changed = True
+            # Replace the literal phone value in the record body (e.g. ground_truth.expected_scenario_db).
+            # Pop culture_overrides so the stored value isn't itself substituted.
+            culture = rec.pop("culture_overrides")
+            romanized = rec.pop("romanized_culture_overrides", {})
+            rec_str = json.dumps(rec, ensure_ascii=False)
+            new_rec_str = rec_str.replace(
+                json.dumps(phone, ensure_ascii=False), json.dumps(PHONE_PLACEHOLDER, ensure_ascii=False)
+            )
+            if new_rec_str != rec_str:
+                rec.clear()
+                rec.update(json.loads(new_rec_str))
+                rec_changed = True
+            else:
+                rec.clear()
+                rec.update(json.loads(rec_str))
+            rec["culture_overrides"] = culture
+            rec["romanized_culture_overrides"] = romanized
+        if rec_changed:
+            changed += 1
+        records.append(rec)
 
     if not dry_run and changed:
         tmp = path.with_suffix(path.suffix + ".tmp")
         with tmp.open("w", encoding="utf-8") as f:
-            for rec in records:
-                f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+            json.dump(records, f, ensure_ascii=False, indent=2)
+            f.write("\n")
         tmp.replace(path)
 
     return changed, scenario_changed, len(records)
@@ -273,7 +276,7 @@ def main() -> int:
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
-    targets = args.paths or sorted(DATA_DIR.glob("*_dataset.jsonl"))
+    targets = args.paths or sorted(DATA_DIR.glob("*_dataset.json"))
     if not targets:
         print("No datasets found", file=sys.stderr)
         return 1

@@ -152,7 +152,7 @@ class BenchmarkRunner:
         config_data = self.config.model_dump(mode="json")
         pipeline_parts = self.config.model.pipeline_parts
         config_data["pipeline_parts"] = pipeline_parts
-        config_path.write_text(json.dumps(config_data, indent=2))
+        config_path.write_text(json.dumps(config_data, indent=2, ensure_ascii=False))
 
         # Build output_id list for tracking (supports pass@k)
         num_trials = self.config.num_trials
@@ -834,7 +834,7 @@ class BenchmarkRunner:
 
         eval_summary_path = self.output_dir / "evaluation_summary.json"
         with open(eval_summary_path, "w") as f:
-            json.dump(eval_summary, f, indent=2)
+            json.dump(eval_summary, f, indent=2, ensure_ascii=False)
 
         # Terminal output — clearly separate simulation from metrics
         logger.info(f"{'=' * 60}")
@@ -986,7 +986,7 @@ class BenchmarkRunner:
         }
 
         with open(eval_summary_path, "w") as f:
-            json.dump(eval_summary, f, indent=2)
+            json.dump(eval_summary, f, indent=2, ensure_ascii=False)
 
         # Terminal output
         logger.info("=" * 60)

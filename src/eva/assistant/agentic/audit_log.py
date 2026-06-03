@@ -431,7 +431,7 @@ class AuditLog:
                 # Filter to user and assistant messages only for simplified transcript
                 if entry.get("message_type") in ["user", "assistant"]:
                     record = {"timestamp": entry["timestamp"], "type": entry["message_type"], "content": entry["value"]}
-                    f.write(json.dumps(record) + "\n")
+                    f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
     def reset(self) -> None:
         """Reset the audit log."""

@@ -122,20 +122,17 @@ async def migrate(domain: str, llm: LLMClient, dry_run: bool) -> None:
             if "name_aliases_base" not in entry:
                 unique_names.add(entry["name"])
 
-    dataset_path = DATA_DIR / f"{domain}_dataset.jsonl"
+    dataset_path = DATA_DIR / f"{domain}_dataset.json"
     if dataset_path.exists():
         with dataset_path.open(encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                rec = json.loads(line)
-                db = rec.get("ground_truth", {}).get("expected_scenario_db")
-                if not db:
-                    continue
-                for _, _, entry in _iter_alias_entries(db):
-                    if "name_aliases_base" not in entry:
-                        unique_names.add(entry["name"])
+            records = json.load(f)
+        for rec in records:
+            db = rec.get("ground_truth", {}).get("expected_scenario_db")
+            if not db:
+                continue
+            for _, _, entry in _iter_alias_entries(db):
+                if "name_aliases_base" not in entry:
+                    unique_names.add(entry["name"])
 
     if not unique_names:
         logger.info("All entries already migrated — nothing to do.")

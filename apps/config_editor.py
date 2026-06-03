@@ -224,7 +224,7 @@ def _render_json_object(name: str, info: str, current: dict) -> None:
 
     # Both widgets are keyed by a hash of the current value so they always
     # re-initialize from field_values after any write + rerun.
-    val_hash = hashlib.md5(json.dumps(current, sort_keys=True).encode()).hexdigest()[:8]
+    val_hash = hashlib.md5(json.dumps(current, sort_keys=True, ensure_ascii=False).encode()).hexdigest()[:8]
 
     rows = [{"key": k, "value": _scalar_to_str(v)} for k, v in current.items()] or [{"key": "", "value": ""}]
     edited = st.data_editor(
@@ -241,14 +241,16 @@ def _render_json_object(name: str, info: str, current: dict) -> None:
         (r.get("key") or "").strip(): _str_to_scalar(r.get("value")) for r in edited if (r.get("key") or "").strip()
     }
 
-    if json.dumps(parsed_from_table, sort_keys=True) != json.dumps(current, sort_keys=True):
+    if json.dumps(parsed_from_table, sort_keys=True, ensure_ascii=False) != json.dumps(
+        current, sort_keys=True, ensure_ascii=False
+    ):
         st.session_state.field_values[name] = parsed_from_table
         st.rerun()
 
     with st.expander("Raw JSON", expanded=False):
         text = st.text_area(
             "Edit as JSON",
-            value=json.dumps(current, indent=2) if current else "",
+            value=json.dumps(current, indent=2, ensure_ascii=False) if current else "",
             key=f"_rawtxt_{name}_{val_hash}",
             height=140,
         )
@@ -256,7 +258,9 @@ def _render_json_object(name: str, info: str, current: dict) -> None:
     if text.strip():
         try:
             parsed_kv = json.loads(text)
-            if json.dumps(parsed_kv, sort_keys=True) != json.dumps(current, sort_keys=True):
+            if json.dumps(parsed_kv, sort_keys=True, ensure_ascii=False) != json.dumps(
+                current, sort_keys=True, ensure_ascii=False
+            ):
                 st.session_state.field_values[name] = parsed_kv
                 st.rerun()
         except json.JSONDecodeError as e:
@@ -267,7 +271,7 @@ def _render_json_object(name: str, info: str, current: dict) -> None:
 
 def _scalar_to_str(v: Any) -> str:
     if isinstance(v, (dict, list)):
-        return json.dumps(v)
+        return json.dumps(v, ensure_ascii=False)
     if isinstance(v, bool):
         return "true" if v else "false"
     if v is None:
@@ -413,7 +417,7 @@ def _render_unmapped_var(name: str) -> None:
     values = st.session_state.field_values
     v = values.get(name, "")
     if not isinstance(v, str):
-        v = json.dumps(v) if v else ""
+        v = json.dumps(v, ensure_ascii=False) if v else ""
     widget_type = "password" if "KEY" in name else "default"
     values[name] = st.text_input(name, value=v, key=f"w_{name}", type=widget_type)
 
@@ -639,7 +643,7 @@ def main() -> None:
             mime="text/plain",
             width="stretch",
         )
-        data_attr = html_module.escape(json.dumps(text), quote=True)
+        data_attr = html_module.escape(json.dumps(text, ensure_ascii=False), quote=True)
         st_components.html(
             f"""
             <button data-content="{data_attr}"

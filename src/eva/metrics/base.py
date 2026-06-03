@@ -301,7 +301,7 @@ class BaseMetric(ABC):
         entry["total_input_tokens"] += input_tokens or 0
         entry["total_output_tokens"] += output_tokens or 0
         entry["num_calls"] += 1
-        json_path.write_text(json.dumps(summary, indent=2))
+        json_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False))
 
     def _handle_error(self, error: Exception, context: MetricContext) -> MetricScore:
         """Standard error handling for all metrics."""

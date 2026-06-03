@@ -639,7 +639,7 @@ class OpenAIRealtimeAssistantServer(AbstractAssistantServer):
         except json.JSONDecodeError:
             arguments = {}
 
-        logger.info(f"Tool call: {func_name}({json.dumps(arguments)})")
+        logger.info(f"Tool call: {func_name}({json.dumps(arguments, ensure_ascii=False)})")
         self._assistant_state.has_function_calls = True
 
         # Execute tool and record in audit log
@@ -661,7 +661,7 @@ class OpenAIRealtimeAssistantServer(AbstractAssistantServer):
             item={
                 "type": "function_call_output",
                 "call_id": call_id,
-                "output": json.dumps(result),
+                "output": json.dumps(result, ensure_ascii=False),
             }
         )
 

@@ -2,7 +2,7 @@
 
 Performs all one-time setup needed to run the benchmark in a new language:
 
-  1. **Dataset records** — for each record in ``data/<domain>_dataset.jsonl``:
+  1. **Dataset records** — for each record in ``data/<domain>_dataset.json``:
        - Picks a culturally appropriate (first, last) name pair matching the
          record's gender, deterministically seeded by record id + language.
        - Sets ``record.culture_overrides[<lang>] = {first_name, last_name}``.
@@ -506,16 +506,12 @@ async def add_scenario_aliases(
             tmp.replace(path)
             logger.info(f"Updated {path.name}")
 
-    # Also update expected_scenario_db inside the dataset JSONL.
-    dataset_path = DATA_DIR / f"{domain}_dataset.jsonl"
+    # Also update expected_scenario_db inside the dataset JSON.
+    dataset_path = DATA_DIR / f"{domain}_dataset.json"
     if dataset_path.exists():
-        records: list[dict[str, Any]] = []
-        dataset_changed = False
         with dataset_path.open(encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if line:
-                    records.append(json.loads(line))
+            records: list[dict[str, Any]] = json.load(f)
+        dataset_changed = False
 
         for rec in records:
             db = rec.get("ground_truth", {}).get("expected_scenario_db")
@@ -536,8 +532,8 @@ async def add_scenario_aliases(
             else:
                 tmp = dataset_path.with_suffix(dataset_path.suffix + ".tmp")
                 with tmp.open("w", encoding="utf-8") as f:
-                    for rec in records:
-                        f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+                    json.dump(records, f, ensure_ascii=False, indent=2)
+                    f.write("\n")
                 tmp.replace(dataset_path)
                 logger.info(f"Updated {dataset_path.name} with translated aliases")
 
@@ -554,16 +550,12 @@ async def add_culture(
     record_id: str | None = None,
     phone_spec: dict | None = None,
 ) -> None:
-    dataset_path = DATA_DIR / f"{domain}_dataset.jsonl"
+    dataset_path = DATA_DIR / f"{domain}_dataset.json"
     if not dataset_path.exists():
         raise FileNotFoundError(dataset_path)
 
-    records: list[dict[str, Any]] = []
     with dataset_path.open(encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                records.append(json.loads(line))
+        records: list[dict[str, Any]] = json.load(f)
 
     if record_id is not None:
         matching = [r for r in records if r.get("id") == record_id]
@@ -637,8 +629,8 @@ async def add_culture(
     else:
         tmp = dataset_path.with_suffix(dataset_path.suffix + ".tmp")
         with tmp.open("w", encoding="utf-8") as f:
-            for rec in records:
-                f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+            json.dump(records, f, ensure_ascii=False, indent=2)
+            f.write("\n")
         tmp.replace(dataset_path)
         logger.info(f"Updated {dataset_path}")
 
@@ -652,45 +644,39 @@ async def add_culture(
 def _all_records_have_language(language: str, domains: list[str], record_id: str | None) -> bool:
     """Return True if every target record already has culture_overrides[language] with first/last name."""
     for domain in domains:
-        path = DATA_DIR / f"{domain}_dataset.jsonl"
+        path = DATA_DIR / f"{domain}_dataset.json"
         if not path.exists():
             continue
         with path.open(encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                rec = json.loads(line)
-                if record_id and rec.get("id") != record_id:
-                    continue
-                entry = rec.get("culture_overrides", {}).get(language, {})
-                if not entry.get("first_name") or not entry.get("last_name"):
-                    return False
+            domain_records = json.load(f)
+        for rec in domain_records:
+            if record_id and rec.get("id") != record_id:
+                continue
+            entry = rec.get("culture_overrides", {}).get(language, {})
+            if not entry.get("first_name") or not entry.get("last_name"):
+                return False
     return True
 
 
 def _all_airline_records_have_phone(language: str, record_id: str | None) -> bool:
     """Return True if every target airline record already has culture_overrides[language].phone."""
-    path = DATA_DIR / "airline_dataset.jsonl"
+    path = DATA_DIR / "airline_dataset.json"
     if not path.exists():
         return True
     with path.open(encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            rec = json.loads(line)
-            if record_id and rec.get("id") != record_id:
-                continue
-            if not rec.get("culture_overrides", {}).get(language, {}).get("phone"):
-                return False
+        airline_records = json.load(f)
+    for rec in airline_records:
+        if record_id and rec.get("id") != record_id:
+            continue
+        if not rec.get("culture_overrides", {}).get(language, {}).get("phone"):
+            return False
     return True
 
 
 async def amain(args: argparse.Namespace) -> int:
     llm = LLMClient(model=args.llm_model, params={"temperature": 0.0})
 
-    domains = args.domains or [p.stem.removesuffix("_dataset") for p in sorted(DATA_DIR.glob("*_dataset.jsonl"))]
+    domains = args.domains or [p.stem.removesuffix("_dataset") for p in sorted(DATA_DIR.glob("*_dataset.json"))]
 
     if args.auto_generate_names:
         if _all_records_have_language(args.language, domains, args.record_id):
