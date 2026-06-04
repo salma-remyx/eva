@@ -436,7 +436,7 @@ class RunConfig(BaseSettings):
             "max_timeout_attempts": 1,
         },
         description="Validation metric thresholds and settings for rerun decisions (JSON). "
-        "max_timeout_attempts controls how many timeout attempts before accepting the last one for evaluation.",
+        "max_timeout_attempts sets the max number of attempts that timeout before accepting a run for evaluation. Default is 1.",
     )
 
     # Multi-attempt (for pass@k evaluation)

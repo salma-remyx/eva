@@ -36,9 +36,9 @@
     "version": "v0.1"
   },
   "ConversationTimeoutMetric": {
-    "name": "conversation_timed_out_rate",
+    "name": "conversation_finished_on_time",
     "prompt_hash": null,
-    "source_hash": "a3d355be900f",
+    "source_hash": "5fcfcc42ae78",
     "version": "v0.1"
   },
   "ConversationValidEndMetric": {

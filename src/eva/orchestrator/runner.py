@@ -276,7 +276,6 @@ class BenchmarkRunner:
             not_finished_ids: list[str] = []
             failed_validation_ids: list[str] = []
             validation_results: dict[str, ValidationResult] = {}
-            # Map output_id → ConversationResult for timeout detection
             result_map: dict[str, ConversationResult] = {}
 
             for output_id, _result, passed, vr in pipeline_results:
