@@ -2,7 +2,9 @@
   "name": "Main Garage",
   "translatable": true,
   "base": [
-    "garage a"
+    "main lot",
+    "primary garage",
+    "main parking"
   ],
   "translations": {
     "fr": [
