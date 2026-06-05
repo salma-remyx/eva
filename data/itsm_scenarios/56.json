@@ -425,10 +425,6 @@
         }
       },
       "name": "Headquarters",
-      "name_aliases": [
-        "HQ",
-        "Headquarters"
-      ],
       "parking_zones": {
         "PZA": {
           "covered": true,

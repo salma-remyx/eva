@@ -710,9 +710,6 @@
         "catalog_id": "APP-1001",
         "department_restrictions": [],
         "name": "Slack",
-        "name_aliases": [
-          "slack"
-        ],
         "requires_manager_approval": false,
         "vendor": "Slack Technologies"
       }
@@ -725,10 +722,6 @@
           "permanent"
         ],
         "name": "Microsoft 365 E3",
-        "name_aliases": [
-          "m365 e3",
-          "office 365 e3"
-        ],
         "vendor": "Microsoft"
       },
       "LIC-0047": {
@@ -739,9 +732,6 @@
           "temporary"
         ],
         "name": "Figma",
-        "name_aliases": [
-          "figma"
-        ],
         "vendor": "Figma"
       }
     }

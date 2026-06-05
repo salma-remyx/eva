@@ -328,10 +328,6 @@
         }
       },
       "name": "Downtown Engineering Center",
-      "name_aliases": [
-        "downtown",
-        "engineering center"
-      ],
       "parking_zones": {
         "PZA": {
           "covered": true,
@@ -435,9 +431,6 @@
         "catalog_id": "APP-1001",
         "department_restrictions": [],
         "name": "Slack",
-        "name_aliases": [
-          "slack app"
-        ],
         "requires_manager_approval": false,
         "vendor": "Slack Technologies"
       }
@@ -451,9 +444,6 @@
           "temporary"
         ],
         "name": "IntelliJ IDEA",
-        "name_aliases": [
-          "JetBrains IntelliJ IDEA"
-        ],
         "vendor": "JetBrains"
       },
       "LIC-0042": {
@@ -464,9 +454,6 @@
           "temporary"
         ],
         "name": "Docker Desktop",
-        "name_aliases": [
-          "Docker"
-        ],
         "vendor": "Docker"
       }
     }

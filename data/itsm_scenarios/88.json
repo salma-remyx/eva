@@ -679,9 +679,6 @@
         "catalog_id": "APP-2101",
         "department_restrictions": [],
         "name": "Datadog",
-        "name_aliases": [
-          "datadog"
-        ],
         "requires_manager_approval": true,
         "vendor": "Datadog"
       },
@@ -694,9 +691,6 @@
         "catalog_id": "APP-2205",
         "department_restrictions": [],
         "name": "Confluence",
-        "name_aliases": [
-          "confluence"
-        ],
         "requires_manager_approval": false,
         "vendor": "Atlassian"
       }
@@ -710,9 +704,6 @@
           "temporary"
         ],
         "name": "Figma",
-        "name_aliases": [
-          "figma"
-        ],
         "vendor": "Figma"
       },
       "LIC-3111": {
@@ -723,9 +714,6 @@
           "temporary"
         ],
         "name": "Lucidchart",
-        "name_aliases": [
-          "lucidchart"
-        ],
         "vendor": "Lucid Software"
       }
     }

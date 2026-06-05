@@ -469,7 +469,7 @@
         "status": "completed",
         "completed_date": "2025-11-21"
       },
-      "first_name": "<FIRST_NAME>",
+      "first_name": "<FIRST_NAME_ROMANIZED>",
       "floor_code": "FL3",
       "group_memberships": [
         {
@@ -500,7 +500,7 @@
       "hire_date": "2021-06-14",
       "is_manager": false,
       "last_desk_assignment_date": null,
-      "last_name": "<LAST_NAME>",
+      "last_name": "<LAST_NAME_ROMANIZED>",
       "last_parking_assignment_date": null,
       "manager_auth_code": null,
       "manager_employee_id": "EMP022201",
@@ -677,9 +677,6 @@
         "catalog_id": "APP-1001",
         "department_restrictions": [],
         "name": "Slack",
-        "name_aliases": [
-          "slack"
-        ],
         "requires_manager_approval": false,
         "vendor": "Salesforce"
       }
@@ -693,10 +690,6 @@
           "temporary"
         ],
         "name": "JetBrains IntelliJ IDEA",
-        "name_aliases": [
-          "IntelliJ",
-          "IntelliJ IDEA"
-        ],
         "vendor": "JetBrains"
       }
     }

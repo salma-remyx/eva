@@ -656,9 +656,6 @@
         "catalog_id": "APP-1042",
         "department_restrictions": [],
         "name": "Confluence",
-        "name_aliases": [
-          "Atlassian Confluence"
-        ],
         "requires_manager_approval": false,
         "vendor": "Atlassian"
       },
@@ -674,9 +671,6 @@
           "MKT"
         ],
         "name": "Salesforce",
-        "name_aliases": [
-          "SFDC"
-        ],
         "requires_manager_approval": true,
         "vendor": "Salesforce"
       }
@@ -690,9 +684,6 @@
           "temporary"
         ],
         "name": "Figma",
-        "name_aliases": [
-          "Figma Design"
-        ],
         "vendor": "Figma"
       },
       "LIC-2051": {
@@ -703,9 +694,6 @@
           "temporary"
         ],
         "name": "Adobe Creative Cloud",
-        "name_aliases": [
-          "Adobe CC"
-        ],
         "vendor": "Adobe"
       }
     }

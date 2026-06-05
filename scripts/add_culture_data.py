@@ -109,32 +109,43 @@ DEFAULT_MODEL = "gpt-5.5-2026-04-23"
 TRANSLATION_BATCH = 25
 ALIAS_BATCH = 50  # Max unique names per alias-translation LLM call.
 
-BUCKET_SIZE = 40  # Each name array: indices [0:BUCKET_SIZE] = ASCII, [BUCKET_SIZE:2*BUCKET_SIZE] = native script.
+BUCKET_SIZE = 50  # Each name array: BUCKET_SIZE native-script names with a 1-to-1 romanized parallel list.
 
 
 async def _generate_phone_format(language_name: str, language: str, llm: LLMClient) -> dict:
-    """Return {calling_code: str, mobile_groups: list[int | str]} for the language's mobile format.
+    """Return phone format spec for the language's mobile numbers.
 
-    Each group element is either:
-      - int: that many random digits
-      - str: a fixed literal prefix (e.g. "6" for French mobiles that always start with 06/+336)
+    Spec keys:
+      calling_code: str — country calling code without leading +
+      mobile_format: str — format string where:
+          X = one random digit
+          {AC} = area code placeholder (replaced by a value from area_codes list)
+          all other characters are fixed literals / separators
+      area_codes: list[str] — 5 representative area codes for the region,
+          or empty list if the format has no area code concept
 
-    Example for France: {"calling_code": "33", "mobile_groups": ["6", 2, 2, 2, 2]}
-    renders as +33 6 XX XX XX XX.
-    Example for UK: {"calling_code": "44", "mobile_groups": ["7", 3, 6]}
-    renders as +44 7 XXX XXXXXX.
+    Examples:
+      US:  {"calling_code": "1",  "mobile_format": "{AC}-XXX-XXXX",  "area_codes": ["212","415","312","646","202"]}
+      FR:  {"calling_code": "33", "mobile_format": "6 XX XX XX XX", "area_codes": []}
+      UK:  {"calling_code": "44", "mobile_format": "7XXX XXXXXX",   "area_codes": []}
+      DE:  {"calling_code": "49", "mobile_format": "151 XXXXXXXX",  "area_codes": []}
     """
     prompt = (
         f"For {language_name} ({language}), what is the standard mobile phone number format?\n"
-        "Make sure you're aware that the region is the defining factor (eg, pt-BR would use Brazilian phone numbers).\n"
-        "Return JSON with:\n"
+        "Make sure you're aware that the region is the defining factor (eg, pt-BR uses Brazilian numbers).\n"
+        "Return JSON with exactly these keys:\n"
         "  calling_code: string (country calling code, no leading +)\n"
-        "  mobile_format: a format string where X = random digit, fixed digits are written literally,\n"
-        "    and separators (spaces, hyphens, dots) are included as-is.\n"
-        'Example for France (+33 6 XX XX XX XX): {"calling_code": "33", "mobile_format": "6 XX XX XX XX"}\n'
-        'Example for UK (+44 7XXX XXXXXX): {"calling_code": "44", "mobile_format": "7XXX XXXXXX"}\n'
-        'Example for US (+1 NXX-NXX-XXXX): {"calling_code": "1", "mobile_format": "XXX-XXX-XXXX"}\n'
-        'Example for Germany (+49 151 12345678): {"calling_code": "49", "mobile_format": "151 XXXXXXXX"}\n'
+        "  mobile_format: format string where X = one random digit, {AC} = area code placeholder\n"
+        "    (use {AC} only if the format genuinely has a varying area code),\n"
+        "    fixed digits and separators (spaces, hyphens, dots) are written literally.\n"
+        "  area_codes: list of exactly 5 representative area codes as strings (no leading zeros lost),\n"
+        "    or an empty list [] if the format has no area code concept.\n"
+        "\n"
+        "Examples:\n"
+        '  US  (+1 212-555-XXXX): {"calling_code": "1",  "mobile_format": "{AC}-XXX-XXXX",  "area_codes": ["212","415","312","646","202"]}\n'
+        '  FR  (+33 6 XX XX XX XX): {"calling_code": "33", "mobile_format": "6 XX XX XX XX", "area_codes": []}\n'
+        '  UK  (+44 7XXX XXXXXX): {"calling_code": "44", "mobile_format": "7XXX XXXXXX",   "area_codes": []}\n'
+        '  DE  (+49 151 12345678): {"calling_code": "49", "mobile_format": "151 XXXXXXXX",  "area_codes": []}\n'
         "Return only the JSON object, no markdown."
     )
     text, _ = await llm.generate_text(
@@ -144,20 +155,37 @@ async def _generate_phone_format(language_name: str, language: str, llm: LLMClie
     data = extract_and_load_json(text)
     calling_code = str(data.get("calling_code", ""))
     mobile_format = data.get("mobile_format")
+    area_codes = data.get("area_codes", [])
     if not calling_code or not isinstance(mobile_format, str) or not mobile_format:
         raise ValueError(f"Phone format generation returned invalid data: {data!r}")
-    return {"calling_code": calling_code, "mobile_format": mobile_format}
+    if not isinstance(area_codes, list):
+        area_codes = []
+    area_codes = [str(ac) for ac in area_codes]
+    if "{AC}" in mobile_format and not area_codes:
+        raise ValueError(f"mobile_format uses {{AC}} but area_codes is empty: {data!r}")
+    return {"calling_code": calling_code, "mobile_format": mobile_format, "area_codes": area_codes}
 
 
 def _render_phone(spec: dict, record_id: str) -> str:
     """Generate a deterministic mobile phone number for record_id using the format spec.
 
-    In mobile_format, each 'X' is replaced by a random digit; all other characters are literals.
+    In mobile_format:
+      - Each 'X' is replaced by a deterministic random digit.
+      - '{AC}' is replaced by a deterministically selected area code from spec['area_codes'].
+      - All other characters are fixed literals / separators.
     """
     h = int(hashlib.sha256(f"phone:{record_id}".encode()).hexdigest(), 16)
     calling_code = spec["calling_code"]
+    area_codes = spec.get("area_codes", [])
+
+    fmt = spec["mobile_format"]
+    if "{AC}" in fmt and area_codes:
+        ac = area_codes[h % len(area_codes)]
+        h //= len(area_codes)
+        fmt = fmt.replace("{AC}", ac)
+
     result = []
-    for ch in spec["mobile_format"]:
+    for ch in fmt:
         if ch == "X":
             result.append(str(h % 10))
             h //= 10
@@ -176,16 +204,6 @@ def _seeded_index(seed: str, n: int) -> int:
     return h % n
 
 
-def _use_native_script(record_id: str) -> bool:
-    """Fixed, language-independent assignment: ~half of records get native-script names.
-
-    Seeded only on record_id so the same record always picks the same script tier
-    regardless of which language is being added.
-    """
-    h = int(hashlib.sha256(f"script:{record_id}".encode()).hexdigest(), 16)
-    return (h % 2) == 1
-
-
 def _gender_to_bucket(gender: str) -> str:
     g = gender.strip().lower()
     if g in {"man", "male", "m"}:
@@ -196,44 +214,29 @@ def _gender_to_bucket(gender: str) -> str:
 
 
 async def _generate_names(language_name: str, llm: LLMClient) -> dict[str, list[str]]:
-    """Two separate requests — one for romanized/ASCII names, one for native-script names.
+    """Single request for BUCKET_SIZE native-script names per gender/last bucket.
 
-    Final arrays are [ascii_half] + [native_half] so indices always align with BUCKET_SIZE.
+    A parallel romanized list is generated separately via _romanize_names.
     """
-
-    def _make_prompt(script_instruction: str) -> str:
-        return (
-            f"Generate culturally authentic {language_name} names for a synthetic dataset.\n"
-            "Return JSON with EXACTLY these keys: male_first, female_first, last.\n"
-            f"Each list must have EXACTLY {BUCKET_SIZE} names.\n"
-            f"Script: {script_instruction}\n"
-            "Rules:\n"
-            "- No duplicates within a list. No honorifics or titles.\n"
-            "- Include common everyday names, not only famous people.\n"
-            f'Response format: {{"male_first": [...{BUCKET_SIZE} items...], "female_first": [...{BUCKET_SIZE} items...], "last": [...{BUCKET_SIZE} items...]}}'
-        )
-
-    ascii_prompt = _make_prompt("Latin alphabet only, no diacritics (romanized/ASCII forms).")
-    native_prompt = _make_prompt(
-        "Native script only (e.g. kanji for Japanese, Cyrillic for Russian, Arabic script, Devanagari, etc.). "
-        "For languages that only use Latin script (e.g. French, Spanish), use full diacritics."
+    prompt = (
+        f"Generate culturally authentic {language_name} names for a synthetic dataset.\n"
+        "Return JSON with EXACTLY these keys: male_first, female_first, last.\n"
+        f"Each list must have EXACTLY {BUCKET_SIZE} names.\n"
+        "Script: Native script only (e.g. kanji for Japanese, Cyrillic for Russian, Arabic script, Devanagari, etc.). "
+        "For languages that only use Latin script (e.g. French, Spanish), use full diacritics.\n"
+        "Rules:\n"
+        "- No duplicates within a list. No honorifics or titles.\n"
+        "- Include common everyday names, not only famous people.\n"
+        f'Response format: {{"male_first": [...{BUCKET_SIZE} items...], "female_first": [...{BUCKET_SIZE} items...], "last": [...{BUCKET_SIZE} items...]}}'
     )
-
-    (ascii_text, _), (native_text, _) = await asyncio.gather(
-        llm.generate_text([{"role": "user", "content": ascii_prompt}], response_format={"type": "json_object"}),
-        llm.generate_text([{"role": "user", "content": native_prompt}], response_format={"type": "json_object"}),
-    )
-
-    ascii_data = extract_and_load_json(ascii_text)
-    native_data = extract_and_load_json(native_text)
+    text, _ = await llm.generate_text([{"role": "user", "content": prompt}], response_format={"type": "json_object"})
+    data = extract_and_load_json(text)
     result: dict[str, list[str]] = {}
     for key in ("male_first", "female_first", "last"):
-        for label, data in (("ascii", ascii_data), ("native", native_data)):
-            lst = data.get(key)
-            if not isinstance(lst, list) or len(lst) != BUCKET_SIZE:
-                raise ValueError(f"Name generation ({label}): expected {BUCKET_SIZE} items for {key!r}, got {lst!r}")
-        result[key] = ascii_data[key] + native_data[key]
-
+        lst = data.get(key)
+        if not isinstance(lst, list) or len(lst) != BUCKET_SIZE:
+            raise ValueError(f"Name generation: expected {BUCKET_SIZE} items for {key!r}, got {lst!r}")
+        result[key] = lst
     return result
 
 
@@ -267,15 +270,14 @@ async def _translate_utterances(utterances: list[str], language_name: str, llm: 
 async def _romanize_names(names: dict[str, list[str]], language_name: str, llm: LLMClient) -> dict[str, list[str]]:
     """Return an ASCII-romanized parallel copy of ``names`` (same shape, same order).
 
-    Only the native-script half (indices BUCKET_SIZE onwards) is sent to the LLM.
-    The ASCII half is already correct and is copied through unchanged.
+    All names are native-script so the full list is sent to the LLM.
     """
-    flat_native: list[str] = []
+    flat: list[str] = []
     spans: dict[str, tuple[int, int]] = {}
     for key in ("male_first", "female_first", "last"):
-        start = len(flat_native)
-        flat_native.extend(names[key][BUCKET_SIZE:])
-        spans[key] = (start, len(flat_native))
+        start = len(flat)
+        flat.extend(names[key])
+        spans[key] = (start, len(flat))
 
     prompt = (
         f"Romanize each name below into ASCII using standard {language_name} transliteration.\n"
@@ -283,7 +285,7 @@ async def _romanize_names(names: dict[str, list[str]], language_name: str, llm: 
         "- Preserve order exactly; no additions, no removals, no duplicates collapsed.\n"
         "- Single token per input (no titles, no diacritics in output).\n"
         '- Return JSON: {"romanized": ["...", "..."]}\n\n'
-        "Names:\n" + "\n".join(f"{i + 1}. {n}" for i, n in enumerate(flat_native))
+        "Names:\n" + "\n".join(f"{i + 1}. {n}" for i, n in enumerate(flat))
     )
     text, _ = await llm.generate_text(
         [{"role": "user", "content": prompt}],
@@ -291,10 +293,9 @@ async def _romanize_names(names: dict[str, list[str]], language_name: str, llm: 
     )
     data = extract_and_load_json(text)
     rom = data.get("romanized")
-    if not isinstance(rom, list) or len(rom) != len(flat_native):
-        raise ValueError(f"Expected {len(flat_native)} romanized names, got: {rom!r}")
-    # Reconstruct: ASCII half unchanged, native half romanized — indices stay aligned.
-    return {key: names[key][:BUCKET_SIZE] + rom[spans[key][0] : spans[key][1]] for key in spans}
+    if not isinstance(rom, list) or len(rom) != len(flat):
+        raise ValueError(f"Expected {len(flat)} romanized names, got: {rom!r}")
+    return {key: rom[spans[key][0] : spans[key][1]] for key in spans}
 
 
 def _load_names_file(path: Path) -> dict[str, list[str]]:
@@ -303,10 +304,9 @@ def _load_names_file(path: Path) -> dict[str, list[str]]:
         lst = data.get(key)
         if not isinstance(lst, list) or not lst:
             raise ValueError(f"--names-file missing/empty key {key!r}")
-        if len(lst) < BUCKET_SIZE * 2:
+        if len(lst) < BUCKET_SIZE:
             raise ValueError(
-                f"--names-file key {key!r} has {len(lst)} entries; need at least {BUCKET_SIZE * 2} "
-                f"({BUCKET_SIZE} ASCII + {BUCKET_SIZE} native-script)"
+                f"--names-file key {key!r} has {len(lst)} entries; need at least {BUCKET_SIZE} native-script names"
             )
     return data
 
@@ -506,10 +506,8 @@ async def add_culture(
                     "re-run without skipping name generation"
                 )
             seed = f"{rec['id']}|{language}"
-            # Script tier is fixed per record_id across all languages (~50/50 ASCII vs native).
-            offset = BUCKET_SIZE if _use_native_script(rec["id"]) else 0
-            first_idx = offset + _seeded_index(seed + "|first", BUCKET_SIZE)
-            last_idx = offset + _seeded_index(seed + "|last", BUCKET_SIZE)
+            first_idx = _seeded_index(seed + "|first", BUCKET_SIZE)
+            last_idx = _seeded_index(seed + "|last", BUCKET_SIZE)
             rec["culture_overrides"][language] = {
                 "first_name": names[bucket][first_idx],
                 "last_name": names["last"][last_idx],
@@ -530,13 +528,12 @@ async def add_culture(
                 )
             comp_gender = en_companion.get("gender") or gender
             comp_bucket = _gender_to_bucket(comp_gender)
-            offset = BUCKET_SIZE if _use_native_script(rec["id"]) else 0
-            comp_idx = offset + _seeded_index(f"{rec['id']}|{language}|companion|first", BUCKET_SIZE)
+            comp_idx = _seeded_index(f"{rec['id']}|{language}|companion|first", BUCKET_SIZE)
             # Ensure distinct from the user's first-name slot. Recompute the user's
             # first_idx here since the primary entry may have been written in a prior run.
-            user_first_idx = offset + _seeded_index(f"{rec['id']}|{language}|first", BUCKET_SIZE)
+            user_first_idx = _seeded_index(f"{rec['id']}|{language}|first", BUCKET_SIZE)
             if comp_bucket == bucket and comp_idx == user_first_idx:
-                comp_idx = offset + ((comp_idx + 1) % BUCKET_SIZE)
+                comp_idx = (comp_idx + 1) % BUCKET_SIZE
             rec["culture_overrides"][language]["companion"] = {
                 "first_name": names[comp_bucket][comp_idx],
                 "gender": comp_gender,

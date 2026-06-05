@@ -664,9 +664,6 @@
         "catalog_id": "APP-1001",
         "department_restrictions": [],
         "name": "Slack",
-        "name_aliases": [
-          "slack"
-        ],
         "requires_manager_approval": false,
         "vendor": "Slack Technologies"
       }
@@ -680,9 +677,6 @@
           "temporary"
         ],
         "name": "Microsoft Visio",
-        "name_aliases": [
-          "visio"
-        ],
         "vendor": "Microsoft"
       }
     }

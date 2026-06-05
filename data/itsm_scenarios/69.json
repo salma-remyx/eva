@@ -521,7 +521,6 @@
         "catalog_id": "APP-1001",
         "department_restrictions": [],
         "name": "Confluence",
-        "name_aliases": [],
         "requires_manager_approval": false,
         "vendor": "Atlassian"
       },
@@ -533,7 +532,6 @@
         "catalog_id": "APP-1002",
         "department_restrictions": [],
         "name": "Datadog",
-        "name_aliases": [],
         "requires_manager_approval": true,
         "vendor": "Datadog"
       },
@@ -549,7 +547,6 @@
           "MKT"
         ],
         "name": "Salesforce",
-        "name_aliases": [],
         "requires_manager_approval": true,
         "vendor": "Salesforce"
       }
@@ -563,7 +560,6 @@
           "temporary"
         ],
         "name": "IntelliJ",
-        "name_aliases": [],
         "vendor": "JetBrains"
       },
       "LIC-2002": {
@@ -574,9 +570,6 @@
           "temporary"
         ],
         "name": "Adobe Acrobat Pro",
-        "name_aliases": [
-          "Acrobat Pro"
-        ],
         "vendor": "Adobe"
       }
     }

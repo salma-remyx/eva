@@ -916,9 +916,6 @@
         "catalog_id": "APP-1001",
         "department_restrictions": [],
         "name": "Slack",
-        "name_aliases": [
-          "slack"
-        ],
         "requires_manager_approval": false,
         "vendor": "Salesforce"
       },
@@ -931,9 +928,6 @@
         "catalog_id": "APP-1002",
         "department_restrictions": [],
         "name": "Confluence",
-        "name_aliases": [
-          "confluence"
-        ],
         "requires_manager_approval": false,
         "vendor": "Atlassian"
       }
@@ -947,10 +941,6 @@
           "temporary"
         ],
         "name": "JetBrains IntelliJ IDEA",
-        "name_aliases": [
-          "IntelliJ",
-          "IntelliJ IDEA"
-        ],
         "vendor": "JetBrains"
       }
     }

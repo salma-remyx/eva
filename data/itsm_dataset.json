@@ -74,8 +74,8 @@
         "employees": {
           "EMP048271": {
             "employee_id": "EMP048271",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1991-07-14",
             "phone_last_four": "7294",
             "otp_code": "481926",
@@ -831,13 +831,13 @@
         "first_name": "Marcus",
         "last_name": "Chen"
       },
-      "fr": {
-        "first_name": "Éric",
-        "last_name": "Nicolas"
-      },
       "fr-CA": {
-        "first_name": "Sébastien",
-        "last_name": "Dufour"
+        "first_name": "Stéphane",
+        "last_name": "Lemieux"
+      },
+      "fr": {
+        "first_name": "Rémi",
+        "last_name": "Rousseau"
       }
     },
     "romanized_culture_overrides": {
@@ -845,13 +845,13 @@
         "first_name": "Marcus",
         "last_name": "Chen"
       },
-      "fr": {
-        "first_name": "Eric",
-        "last_name": "Nicolas"
-      },
       "fr-CA": {
-        "first_name": "Sebastien",
-        "last_name": "Dufour"
+        "first_name": "Stephane",
+        "last_name": "Lemieux"
+      },
+      "fr": {
+        "first_name": "Remi",
+        "last_name": "Rousseau"
       }
     }
   },
@@ -1646,13 +1646,13 @@
         "first_name": "Hannah",
         "last_name": "Morrison"
       },
-      "fr": {
-        "first_name": "Océane",
-        "last_name": "Bonnet"
-      },
       "fr-CA": {
-        "first_name": "Nathalie",
-        "last_name": "Couture"
+        "first_name": "Noémie",
+        "last_name": "Girard"
+      },
+      "fr": {
+        "first_name": "Inès",
+        "last_name": "Martin"
       }
     },
     "romanized_culture_overrides": {
@@ -1660,13 +1660,13 @@
         "first_name": "Hannah",
         "last_name": "Morrison"
       },
-      "fr": {
-        "first_name": "Oceane",
-        "last_name": "Bonnet"
-      },
       "fr-CA": {
-        "first_name": "Nathalie",
-        "last_name": "Couture"
+        "first_name": "Noemie",
+        "last_name": "Girard"
+      },
+      "fr": {
+        "first_name": "Ines",
+        "last_name": "Martin"
       }
     }
   },
@@ -1767,8 +1767,8 @@
         "employees": {
           "EMP068347": {
             "employee_id": "EMP068347",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1991-04-17",
             "phone_last_four": "2916",
             "otp_code": "482193",
@@ -2146,9 +2146,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Slack",
-              "name_aliases": [
-                "slack"
-              ],
               "vendor": "Salesforce",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -2162,10 +2159,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ",
-                "IntelliJ IDEA"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 599,
               "license_types_supported": [
@@ -2637,13 +2630,13 @@
         "first_name": "Declan",
         "last_name": "Murphy"
       },
-      "fr": {
-        "first_name": "Alain",
-        "last_name": "Faure"
-      },
       "fr-CA": {
-        "first_name": "Luc",
-        "last_name": "Dubois"
+        "first_name": "Ghislain",
+        "last_name": "Desjardins"
+      },
+      "fr": {
+        "first_name": "Thierry",
+        "last_name": "Garnier"
       }
     },
     "romanized_culture_overrides": {
@@ -2651,13 +2644,13 @@
         "first_name": "Declan",
         "last_name": "Murphy"
       },
-      "fr": {
-        "first_name": "Alain",
-        "last_name": "Faure"
-      },
       "fr-CA": {
-        "first_name": "Luc",
-        "last_name": "Dubois"
+        "first_name": "Ghislain",
+        "last_name": "Desjardins"
+      },
+      "fr": {
+        "first_name": "Thierry",
+        "last_name": "Garnier"
       }
     }
   },
@@ -3126,9 +3119,6 @@
             "APP-2048": {
               "catalog_id": "APP-2048",
               "name": "Datadog",
-              "name_aliases": [
-                "datadog"
-              ],
               "vendor": "Datadog",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -3140,9 +3130,6 @@
             "APP-1020": {
               "catalog_id": "APP-1020",
               "name": "Slack",
-              "name_aliases": [
-                "slack"
-              ],
               "vendor": "Salesforce",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -3156,9 +3143,6 @@
             "LIC-1100": {
               "catalog_id": "LIC-1100",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 599,
               "license_types_supported": [
@@ -3435,9 +3419,6 @@
               "application": {
                 "catalog_id": "APP-2048",
                 "name": "Datadog",
-                "name_aliases": [
-                  "datadog"
-                ],
                 "vendor": "Datadog",
                 "requires_manager_approval": true,
                 "available_access_levels": [
@@ -3552,13 +3533,13 @@
         "first_name": "Vera",
         "last_name": "Kuznetsova"
       },
-      "fr": {
-        "first_name": "Mélanie",
-        "last_name": "Leroy"
-      },
       "fr-CA": {
-        "first_name": "Céline",
-        "last_name": "Roy"
+        "first_name": "Geneviève",
+        "last_name": "Lachance"
+      },
+      "fr": {
+        "first_name": "Inès",
+        "last_name": "André"
       }
     },
     "romanized_culture_overrides": {
@@ -3566,13 +3547,13 @@
         "first_name": "Vera",
         "last_name": "Kuznetsova"
       },
-      "fr": {
-        "first_name": "Melanie",
-        "last_name": "Leroy"
-      },
       "fr-CA": {
-        "first_name": "Celine",
-        "last_name": "Roy"
+        "first_name": "Genevieve",
+        "last_name": "Lachance"
+      },
+      "fr": {
+        "first_name": "Ines",
+        "last_name": "Andre"
       }
     }
   },
@@ -4390,13 +4371,13 @@
         "first_name": "Miles",
         "last_name": "Crawford"
       },
-      "fr": {
-        "first_name": "Jérôme",
-        "last_name": "Bertrand"
-      },
       "fr-CA": {
-        "first_name": "Antoine",
-        "last_name": "Lévesque"
+        "first_name": "Patrick",
+        "last_name": "Desjardins"
+      },
+      "fr": {
+        "first_name": "Édouard",
+        "last_name": "David"
       }
     },
     "romanized_culture_overrides": {
@@ -4404,13 +4385,13 @@
         "first_name": "Miles",
         "last_name": "Crawford"
       },
-      "fr": {
-        "first_name": "Jerome",
-        "last_name": "Bertrand"
-      },
       "fr-CA": {
-        "first_name": "Antoine",
-        "last_name": "Levesque"
+        "first_name": "Patrick",
+        "last_name": "Desjardins"
+      },
+      "fr": {
+        "first_name": "Edouard",
+        "last_name": "David"
       }
     }
   },
@@ -4513,8 +4494,8 @@
         "employees": {
           "EMP077777": {
             "employee_id": "EMP077777",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1986-04-18",
             "phone_last_four": "9023",
             "otp_code": "405126",
@@ -5477,13 +5458,13 @@
         "first_name": "Evelyn",
         "last_name": "Hayes"
       },
-      "fr": {
-        "first_name": "Olivier",
-        "last_name": "Francois"
-      },
       "fr-CA": {
-        "first_name": "Jean",
-        "last_name": "Simard"
+        "first_name": "Ghislain",
+        "last_name": "Bédard"
+      },
+      "fr": {
+        "first_name": "Christophe",
+        "last_name": "Fournier"
       }
     },
     "romanized_culture_overrides": {
@@ -5491,13 +5472,13 @@
         "first_name": "Evelyn",
         "last_name": "Hayes"
       },
-      "fr": {
-        "first_name": "Olivier",
-        "last_name": "Francois"
-      },
       "fr-CA": {
-        "first_name": "Jean",
-        "last_name": "Simard"
+        "first_name": "Ghislain",
+        "last_name": "Bedard"
+      },
+      "fr": {
+        "first_name": "Christophe",
+        "last_name": "Fournier"
       }
     }
   },
@@ -6339,13 +6320,13 @@
         "first_name": "Dmitri",
         "last_name": "Volkov"
       },
-      "fr": {
-        "first_name": "Nicolas",
-        "last_name": "David"
-      },
       "fr-CA": {
-        "first_name": "Eric",
-        "last_name": "Lavoie"
+        "first_name": "Claude",
+        "last_name": "Fréchette"
+      },
+      "fr": {
+        "first_name": "Guillaume",
+        "last_name": "Dumont"
       }
     },
     "romanized_culture_overrides": {
@@ -6353,13 +6334,13 @@
         "first_name": "Dmitri",
         "last_name": "Volkov"
       },
-      "fr": {
-        "first_name": "Nicolas",
-        "last_name": "David"
-      },
       "fr-CA": {
-        "first_name": "Eric",
-        "last_name": "Lavoie"
+        "first_name": "Claude",
+        "last_name": "Frechette"
+      },
+      "fr": {
+        "first_name": "Guillaume",
+        "last_name": "Dumont"
       }
     }
   },
@@ -6442,8 +6423,8 @@
         "employees": {
           "EMP048271": {
             "employee_id": "EMP048271",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1991-03-18",
             "phone_last_four": "7294",
             "otp_code": "481926",
@@ -6971,10 +6952,6 @@
           "BLD3": {
             "building_code": "BLD3",
             "name": "Headquarters",
-            "name_aliases": [
-              "HQ",
-              "Headquarters Campus"
-            ],
             "floors": {
               "FL2": {
                 "desks": {
@@ -7343,13 +7320,13 @@
         "first_name": "Marcus",
         "last_name": "Chen"
       },
-      "fr": {
-        "first_name": "Louis",
-        "last_name": "Lambert"
-      },
       "fr-CA": {
-        "first_name": "Denis",
-        "last_name": "Gagnon"
+        "first_name": "Paul",
+        "last_name": "Nadeau"
+      },
+      "fr": {
+        "first_name": "Nicolas",
+        "last_name": "Durand"
       }
     },
     "romanized_culture_overrides": {
@@ -7357,13 +7334,13 @@
         "first_name": "Marcus",
         "last_name": "Chen"
       },
-      "fr": {
-        "first_name": "Louis",
-        "last_name": "Lambert"
-      },
       "fr-CA": {
-        "first_name": "Denis",
-        "last_name": "Gagnon"
+        "first_name": "Paul",
+        "last_name": "Nadeau"
+      },
+      "fr": {
+        "first_name": "Nicolas",
+        "last_name": "Durand"
       }
     }
   },
@@ -8049,13 +8026,13 @@
         "first_name": "Kenji",
         "last_name": "Nakamura"
       },
-      "fr": {
-        "first_name": "Elodie",
-        "last_name": "Laurent"
-      },
       "fr-CA": {
-        "first_name": "Monique",
+        "first_name": "Mélanie",
         "last_name": "Gauthier"
+      },
+      "fr": {
+        "first_name": "Sylvie",
+        "last_name": "Thomas"
       }
     },
     "romanized_culture_overrides": {
@@ -8063,13 +8040,13 @@
         "first_name": "Kenji",
         "last_name": "Nakamura"
       },
-      "fr": {
-        "first_name": "Elodie",
-        "last_name": "Laurent"
-      },
       "fr-CA": {
-        "first_name": "Monique",
+        "first_name": "Melanie",
         "last_name": "Gauthier"
+      },
+      "fr": {
+        "first_name": "Sylvie",
+        "last_name": "Thomas"
       }
     }
   },
@@ -8521,9 +8498,6 @@
             "APP-1007": {
               "catalog_id": "APP-1007",
               "name": "Confluence",
-              "name_aliases": [
-                "Atlassian Confluence"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -8536,9 +8510,6 @@
             "APP-1011": {
               "catalog_id": "APP-1011",
               "name": "Jira",
-              "name_aliases": [
-                "Atlassian Jira"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -8551,7 +8522,6 @@
             "APP-1022": {
               "catalog_id": "APP-1022",
               "name": "Salesforce",
-              "name_aliases": [],
               "vendor": "Salesforce",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -8569,9 +8539,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 699,
               "license_types_supported": [
@@ -8855,9 +8822,6 @@
               "application": {
                 "catalog_id": "APP-1007",
                 "name": "Confluence",
-                "name_aliases": [
-                  "Atlassian Confluence"
-                ],
                 "vendor": "Atlassian",
                 "requires_manager_approval": false,
                 "available_access_levels": [
@@ -8920,13 +8884,13 @@
         "first_name": "Elena",
         "last_name": "Petrov"
       },
-      "fr": {
-        "first_name": "Sophie",
-        "last_name": "Martin"
-      },
       "fr-CA": {
-        "first_name": "Christine",
-        "last_name": "Martel"
+        "first_name": "Monique",
+        "last_name": "Nadeau"
+      },
+      "fr": {
+        "first_name": "Anaïs",
+        "last_name": "Legrand"
       }
     },
     "romanized_culture_overrides": {
@@ -8934,13 +8898,13 @@
         "first_name": "Elena",
         "last_name": "Petrov"
       },
-      "fr": {
-        "first_name": "Sophie",
-        "last_name": "Martin"
-      },
       "fr-CA": {
-        "first_name": "Christine",
-        "last_name": "Martel"
+        "first_name": "Monique",
+        "last_name": "Nadeau"
+      },
+      "fr": {
+        "first_name": "Anais",
+        "last_name": "Legrand"
       }
     }
   },
@@ -9017,8 +8981,8 @@
         "employees": {
           "EMP071549": {
             "employee_id": "EMP071549",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1992-03-14",
             "phone_last_four": "5283",
             "otp_code": "441209",
@@ -9520,9 +9484,6 @@
             "APP-1042": {
               "catalog_id": "APP-1042",
               "name": "Datadog",
-              "name_aliases": [
-                "datadog"
-              ],
               "vendor": "Datadog",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -9534,9 +9495,6 @@
             "APP-1010": {
               "catalog_id": "APP-1010",
               "name": "Slack",
-              "name_aliases": [
-                "slack"
-              ],
               "vendor": "Salesforce",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -9548,9 +9506,6 @@
             "APP-1065": {
               "catalog_id": "APP-1065",
               "name": "Confluence",
-              "name_aliases": [
-                "confluence"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -9565,10 +9520,6 @@
             "LIC-0018": {
               "catalog_id": "LIC-0018",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "intellij",
-                "idea"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 599,
               "license_types_supported": [
@@ -9862,9 +9813,6 @@
               "application": {
                 "catalog_id": "APP-1042",
                 "name": "Datadog",
-                "name_aliases": [
-                  "datadog"
-                ],
                 "vendor": "Datadog",
                 "requires_manager_approval": true,
                 "available_access_levels": [
@@ -9947,13 +9895,13 @@
         "first_name": "Amara",
         "last_name": "Diallo"
       },
-      "fr": {
-        "first_name": "Océane",
-        "last_name": "Mercier"
-      },
       "fr-CA": {
-        "first_name": "Noémie",
+        "first_name": "Danielle",
         "last_name": "Tremblay"
+      },
+      "fr": {
+        "first_name": "Marion",
+        "last_name": "Bernard"
       }
     },
     "romanized_culture_overrides": {
@@ -9961,13 +9909,13 @@
         "first_name": "Amara",
         "last_name": "Diallo"
       },
-      "fr": {
-        "first_name": "Oceane",
-        "last_name": "Mercier"
-      },
       "fr-CA": {
-        "first_name": "Noemie",
+        "first_name": "Danielle",
         "last_name": "Tremblay"
+      },
+      "fr": {
+        "first_name": "Marion",
+        "last_name": "Bernard"
       }
     }
   },
@@ -10410,9 +10358,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Slack",
-              "name_aliases": [
-                "slack"
-              ],
               "vendor": "Salesforce",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -10424,9 +10369,6 @@
             "APP-1002": {
               "catalog_id": "APP-1002",
               "name": "Confluence",
-              "name_aliases": [
-                "confluence"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -10441,10 +10383,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ",
-                "IntelliJ IDEA"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 699,
               "license_types_supported": [
@@ -10455,9 +10393,6 @@
             "LIC-2002": {
               "catalog_id": "LIC-2002",
               "name": "Microsoft Visio",
-              "name_aliases": [
-                "Visio"
-              ],
               "vendor": "Microsoft",
               "license_cost_usd": 249,
               "license_types_supported": [
@@ -10751,10 +10686,6 @@
               "license": {
                 "catalog_id": "LIC-2001",
                 "name": "JetBrains IntelliJ IDEA",
-                "name_aliases": [
-                  "IntelliJ",
-                  "IntelliJ IDEA"
-                ],
                 "vendor": "JetBrains",
                 "license_cost_usd": 699,
                 "license_types_supported": [
@@ -10832,13 +10763,13 @@
         "first_name": "Carlos",
         "last_name": "Rivera"
       },
+      "fr-CA": {
+        "first_name": "Nicolas",
+        "last_name": "Lemieux"
+      },
       "fr": {
         "first_name": "Michel",
-        "last_name": "Dubois"
-      },
-      "fr-CA": {
-        "first_name": "Alain",
-        "last_name": "Dufour"
+        "last_name": "Lopez"
       }
     },
     "romanized_culture_overrides": {
@@ -10846,13 +10777,13 @@
         "first_name": "Carlos",
         "last_name": "Rivera"
       },
+      "fr-CA": {
+        "first_name": "Nicolas",
+        "last_name": "Lemieux"
+      },
       "fr": {
         "first_name": "Michel",
-        "last_name": "Dubois"
-      },
-      "fr-CA": {
-        "first_name": "Alain",
-        "last_name": "Dufour"
+        "last_name": "Lopez"
       }
     }
   },
@@ -10926,8 +10857,8 @@
         "employees": {
           "EMP083947": {
             "employee_id": "EMP083947",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1994-03-11",
             "phone_last_four": "6628",
             "otp_code": "481927",
@@ -11305,9 +11236,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Slack",
-              "name_aliases": [
-                "slack app"
-              ],
               "vendor": "Salesforce",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -11319,9 +11247,6 @@
             "APP-1042": {
               "catalog_id": "APP-1042",
               "name": "Confluence",
-              "name_aliases": [
-                "wiki"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -11336,9 +11261,6 @@
             "LIC-2007": {
               "catalog_id": "LIC-2007",
               "name": "Figma",
-              "name_aliases": [
-                "figma design"
-              ],
               "vendor": "Figma",
               "license_cost_usd": 360,
               "license_types_supported": [
@@ -11349,10 +11271,6 @@
             "LIC-2011": {
               "catalog_id": "LIC-2011",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "intellij",
-                "idea"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 599,
               "license_types_supported": [
@@ -11627,9 +11545,6 @@
               "license": {
                 "catalog_id": "LIC-2007",
                 "name": "Figma",
-                "name_aliases": [
-                  "figma design"
-                ],
                 "vendor": "Figma",
                 "license_cost_usd": 360,
                 "license_types_supported": [
@@ -11691,13 +11606,13 @@
         "first_name": "Aisha",
         "last_name": "Mohammed"
       },
-      "fr": {
-        "first_name": "Marie",
-        "last_name": "Lambert"
-      },
       "fr-CA": {
-        "first_name": "Louise",
-        "last_name": "Desjardins"
+        "first_name": "Christine",
+        "last_name": "Nadeau"
+      },
+      "fr": {
+        "first_name": "Marion",
+        "last_name": "Vincent"
       }
     },
     "romanized_culture_overrides": {
@@ -11705,13 +11620,13 @@
         "first_name": "Aisha",
         "last_name": "Mohammed"
       },
-      "fr": {
-        "first_name": "Marie",
-        "last_name": "Lambert"
-      },
       "fr-CA": {
-        "first_name": "Louise",
-        "last_name": "Desjardins"
+        "first_name": "Christine",
+        "last_name": "Nadeau"
+      },
+      "fr": {
+        "first_name": "Marion",
+        "last_name": "Vincent"
       }
     }
   },
@@ -12054,9 +11969,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Slack",
-              "name_aliases": [
-                "slack app"
-              ],
               "vendor": "Slack Technologies",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -12071,9 +11983,6 @@
             "LIC-0018": {
               "catalog_id": "LIC-0018",
               "name": "IntelliJ IDEA",
-              "name_aliases": [
-                "JetBrains IntelliJ IDEA"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 599,
               "license_types_supported": [
@@ -12084,9 +11993,6 @@
             "LIC-0042": {
               "catalog_id": "LIC-0042",
               "name": "Docker Desktop",
-              "name_aliases": [
-                "Docker"
-              ],
               "vendor": "Docker",
               "license_cost_usd": 180,
               "license_types_supported": [
@@ -12205,10 +12111,6 @@
           "BLD3": {
             "building_code": "BLD3",
             "name": "Downtown Engineering Center",
-            "name_aliases": [
-              "downtown",
-              "engineering center"
-            ],
             "floors": {
               "FL2": {
                 "desks": {
@@ -12454,13 +12356,13 @@
         "first_name": "Marcus",
         "last_name": "Chen"
       },
-      "fr": {
-        "first_name": "Arthur",
-        "last_name": "Mercier"
-      },
       "fr-CA": {
-        "first_name": "Julien",
-        "last_name": "Morin"
+        "first_name": "Philippe",
+        "last_name": "Lapointe"
+      },
+      "fr": {
+        "first_name": "Stéphane",
+        "last_name": "Lefèvre"
       }
     },
     "romanized_culture_overrides": {
@@ -12468,13 +12370,13 @@
         "first_name": "Marcus",
         "last_name": "Chen"
       },
-      "fr": {
-        "first_name": "Arthur",
-        "last_name": "Mercier"
-      },
       "fr-CA": {
-        "first_name": "Julien",
-        "last_name": "Morin"
+        "first_name": "Philippe",
+        "last_name": "Lapointe"
+      },
+      "fr": {
+        "first_name": "Stephane",
+        "last_name": "Lefevre"
       }
     }
   },
@@ -13267,13 +13169,13 @@
         "first_name": "Olivia",
         "last_name": "Tanaka"
       },
-      "fr": {
-        "first_name": "Julie",
-        "last_name": "Martin"
-      },
       "fr-CA": {
-        "first_name": "Martine",
-        "last_name": "Ouellet"
+        "first_name": "Camille",
+        "last_name": "Renaud"
+      },
+      "fr": {
+        "first_name": "Louise",
+        "last_name": "Dupont"
       }
     },
     "romanized_culture_overrides": {
@@ -13281,13 +13183,13 @@
         "first_name": "Olivia",
         "last_name": "Tanaka"
       },
-      "fr": {
-        "first_name": "Julie",
-        "last_name": "Martin"
-      },
       "fr-CA": {
-        "first_name": "Martine",
-        "last_name": "Ouellet"
+        "first_name": "Camille",
+        "last_name": "Renaud"
+      },
+      "fr": {
+        "first_name": "Louise",
+        "last_name": "Dupont"
       }
     }
   },
@@ -13363,8 +13265,8 @@
         "employees": {
           "EMP066666": {
             "employee_id": "EMP066666",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1993-02-11",
             "phone_last_four": "4425",
             "otp_code": "731942",
@@ -13869,9 +13771,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Slack",
-              "name_aliases": [
-                "slack"
-              ],
               "vendor": "Salesforce",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -13884,9 +13783,6 @@
             "APP-1002": {
               "catalog_id": "APP-1002",
               "name": "Confluence",
-              "name_aliases": [
-                "confluence"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -13901,10 +13797,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "Adobe Creative Cloud",
-              "name_aliases": [
-                "creative cloud",
-                "adobe cc"
-              ],
               "vendor": "Adobe",
               "license_cost_usd": 840,
               "license_types_supported": [
@@ -14242,13 +14134,13 @@
         "first_name": "Sofia",
         "last_name": "Alvarez"
       },
-      "fr": {
-        "first_name": "Emma",
-        "last_name": "Legrand"
-      },
       "fr-CA": {
-        "first_name": "Brigitte",
-        "last_name": "Ouellet"
+        "first_name": "Noémie",
+        "last_name": "Tremblay"
+      },
+      "fr": {
+        "first_name": "Maëlle",
+        "last_name": "Rousseau"
       }
     },
     "romanized_culture_overrides": {
@@ -14256,13 +14148,13 @@
         "first_name": "Sofia",
         "last_name": "Alvarez"
       },
-      "fr": {
-        "first_name": "Emma",
-        "last_name": "Legrand"
-      },
       "fr-CA": {
-        "first_name": "Brigitte",
-        "last_name": "Ouellet"
+        "first_name": "Noemie",
+        "last_name": "Tremblay"
+      },
+      "fr": {
+        "first_name": "Maelle",
+        "last_name": "Rousseau"
       }
     }
   },
@@ -14721,9 +14613,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Slack",
-              "name_aliases": [
-                "slack"
-              ],
               "vendor": "Slack Technologies",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -14737,9 +14626,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 599,
               "license_types_supported": [
@@ -15095,13 +14981,13 @@
         "first_name": "Ethan",
         "last_name": "O'Brien"
       },
-      "fr": {
-        "first_name": "Baptiste",
-        "last_name": "Blanc"
-      },
       "fr-CA": {
-        "first_name": "Marc",
-        "last_name": "Côté"
+        "first_name": "Marcel",
+        "last_name": "Desjardins"
+      },
+      "fr": {
+        "first_name": "Alain",
+        "last_name": "David"
       }
     },
     "romanized_culture_overrides": {
@@ -15109,13 +14995,13 @@
         "first_name": "Ethan",
         "last_name": "O'Brien"
       },
-      "fr": {
-        "first_name": "Baptiste",
-        "last_name": "Blanc"
-      },
       "fr-CA": {
-        "first_name": "Marc",
-        "last_name": "Cote"
+        "first_name": "Marcel",
+        "last_name": "Desjardins"
+      },
+      "fr": {
+        "first_name": "Alain",
+        "last_name": "David"
       }
     }
   },
@@ -15198,8 +15084,8 @@
         "employees": {
           "EMP056428": {
             "employee_id": "EMP056428",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1991-03-14",
             "phone_last_four": "3391",
             "otp_code": "481203",
@@ -15946,13 +15832,13 @@
         "first_name": "Grace",
         "last_name": "Kim"
       },
-      "fr": {
-        "first_name": "Pauline",
-        "last_name": "Robert"
-      },
       "fr-CA": {
-        "first_name": "Valérie",
-        "last_name": "Simard"
+        "first_name": "Laurence",
+        "last_name": "Benoît"
+      },
+      "fr": {
+        "first_name": "Noémie",
+        "last_name": "Chevalier"
       }
     },
     "romanized_culture_overrides": {
@@ -15960,13 +15846,13 @@
         "first_name": "Grace",
         "last_name": "Kim"
       },
-      "fr": {
-        "first_name": "Pauline",
-        "last_name": "Robert"
-      },
       "fr-CA": {
-        "first_name": "Valerie",
-        "last_name": "Simard"
+        "first_name": "Laurence",
+        "last_name": "Benoit"
+      },
+      "fr": {
+        "first_name": "Noemie",
+        "last_name": "Chevalier"
       }
     }
   },
@@ -16750,13 +16636,13 @@
         "first_name": "Ahmed",
         "last_name": "Patel"
       },
-      "fr": {
-        "first_name": "Lucas",
-        "last_name": "Lambert"
-      },
       "fr-CA": {
-        "first_name": "Luc",
-        "last_name": "Mercier"
+        "first_name": "Simon",
+        "last_name": "Leblanc"
+      },
+      "fr": {
+        "first_name": "Thierry",
+        "last_name": "Perrin"
       }
     },
     "romanized_culture_overrides": {
@@ -16764,13 +16650,13 @@
         "first_name": "Ahmed",
         "last_name": "Patel"
       },
-      "fr": {
-        "first_name": "Lucas",
-        "last_name": "Lambert"
-      },
       "fr-CA": {
-        "first_name": "Luc",
-        "last_name": "Mercier"
+        "first_name": "Simon",
+        "last_name": "Leblanc"
+      },
+      "fr": {
+        "first_name": "Thierry",
+        "last_name": "Perrin"
       }
     }
   },
@@ -17534,13 +17420,13 @@
         "first_name": "Fatima",
         "last_name": "Hassan"
       },
-      "fr": {
-        "first_name": "Léa",
-        "last_name": "Bertrand"
-      },
       "fr-CA": {
-        "first_name": "Louise",
-        "last_name": "Lapointe"
+        "first_name": "Annie",
+        "last_name": "Paquette"
+      },
+      "fr": {
+        "first_name": "Sophie",
+        "last_name": "Vincent"
       }
     },
     "romanized_culture_overrides": {
@@ -17548,13 +17434,13 @@
         "first_name": "Fatima",
         "last_name": "Hassan"
       },
-      "fr": {
-        "first_name": "Lea",
-        "last_name": "Bertrand"
-      },
       "fr-CA": {
-        "first_name": "Louise",
-        "last_name": "Lapointe"
+        "first_name": "Annie",
+        "last_name": "Paquette"
+      },
+      "fr": {
+        "first_name": "Sophie",
+        "last_name": "Vincent"
       }
     }
   },
@@ -17648,8 +17534,8 @@
         "employees": {
           "EMP068743": {
             "employee_id": "EMP068743",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1990-04-18",
             "phone_last_four": "7158",
             "otp_code": "482915",
@@ -18470,13 +18356,13 @@
         "first_name": "Lucas",
         "last_name": "Ferreira"
       },
-      "fr": {
-        "first_name": "Antoine",
-        "last_name": "Roussel"
-      },
       "fr-CA": {
-        "first_name": "Gabriel",
-        "last_name": "Lévesque"
+        "first_name": "Jacques",
+        "last_name": "Dufour"
+      },
+      "fr": {
+        "first_name": "Adrien",
+        "last_name": "Lambert"
       }
     },
     "romanized_culture_overrides": {
@@ -18484,13 +18370,13 @@
         "first_name": "Lucas",
         "last_name": "Ferreira"
       },
-      "fr": {
-        "first_name": "Antoine",
-        "last_name": "Roussel"
-      },
       "fr-CA": {
-        "first_name": "Gabriel",
-        "last_name": "Levesque"
+        "first_name": "Jacques",
+        "last_name": "Dufour"
+      },
+      "fr": {
+        "first_name": "Adrien",
+        "last_name": "Lambert"
       }
     }
   },
@@ -19307,13 +19193,13 @@
         "first_name": "Isabelle",
         "last_name": "Tremblay"
       },
-      "fr": {
-        "first_name": "Jeanne",
-        "last_name": "Simon"
-      },
       "fr-CA": {
-        "first_name": "Genevieve",
-        "last_name": "Gagnon"
+        "first_name": "Josée",
+        "last_name": "Nadeau"
+      },
+      "fr": {
+        "first_name": "Océane",
+        "last_name": "Lopez"
       }
     },
     "romanized_culture_overrides": {
@@ -19321,13 +19207,13 @@
         "first_name": "Isabelle",
         "last_name": "Tremblay"
       },
-      "fr": {
-        "first_name": "Jeanne",
-        "last_name": "Simon"
-      },
       "fr-CA": {
-        "first_name": "Genevieve",
-        "last_name": "Gagnon"
+        "first_name": "Josee",
+        "last_name": "Nadeau"
+      },
+      "fr": {
+        "first_name": "Oceane",
+        "last_name": "Lopez"
       }
     }
   },
@@ -19423,8 +19309,8 @@
         "employees": {
           "EMP031482": {
             "employee_id": "EMP031482",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1988-03-12",
             "phone_last_four": "3614",
             "otp_code": "472018",
@@ -20197,13 +20083,13 @@
         "first_name": "Priya",
         "last_name": "Ramaswamy"
       },
-      "fr": {
-        "first_name": "Juliette",
-        "last_name": "Henry"
-      },
       "fr-CA": {
-        "first_name": "Nicole",
-        "last_name": "Renaud"
+        "first_name": "Sophie",
+        "last_name": "Deschênes"
+      },
+      "fr": {
+        "first_name": "Sophie",
+        "last_name": "Lefèvre"
       }
     },
     "romanized_culture_overrides": {
@@ -20211,13 +20097,13 @@
         "first_name": "Priya",
         "last_name": "Ramaswamy"
       },
-      "fr": {
-        "first_name": "Juliette",
-        "last_name": "Henry"
-      },
       "fr-CA": {
-        "first_name": "Nicole",
-        "last_name": "Renaud"
+        "first_name": "Sophie",
+        "last_name": "Deschenes"
+      },
+      "fr": {
+        "first_name": "Sophie",
+        "last_name": "Lefevre"
       }
     }
   },
@@ -21161,13 +21047,13 @@
         "first_name": "Wei",
         "last_name": "Zhang"
       },
-      "fr": {
-        "first_name": "Amandine",
-        "last_name": "Richard"
-      },
       "fr-CA": {
-        "first_name": "Francine",
-        "last_name": "Gagne"
+        "first_name": "Monique",
+        "last_name": "Gagné"
+      },
+      "fr": {
+        "first_name": "Maëlle",
+        "last_name": "Vincent"
       }
     },
     "romanized_culture_overrides": {
@@ -21175,13 +21061,13 @@
         "first_name": "Wei",
         "last_name": "Zhang"
       },
-      "fr": {
-        "first_name": "Amandine",
-        "last_name": "Richard"
-      },
       "fr-CA": {
-        "first_name": "Francine",
+        "first_name": "Monique",
         "last_name": "Gagne"
+      },
+      "fr": {
+        "first_name": "Maelle",
+        "last_name": "Vincent"
       }
     }
   },
@@ -22088,13 +21974,13 @@
         "first_name": "Tomoko",
         "last_name": "Ishikawa"
       },
-      "fr": {
-        "first_name": "Sébastien",
-        "last_name": "Garnier"
-      },
       "fr-CA": {
-        "first_name": "Jean",
-        "last_name": "Morin"
+        "first_name": "Ghislain",
+        "last_name": "Charbonneau"
+      },
+      "fr": {
+        "first_name": "Clément",
+        "last_name": "Guérin"
       }
     },
     "romanized_culture_overrides": {
@@ -22102,13 +21988,13 @@
         "first_name": "Tomoko",
         "last_name": "Ishikawa"
       },
-      "fr": {
-        "first_name": "Sebastien",
-        "last_name": "Garnier"
-      },
       "fr-CA": {
-        "first_name": "Jean",
-        "last_name": "Morin"
+        "first_name": "Ghislain",
+        "last_name": "Charbonneau"
+      },
+      "fr": {
+        "first_name": "Clement",
+        "last_name": "Guerin"
       }
     }
   },
@@ -22194,8 +22080,8 @@
         "employees": {
           "EMP055555": {
             "employee_id": "EMP055555",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1992-04-18",
             "phone_last_four": "8816",
             "otp_code": "105927",
@@ -22952,13 +22838,13 @@
         "first_name": "Ahmed",
         "last_name": "Patel"
       },
-      "fr": {
-        "first_name": "Christophe",
-        "last_name": "Fournier"
-      },
       "fr-CA": {
-        "first_name": "Vincent",
+        "first_name": "Antoine",
         "last_name": "Gauthier"
+      },
+      "fr": {
+        "first_name": "Sylvain",
+        "last_name": "Lefebvre"
       }
     },
     "romanized_culture_overrides": {
@@ -22966,13 +22852,13 @@
         "first_name": "Ahmed",
         "last_name": "Patel"
       },
-      "fr": {
-        "first_name": "Christophe",
-        "last_name": "Fournier"
-      },
       "fr-CA": {
-        "first_name": "Vincent",
+        "first_name": "Antoine",
         "last_name": "Gauthier"
+      },
+      "fr": {
+        "first_name": "Sylvain",
+        "last_name": "Lefebvre"
       }
     }
   },
@@ -23531,10 +23417,6 @@
           "BLD3": {
             "building_code": "BLD3",
             "name": "Downtown Engineering Center",
-            "name_aliases": [
-              "Downtown",
-              "Engineering Center"
-            ],
             "floors": {
               "FL2": {
                 "desks": {
@@ -23873,13 +23755,13 @@
         "first_name": "Priya",
         "last_name": "Ramaswamy"
       },
-      "fr": {
-        "first_name": "Marion",
-        "last_name": "Bernard"
-      },
       "fr-CA": {
-        "first_name": "Monique",
-        "last_name": "Cloutier"
+        "first_name": "Audrey",
+        "last_name": "Lachance"
+      },
+      "fr": {
+        "first_name": "Audrey",
+        "last_name": "Faure"
       }
     },
     "romanized_culture_overrides": {
@@ -23887,13 +23769,13 @@
         "first_name": "Priya",
         "last_name": "Ramaswamy"
       },
-      "fr": {
-        "first_name": "Marion",
-        "last_name": "Bernard"
-      },
       "fr-CA": {
-        "first_name": "Monique",
-        "last_name": "Cloutier"
+        "first_name": "Audrey",
+        "last_name": "Lachance"
+      },
+      "fr": {
+        "first_name": "Audrey",
+        "last_name": "Faure"
       }
     }
   },
@@ -23970,8 +23852,8 @@
         "employees": {
           "EMP066666": {
             "employee_id": "EMP066666",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1992-04-18",
             "phone_last_four": "4425",
             "otp_code": "318442",
@@ -24663,13 +24545,13 @@
         "first_name": "Sofia",
         "last_name": "Alvarez"
       },
-      "fr": {
-        "first_name": "Camille",
-        "last_name": "Blanc"
-      },
       "fr-CA": {
-        "first_name": "Camille",
-        "last_name": "Lavoie"
+        "first_name": "Annie",
+        "last_name": "Girard"
+      },
+      "fr": {
+        "first_name": "Caroline",
+        "last_name": "Michel"
       }
     },
     "romanized_culture_overrides": {
@@ -24677,13 +24559,13 @@
         "first_name": "Sofia",
         "last_name": "Alvarez"
       },
-      "fr": {
-        "first_name": "Camille",
-        "last_name": "Blanc"
-      },
       "fr-CA": {
-        "first_name": "Camille",
-        "last_name": "Lavoie"
+        "first_name": "Annie",
+        "last_name": "Girard"
+      },
+      "fr": {
+        "first_name": "Caroline",
+        "last_name": "Michel"
       }
     }
   },
@@ -26021,13 +25903,13 @@
         "first_name": "Benjamin",
         "last_name": "Torres"
       },
-      "fr": {
-        "first_name": "Adrien",
-        "last_name": "Guerin"
-      },
       "fr-CA": {
-        "first_name": "Simon",
+        "first_name": "Paul",
         "last_name": "Bergeron"
+      },
+      "fr": {
+        "first_name": "Arthur",
+        "last_name": "Dubois"
       }
     },
     "romanized_culture_overrides": {
@@ -26035,13 +25917,13 @@
         "first_name": "Benjamin",
         "last_name": "Torres"
       },
-      "fr": {
-        "first_name": "Adrien",
-        "last_name": "Guerin"
-      },
       "fr-CA": {
-        "first_name": "Simon",
+        "first_name": "Paul",
         "last_name": "Bergeron"
+      },
+      "fr": {
+        "first_name": "Arthur",
+        "last_name": "Dubois"
       }
     }
   },
@@ -26851,9 +26733,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Slack",
-              "name_aliases": [
-                "slack"
-              ],
               "vendor": "Salesforce",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -26865,9 +26744,6 @@
             "APP-1002": {
               "catalog_id": "APP-1002",
               "name": "Confluence",
-              "name_aliases": [
-                "confluence"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -26882,10 +26758,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ",
-                "IntelliJ IDEA"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 599,
               "license_types_supported": [
@@ -27430,13 +27302,13 @@
         "first_name": "Samuel",
         "last_name": "Lindqvist"
       },
-      "fr": {
-        "first_name": "Clément",
-        "last_name": "Laurent"
-      },
       "fr-CA": {
-        "first_name": "Luc",
-        "last_name": "Lessard"
+        "first_name": "Stéphane",
+        "last_name": "Côté"
+      },
+      "fr": {
+        "first_name": "Yann",
+        "last_name": "Robin"
       }
     },
     "romanized_culture_overrides": {
@@ -27444,13 +27316,13 @@
         "first_name": "Samuel",
         "last_name": "Lindqvist"
       },
-      "fr": {
-        "first_name": "Clement",
-        "last_name": "Laurent"
-      },
       "fr-CA": {
-        "first_name": "Luc",
-        "last_name": "Lessard"
+        "first_name": "Stephane",
+        "last_name": "Cote"
+      },
+      "fr": {
+        "first_name": "Yann",
+        "last_name": "Robin"
       }
     }
   },
@@ -27539,8 +27411,8 @@
         "employees": {
           "EMP093471": {
             "employee_id": "EMP093471",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1990-04-18",
             "phone_last_four": "8215",
             "otp_code": "418263",
@@ -28337,13 +28209,13 @@
         "first_name": "Oliver",
         "last_name": "Magnusson"
       },
-      "fr": {
-        "first_name": "Paul",
-        "last_name": "Dupont"
-      },
       "fr-CA": {
-        "first_name": "Maxime",
-        "last_name": "Lapointe"
+        "first_name": "Claude",
+        "last_name": "Thibault"
+      },
+      "fr": {
+        "first_name": "Michel",
+        "last_name": "Bernard"
       }
     },
     "romanized_culture_overrides": {
@@ -28351,13 +28223,13 @@
         "first_name": "Oliver",
         "last_name": "Magnusson"
       },
-      "fr": {
-        "first_name": "Paul",
-        "last_name": "Dupont"
-      },
       "fr-CA": {
-        "first_name": "Maxime",
-        "last_name": "Lapointe"
+        "first_name": "Claude",
+        "last_name": "Thibault"
+      },
+      "fr": {
+        "first_name": "Michel",
+        "last_name": "Bernard"
       }
     }
   },
@@ -29299,13 +29171,13 @@
         "first_name": "Zara",
         "last_name": "Hussain"
       },
-      "fr": {
-        "first_name": "Sarah",
-        "last_name": "Robert"
-      },
       "fr-CA": {
-        "first_name": "Émilie",
-        "last_name": "Morin"
+        "first_name": "Mélanie",
+        "last_name": "Lapointe"
+      },
+      "fr": {
+        "first_name": "Delphine",
+        "last_name": "Bernard"
       }
     },
     "romanized_culture_overrides": {
@@ -29313,13 +29185,13 @@
         "first_name": "Zara",
         "last_name": "Hussain"
       },
-      "fr": {
-        "first_name": "Sarah",
-        "last_name": "Robert"
-      },
       "fr-CA": {
-        "first_name": "Emilie",
-        "last_name": "Morin"
+        "first_name": "Melanie",
+        "last_name": "Lapointe"
+      },
+      "fr": {
+        "first_name": "Delphine",
+        "last_name": "Bernard"
       }
     }
   },
@@ -29396,8 +29268,8 @@
         "employees": {
           "EMP041829": {
             "employee_id": "EMP041829",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1991-02-14",
             "phone_last_four": "3157",
             "otp_code": "482913",
@@ -30589,13 +30461,13 @@
         "first_name": "Naomi",
         "last_name": "Okafor"
       },
-      "fr": {
-        "first_name": "Aurélie",
-        "last_name": "Bertrand"
-      },
       "fr-CA": {
-        "first_name": "Josée",
-        "last_name": "Caron"
+        "first_name": "Amélie",
+        "last_name": "Tremblay"
+      },
+      "fr": {
+        "first_name": "Justine",
+        "last_name": "Thomas"
       }
     },
     "romanized_culture_overrides": {
@@ -30603,13 +30475,13 @@
         "first_name": "Naomi",
         "last_name": "Okafor"
       },
-      "fr": {
-        "first_name": "Aurelie",
-        "last_name": "Bertrand"
-      },
       "fr-CA": {
-        "first_name": "Josee",
-        "last_name": "Caron"
+        "first_name": "Amelie",
+        "last_name": "Tremblay"
+      },
+      "fr": {
+        "first_name": "Justine",
+        "last_name": "Thomas"
       }
     }
   },
@@ -31074,9 +30946,6 @@
             "APP-1007": {
               "catalog_id": "APP-1007",
               "name": "Datadog",
-              "name_aliases": [
-                "datadog"
-              ],
               "vendor": "Datadog",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -31089,9 +30958,6 @@
             "APP-1011": {
               "catalog_id": "APP-1011",
               "name": "Confluence",
-              "name_aliases": [
-                "confluence"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -31105,10 +30971,6 @@
             "LIC-2008": {
               "catalog_id": "LIC-2008",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ",
-                "IntelliJ IDEA"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 699,
               "license_types_supported": [
@@ -31119,9 +30981,6 @@
             "LIC-2012": {
               "catalog_id": "LIC-2012",
               "name": "Adobe Acrobat Pro",
-              "name_aliases": [
-                "Acrobat Pro"
-              ],
               "vendor": "Adobe",
               "license_cost_usd": 240,
               "license_types_supported": [
@@ -31406,9 +31265,6 @@
               "application": {
                 "catalog_id": "APP-1007",
                 "name": "Datadog",
-                "name_aliases": [
-                  "datadog"
-                ],
                 "vendor": "Datadog",
                 "requires_manager_approval": true,
                 "available_access_levels": [
@@ -31437,10 +31293,6 @@
               "license": {
                 "catalog_id": "LIC-2008",
                 "name": "JetBrains IntelliJ IDEA",
-                "name_aliases": [
-                  "IntelliJ",
-                  "IntelliJ IDEA"
-                ],
                 "vendor": "JetBrains",
                 "license_cost_usd": 699,
                 "license_types_supported": [
@@ -31553,7 +31405,7 @@
     },
     "starting_utterances": {
       "en": "Hi, I've got a couple of IT things I need help with.",
-      "fr": "Bonjour, j’ai quelques trucs liées à l’informatique pour lesquelles j’ai besoin d’aide.",
+      "fr": "Bonjour, j’ai quelques trucs liés à l’informatique pour lesquelles j’ai besoin d’aide.",
       "fr-CA": "Bonjour, j’ai quelques trucs informatiques pour lesquels j’ai besoin d’aide."
     },
     "culture_overrides": {
@@ -31561,13 +31413,13 @@
         "first_name": "Leo",
         "last_name": "Andersen"
       },
-      "fr": {
-        "first_name": "Adrien",
-        "last_name": "Lefevre"
-      },
       "fr-CA": {
-        "first_name": "Francois",
-        "last_name": "Gauthier"
+        "first_name": "Laurent",
+        "last_name": "Fournier"
+      },
+      "fr": {
+        "first_name": "Damien",
+        "last_name": "Vincent"
       }
     },
     "romanized_culture_overrides": {
@@ -31575,13 +31427,13 @@
         "first_name": "Leo",
         "last_name": "Andersen"
       },
-      "fr": {
-        "first_name": "Adrien",
-        "last_name": "Lefevre"
-      },
       "fr-CA": {
-        "first_name": "Francois",
-        "last_name": "Gauthier"
+        "first_name": "Laurent",
+        "last_name": "Fournier"
+      },
+      "fr": {
+        "first_name": "Damien",
+        "last_name": "Vincent"
       }
     }
   },
@@ -32046,9 +31898,6 @@
             "APP-2001": {
               "catalog_id": "APP-2001",
               "name": "Slack",
-              "name_aliases": [
-                "slack"
-              ],
               "vendor": "Slack Technologies",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -32062,10 +31911,6 @@
             "LIC-1001": {
               "catalog_id": "LIC-1001",
               "name": "Adobe Creative Cloud",
-              "name_aliases": [
-                "adobe cc",
-                "creative cloud"
-              ],
               "vendor": "Adobe",
               "license_cost_usd": 840,
               "license_types_supported": [
@@ -32076,10 +31921,6 @@
             "LIC-1002": {
               "catalog_id": "LIC-1002",
               "name": "IntelliJ IDEA",
-              "name_aliases": [
-                "jetbrains intellij idea",
-                "intellij"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 599,
               "license_types_supported": [
@@ -32090,9 +31931,6 @@
             "LIC-1003": {
               "catalog_id": "LIC-1003",
               "name": "Microsoft Visio",
-              "name_aliases": [
-                "visio"
-              ],
               "vendor": "Microsoft",
               "license_cost_usd": 280,
               "license_types_supported": [
@@ -32396,10 +32234,6 @@
               "license": {
                 "catalog_id": "LIC-1001",
                 "name": "Adobe Creative Cloud",
-                "name_aliases": [
-                  "adobe cc",
-                  "creative cloud"
-                ],
                 "vendor": "Adobe",
                 "license_cost_usd": 840,
                 "license_types_supported": [
@@ -32526,13 +32360,13 @@
         "first_name": "Clara",
         "last_name": "Bergström"
       },
-      "fr": {
-        "first_name": "Sophie",
-        "last_name": "Roussel"
-      },
       "fr-CA": {
-        "first_name": "Marie",
-        "last_name": "St-Pierre"
+        "first_name": "Stéphanie",
+        "last_name": "Ouellet"
+      },
+      "fr": {
+        "first_name": "Camille",
+        "last_name": "David"
       }
     },
     "romanized_culture_overrides": {
@@ -32540,13 +32374,13 @@
         "first_name": "Clara",
         "last_name": "Bergström"
       },
-      "fr": {
-        "first_name": "Sophie",
-        "last_name": "Roussel"
-      },
       "fr-CA": {
-        "first_name": "Marie",
-        "last_name": "St-Pierre"
+        "first_name": "Stephanie",
+        "last_name": "Ouellet"
+      },
+      "fr": {
+        "first_name": "Camille",
+        "last_name": "David"
       }
     }
   },
@@ -32649,8 +32483,8 @@
         "employees": {
           "EMP067342": {
             "employee_id": "EMP067342",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1990-11-14",
             "phone_last_four": "2185",
             "otp_code": "482193",
@@ -33028,9 +32862,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Slack",
-              "name_aliases": [
-                "slack"
-              ],
               "vendor": "Salesforce",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -33044,9 +32875,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "Microsoft Visio",
-              "name_aliases": [
-                "Visio"
-              ],
               "vendor": "Microsoft",
               "license_cost_usd": 180,
               "license_types_supported": [
@@ -33572,20 +33400,20 @@
     "starting_utterances": {
       "en": "Hi, I've got a couple of facilities things I need help with.",
       "fr": "Bonjour, j’ai quelques sujets liés aux services généraux pour lesquels j’ai besoin d’aide.",
-      "fr-CA": "Bonjour, j’ai quelques affaires liées aux installations pour lesquelles j’ai besoin d’aide."
+      "fr-CA": "Bonjour, j’ai quelques affaires liés aux installations pour lesquelles j’ai besoin d’aide."
     },
     "culture_overrides": {
       "en": {
         "first_name": "Nathan",
         "last_name": "Kowalski"
       },
-      "fr": {
-        "first_name": "Antoine",
-        "last_name": "Thomas"
-      },
       "fr-CA": {
-        "first_name": "Louis",
-        "last_name": "Cloutier"
+        "first_name": "Antoine",
+        "last_name": "Martel"
+      },
+      "fr": {
+        "first_name": "Adrien",
+        "last_name": "Bernard"
       }
     },
     "romanized_culture_overrides": {
@@ -33593,13 +33421,13 @@
         "first_name": "Nathan",
         "last_name": "Kowalski"
       },
-      "fr": {
-        "first_name": "Antoine",
-        "last_name": "Thomas"
-      },
       "fr-CA": {
-        "first_name": "Louis",
-        "last_name": "Cloutier"
+        "first_name": "Antoine",
+        "last_name": "Martel"
+      },
+      "fr": {
+        "first_name": "Adrien",
+        "last_name": "Bernard"
       }
     }
   },
@@ -34076,9 +33904,6 @@
             "APP-0001": {
               "catalog_id": "APP-0001",
               "name": "Slack",
-              "name_aliases": [
-                "slack messenger"
-              ],
               "vendor": "Salesforce",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -34092,9 +33917,6 @@
             "LIC-0001": {
               "catalog_id": "LIC-0001",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 599,
               "license_types_supported": [
@@ -34602,21 +34424,21 @@
     },
     "starting_utterances": {
       "en": "Hi, I've got a couple of workplace requests I need help with.",
-      "fr": "Bonjour, j’ai quelques demandes liées au lieu de travail pour lesquelles j’ai besoin d’aide.",
-      "fr-CA": "Bonjour, j’ai quelques demandes liées au milieu de travail pour lesquelles j’ai besoin d’aide."
+      "fr": "Bonjour, j’ai quelques demandes liés au lieu de travail pour lesquelles j’ai besoin d’aide.",
+      "fr-CA": "Bonjour, j’ai quelques demandes liés au milieu de travail pour lesquelles j’ai besoin d’aide."
     },
     "culture_overrides": {
       "en": {
         "first_name": "Leila",
         "last_name": "Mansour"
       },
-      "fr": {
-        "first_name": "Celine",
-        "last_name": "Dubois"
-      },
       "fr-CA": {
-        "first_name": "Sophie",
-        "last_name": "Girard"
+        "first_name": "Sylvie",
+        "last_name": "Lavoie"
+      },
+      "fr": {
+        "first_name": "Sylvie",
+        "last_name": "Robin"
       }
     },
     "romanized_culture_overrides": {
@@ -34624,13 +34446,13 @@
         "first_name": "Leila",
         "last_name": "Mansour"
       },
-      "fr": {
-        "first_name": "Celine",
-        "last_name": "Dubois"
-      },
       "fr-CA": {
-        "first_name": "Sophie",
-        "last_name": "Girard"
+        "first_name": "Sylvie",
+        "last_name": "Lavoie"
+      },
+      "fr": {
+        "first_name": "Sylvie",
+        "last_name": "Robin"
       }
     }
   },
@@ -34716,8 +34538,8 @@
         "employees": {
           "EMP069135": {
             "employee_id": "EMP069135",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1990-04-18",
             "phone_last_four": "5891",
             "otp_code": "482911",
@@ -35893,13 +35715,13 @@
         "first_name": "Raj",
         "last_name": "Gupta"
       },
-      "fr": {
-        "first_name": "Louis",
-        "last_name": "Leroy"
-      },
       "fr-CA": {
-        "first_name": "Benoit",
-        "last_name": "Therrien"
+        "first_name": "Antoine",
+        "last_name": "Dion"
+      },
+      "fr": {
+        "first_name": "Baptiste",
+        "last_name": "Martinez"
       }
     },
     "romanized_culture_overrides": {
@@ -35907,13 +35729,13 @@
         "first_name": "Raj",
         "last_name": "Gupta"
       },
-      "fr": {
-        "first_name": "Louis",
-        "last_name": "Leroy"
-      },
       "fr-CA": {
-        "first_name": "Benoit",
-        "last_name": "Therrien"
+        "first_name": "Antoine",
+        "last_name": "Dion"
+      },
+      "fr": {
+        "first_name": "Baptiste",
+        "last_name": "Martinez"
       }
     }
   },
@@ -36376,9 +36198,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Slack",
-              "name_aliases": [
-                "slack"
-              ],
               "vendor": "Salesforce",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -36392,9 +36211,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 699,
               "license_types_supported": [
@@ -36823,7 +36639,7 @@
     },
     "starting_utterances": {
       "en": "Hi, I've got a couple of IT things I need help with.",
-      "fr": "Bonjour, j’ai quelques trucs liées à l’informatique pour lesquelles j’ai besoin d’aide.",
+      "fr": "Bonjour, j’ai quelques trucs liés à l’informatique pour lesquelles j’ai besoin d’aide.",
       "fr-CA": "Bonjour, j’ai quelques trucs informatiques pour lesquels j’ai besoin d’aide."
     },
     "culture_overrides": {
@@ -36831,13 +36647,13 @@
         "first_name": "Ingrid",
         "last_name": "Nilsen"
       },
+      "fr-CA": {
+        "first_name": "Annie",
+        "last_name": "Lefebvre"
+      },
       "fr": {
         "first_name": "Sandrine",
-        "last_name": "Martin"
-      },
-      "fr-CA": {
-        "first_name": "Camille",
-        "last_name": "Fortin"
+        "last_name": "Mathieu"
       }
     },
     "romanized_culture_overrides": {
@@ -36845,13 +36661,13 @@
         "first_name": "Ingrid",
         "last_name": "Nilsen"
       },
+      "fr-CA": {
+        "first_name": "Annie",
+        "last_name": "Lefebvre"
+      },
       "fr": {
         "first_name": "Sandrine",
-        "last_name": "Martin"
-      },
-      "fr-CA": {
-        "first_name": "Camille",
-        "last_name": "Fortin"
+        "last_name": "Mathieu"
       }
     }
   },
@@ -37441,9 +37257,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Slack",
-              "name_aliases": [
-                "slack"
-              ],
               "vendor": "Slack Technologies",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -37458,10 +37271,6 @@
             "LIC-0011": {
               "catalog_id": "LIC-0011",
               "name": "Microsoft 365 E3",
-              "name_aliases": [
-                "m365 e3",
-                "office 365 e3"
-              ],
               "vendor": "Microsoft",
               "license_cost_usd": 420,
               "license_types_supported": [
@@ -37471,9 +37280,6 @@
             "LIC-0047": {
               "catalog_id": "LIC-0047",
               "name": "Figma",
-              "name_aliases": [
-                "figma"
-              ],
               "vendor": "Figma",
               "license_cost_usd": 180,
               "license_types_supported": [
@@ -38039,9 +37845,6 @@
               "license": {
                 "catalog_id": "LIC-0047",
                 "name": "Figma",
-                "name_aliases": [
-                  "figma"
-                ],
                 "vendor": "Figma",
                 "license_cost_usd": 180,
                 "license_types_supported": [
@@ -38099,7 +37902,7 @@
     },
     "starting_utterances": {
       "en": "Hi, I've got a couple of IT things I need help with.",
-      "fr": "Bonjour, j’ai quelques trucs liées à l’informatique pour lesquelles j’ai besoin d’aide.",
+      "fr": "Bonjour, j’ai quelques trucs liés à l’informatique pour lesquelles j’ai besoin d’aide.",
       "fr-CA": "Bonjour, j’ai quelques trucs informatiques pour lesquels j’ai besoin d’aide."
     },
     "culture_overrides": {
@@ -38107,13 +37910,13 @@
         "first_name": "Priya",
         "last_name": "Ramaswamy"
       },
-      "fr": {
-        "first_name": "Céline",
-        "last_name": "Dupont"
-      },
       "fr-CA": {
-        "first_name": "Émilie",
-        "last_name": "Lévesque"
+        "first_name": "Claudine",
+        "last_name": "Côté"
+      },
+      "fr": {
+        "first_name": "Claire",
+        "last_name": "Muller"
       }
     },
     "romanized_culture_overrides": {
@@ -38121,13 +37924,13 @@
         "first_name": "Priya",
         "last_name": "Ramaswamy"
       },
-      "fr": {
-        "first_name": "Celine",
-        "last_name": "Dupont"
-      },
       "fr-CA": {
-        "first_name": "Emilie",
-        "last_name": "Levesque"
+        "first_name": "Claudine",
+        "last_name": "Cote"
+      },
+      "fr": {
+        "first_name": "Claire",
+        "last_name": "Muller"
       }
     }
   },
@@ -38211,8 +38014,8 @@
         "employees": {
           "EMP053714": {
             "employee_id": "EMP053714",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1991-03-22",
             "phone_last_four": "8832",
             "otp_code": "418527",
@@ -39280,13 +39083,13 @@
         "first_name": "Rafael",
         "last_name": "Mendez"
       },
-      "fr": {
-        "first_name": "Sébastien",
-        "last_name": "Moreau"
-      },
       "fr-CA": {
-        "first_name": "Alain",
-        "last_name": "Dubé"
+        "first_name": "Nicolas",
+        "last_name": "Lévesque"
+      },
+      "fr": {
+        "first_name": "Sylvain",
+        "last_name": "Perrin"
       }
     },
     "romanized_culture_overrides": {
@@ -39294,13 +39097,13 @@
         "first_name": "Rafael",
         "last_name": "Mendez"
       },
-      "fr": {
-        "first_name": "Sebastien",
-        "last_name": "Moreau"
-      },
       "fr-CA": {
-        "first_name": "Alain",
-        "last_name": "Dube"
+        "first_name": "Nicolas",
+        "last_name": "Levesque"
+      },
+      "fr": {
+        "first_name": "Sylvain",
+        "last_name": "Perrin"
       }
     }
   },
@@ -40515,7 +40318,7 @@
     },
     "starting_utterances": {
       "en": "Hi, I have a couple of IT things I need help with.",
-      "fr": "Bonjour, j’ai quelques trucs liées à l’informatique pour lesquelles j’ai besoin d’aide.",
+      "fr": "Bonjour, j’ai quelques trucs liés à l’informatique pour lesquelles j’ai besoin d’aide.",
       "fr-CA": "Bonjour, j’ai quelques trucs informatiques pour lesquels j’ai besoin d’aide."
     },
     "culture_overrides": {
@@ -40523,13 +40326,13 @@
         "first_name": "Diana",
         "last_name": "Popescu"
       },
-      "fr": {
-        "first_name": "Catherine",
-        "last_name": "Martinez"
-      },
       "fr-CA": {
-        "first_name": "Francine",
-        "last_name": "Lapointe"
+        "first_name": "Martine",
+        "last_name": "Paquette"
+      },
+      "fr": {
+        "first_name": "Océane",
+        "last_name": "Fontaine"
       }
     },
     "romanized_culture_overrides": {
@@ -40537,13 +40340,13 @@
         "first_name": "Diana",
         "last_name": "Popescu"
       },
-      "fr": {
-        "first_name": "Catherine",
-        "last_name": "Martinez"
-      },
       "fr-CA": {
-        "first_name": "Francine",
-        "last_name": "Lapointe"
+        "first_name": "Martine",
+        "last_name": "Paquette"
+      },
+      "fr": {
+        "first_name": "Oceane",
+        "last_name": "Fontaine"
       }
     }
   },
@@ -40634,8 +40437,8 @@
         "employees": {
           "EMP057491": {
             "employee_id": "EMP057491",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1991-04-18",
             "phone_last_four": "3842",
             "otp_code": "615204",
@@ -41499,13 +41302,13 @@
         "first_name": "Hugo",
         "last_name": "Larsson"
       },
-      "fr": {
-        "first_name": "Jean",
-        "last_name": "Garcia"
-      },
       "fr-CA": {
-        "first_name": "Jacques",
-        "last_name": "Cote"
+        "first_name": "Yves",
+        "last_name": "Dubé"
+      },
+      "fr": {
+        "first_name": "Olivier",
+        "last_name": "Henry"
       }
     },
     "romanized_culture_overrides": {
@@ -41513,13 +41316,13 @@
         "first_name": "Hugo",
         "last_name": "Larsson"
       },
-      "fr": {
-        "first_name": "Jean",
-        "last_name": "Garcia"
-      },
       "fr-CA": {
-        "first_name": "Jacques",
-        "last_name": "Cote"
+        "first_name": "Yves",
+        "last_name": "Dube"
+      },
+      "fr": {
+        "first_name": "Olivier",
+        "last_name": "Henry"
       }
     }
   },
@@ -42630,21 +42433,21 @@
     },
     "starting_utterances": {
       "en": "Hi, I've got a couple of workplace requests I need help with.",
-      "fr": "Bonjour, j’ai quelques demandes liées au lieu de travail pour lesquelles j’ai besoin d’aide.",
-      "fr-CA": "Bonjour, j’ai quelques demandes liées au milieu de travail pour lesquelles j’ai besoin d’aide."
+      "fr": "Bonjour, j’ai quelques demandes liés au lieu de travail pour lesquelles j’ai besoin d’aide.",
+      "fr-CA": "Bonjour, j’ai quelques demandes liés au milieu de travail pour lesquelles j’ai besoin d’aide."
     },
     "culture_overrides": {
       "en": {
         "first_name": "Mia",
         "last_name": "Johansson"
       },
-      "fr": {
-        "first_name": "Alice",
-        "last_name": "Moreau"
-      },
       "fr-CA": {
-        "first_name": "Stephanie",
-        "last_name": "Dion"
+        "first_name": "Line",
+        "last_name": "Bouchard"
+      },
+      "fr": {
+        "first_name": "Chloé",
+        "last_name": "Fournier"
       }
     },
     "romanized_culture_overrides": {
@@ -42652,13 +42455,13 @@
         "first_name": "Mia",
         "last_name": "Johansson"
       },
-      "fr": {
-        "first_name": "Alice",
-        "last_name": "Moreau"
-      },
       "fr-CA": {
-        "first_name": "Stephanie",
-        "last_name": "Dion"
+        "first_name": "Line",
+        "last_name": "Bouchard"
+      },
+      "fr": {
+        "first_name": "Chloe",
+        "last_name": "Fournier"
       }
     }
   },
@@ -43281,10 +43084,6 @@
           "BLD3": {
             "building_code": "BLD3",
             "name": "Headquarters",
-            "name_aliases": [
-              "HQ",
-              "Headquarters"
-            ],
             "floors": {
               "FL2": {
                 "desks": {
@@ -43899,13 +43698,13 @@
         "first_name": "Oscar",
         "last_name": "Gutierrez"
       },
-      "fr": {
-        "first_name": "Étienne",
-        "last_name": "Dupont"
-      },
       "fr-CA": {
-        "first_name": "Samuel",
+        "first_name": "René",
         "last_name": "Dubé"
+      },
+      "fr": {
+        "first_name": "Gilles",
+        "last_name": "Garcia"
       }
     },
     "romanized_culture_overrides": {
@@ -43913,13 +43712,13 @@
         "first_name": "Oscar",
         "last_name": "Gutierrez"
       },
-      "fr": {
-        "first_name": "Etienne",
-        "last_name": "Dupont"
-      },
       "fr-CA": {
-        "first_name": "Samuel",
+        "first_name": "Rene",
         "last_name": "Dube"
+      },
+      "fr": {
+        "first_name": "Gilles",
+        "last_name": "Garcia"
       }
     }
   },
@@ -44004,8 +43803,8 @@
         "employees": {
           "EMP035784": {
             "employee_id": "EMP035784",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1991-04-22",
             "phone_last_four": "9182",
             "otp_code": "441902",
@@ -44489,9 +44288,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Slack",
-              "name_aliases": [
-                "slack messenger"
-              ],
               "vendor": "Slack",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -44505,9 +44301,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 599,
               "license_types_supported": [
@@ -45162,13 +44955,13 @@
         "first_name": "Selma",
         "last_name": "Eriksson"
       },
-      "fr": {
-        "first_name": "Celine",
-        "last_name": "Rousseau"
-      },
       "fr-CA": {
-        "first_name": "France",
-        "last_name": "Pelletier"
+        "first_name": "Christine",
+        "last_name": "Turcotte"
+      },
+      "fr": {
+        "first_name": "Audrey",
+        "last_name": "Bernard"
       }
     },
     "romanized_culture_overrides": {
@@ -45176,13 +44969,13 @@
         "first_name": "Selma",
         "last_name": "Eriksson"
       },
-      "fr": {
-        "first_name": "Celine",
-        "last_name": "Rousseau"
-      },
       "fr-CA": {
-        "first_name": "France",
-        "last_name": "Pelletier"
+        "first_name": "Christine",
+        "last_name": "Turcotte"
+      },
+      "fr": {
+        "first_name": "Audrey",
+        "last_name": "Bernard"
       }
     }
   },
@@ -45746,9 +45539,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Slack",
-              "name_aliases": [
-                "slack"
-              ],
               "vendor": "Slack Technologies",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -45762,9 +45552,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "Microsoft Visio",
-              "name_aliases": [
-                "visio"
-              ],
               "vendor": "Microsoft",
               "license_cost_usd": 240,
               "license_types_supported": [
@@ -46192,13 +45979,13 @@
         "first_name": "Lina",
         "last_name": "Johansson"
       },
-      "fr": {
-        "first_name": "Marine",
-        "last_name": "Girard"
-      },
       "fr-CA": {
-        "first_name": "Diane",
-        "last_name": "Lemieux"
+        "first_name": "Sophie",
+        "last_name": "Desjardins"
+      },
+      "fr": {
+        "first_name": "Audrey",
+        "last_name": "Rousseau"
       }
     },
     "romanized_culture_overrides": {
@@ -46206,13 +45993,13 @@
         "first_name": "Lina",
         "last_name": "Johansson"
       },
-      "fr": {
-        "first_name": "Marine",
-        "last_name": "Girard"
-      },
       "fr-CA": {
-        "first_name": "Diane",
-        "last_name": "Lemieux"
+        "first_name": "Sophie",
+        "last_name": "Desjardins"
+      },
+      "fr": {
+        "first_name": "Audrey",
+        "last_name": "Rousseau"
       }
     }
   },
@@ -46323,8 +46110,8 @@
         "employees": {
           "EMP058374": {
             "employee_id": "EMP058374",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1992-11-08",
             "phone_last_four": "7219",
             "otp_code": "482611",
@@ -47389,13 +47176,13 @@
         "first_name": "Layla",
         "last_name": "Abdi"
       },
-      "fr": {
-        "first_name": "Caroline",
-        "last_name": "Dubois"
-      },
       "fr-CA": {
-        "first_name": "Micheline",
-        "last_name": "Desjardins"
+        "first_name": "Mélanie",
+        "last_name": "Charbonneau"
+      },
+      "fr": {
+        "first_name": "Amandine",
+        "last_name": "Fontaine"
       }
     },
     "romanized_culture_overrides": {
@@ -47403,13 +47190,13 @@
         "first_name": "Layla",
         "last_name": "Abdi"
       },
-      "fr": {
-        "first_name": "Caroline",
-        "last_name": "Dubois"
-      },
       "fr-CA": {
-        "first_name": "Micheline",
-        "last_name": "Desjardins"
+        "first_name": "Melanie",
+        "last_name": "Charbonneau"
+      },
+      "fr": {
+        "first_name": "Amandine",
+        "last_name": "Fontaine"
       }
     }
   },
@@ -47905,9 +47692,6 @@
             "APP-1007": {
               "catalog_id": "APP-1007",
               "name": "Confluence",
-              "name_aliases": [
-                "Atlassian Confluence"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -47920,9 +47704,6 @@
             "APP-1012": {
               "catalog_id": "APP-1012",
               "name": "Jira",
-              "name_aliases": [
-                "Atlassian Jira"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -47937,9 +47718,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 699,
               "license_types_supported": [
@@ -48593,9 +48371,6 @@
               "application": {
                 "catalog_id": "APP-1007",
                 "name": "Confluence",
-                "name_aliases": [
-                  "Atlassian Confluence"
-                ],
                 "vendor": "Atlassian",
                 "requires_manager_approval": false,
                 "available_access_levels": [
@@ -48666,13 +48441,13 @@
         "first_name": "Ahmed",
         "last_name": "Patel"
       },
-      "fr": {
-        "first_name": "Eric",
-        "last_name": "Bertrand"
-      },
       "fr-CA": {
-        "first_name": "Denis",
-        "last_name": "Poulin"
+        "first_name": "Michel",
+        "last_name": "Fortin"
+      },
+      "fr": {
+        "first_name": "Vincent",
+        "last_name": "Martinez"
       }
     },
     "romanized_culture_overrides": {
@@ -48680,13 +48455,13 @@
         "first_name": "Ahmed",
         "last_name": "Patel"
       },
-      "fr": {
-        "first_name": "Eric",
-        "last_name": "Bertrand"
-      },
       "fr-CA": {
-        "first_name": "Denis",
-        "last_name": "Poulin"
+        "first_name": "Michel",
+        "last_name": "Fortin"
+      },
+      "fr": {
+        "first_name": "Vincent",
+        "last_name": "Martinez"
       }
     }
   },
@@ -49152,9 +48927,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Slack",
-              "name_aliases": [
-                "slack"
-              ],
               "vendor": "Salesforce",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -49169,10 +48941,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ",
-                "IntelliJ IDEA"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 599,
               "license_types_supported": [
@@ -49733,13 +49501,13 @@
         "first_name": "Viktor",
         "last_name": "Novak"
       },
-      "fr": {
-        "first_name": "Guillaume",
-        "last_name": "Guerin"
-      },
       "fr-CA": {
-        "first_name": "Pierre",
-        "last_name": "Lapointe"
+        "first_name": "Michel",
+        "last_name": "Charbonneau"
+      },
+      "fr": {
+        "first_name": "Baptiste",
+        "last_name": "Lefebvre"
       }
     },
     "romanized_culture_overrides": {
@@ -49747,13 +49515,13 @@
         "first_name": "Viktor",
         "last_name": "Novak"
       },
-      "fr": {
-        "first_name": "Guillaume",
-        "last_name": "Guerin"
-      },
       "fr-CA": {
-        "first_name": "Pierre",
-        "last_name": "Lapointe"
+        "first_name": "Michel",
+        "last_name": "Charbonneau"
+      },
+      "fr": {
+        "first_name": "Baptiste",
+        "last_name": "Lefebvre"
       }
     }
   },
@@ -49852,8 +49620,8 @@
         "employees": {
           "EMP073291": {
             "employee_id": "EMP073291",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1991-09-14",
             "phone_last_four": "4106",
             "otp_code": "482913",
@@ -50225,9 +49993,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Slack",
-              "name_aliases": [
-                "slack"
-              ],
               "vendor": "Slack Technologies",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -50239,9 +50004,6 @@
             "APP-1002": {
               "catalog_id": "APP-1002",
               "name": "Confluence",
-              "name_aliases": [
-                "confluence"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -50256,9 +50018,6 @@
             "LIC-2207": {
               "catalog_id": "LIC-2207",
               "name": "Adobe Creative Cloud",
-              "name_aliases": [
-                "Adobe CC"
-              ],
               "vendor": "Adobe",
               "license_cost_usd": 720,
               "license_types_supported": [
@@ -50269,9 +50028,6 @@
             "LIC-2215": {
               "catalog_id": "LIC-2215",
               "name": "Microsoft Visio",
-              "name_aliases": [
-                "Visio"
-              ],
               "vendor": "Microsoft",
               "license_cost_usd": 180,
               "license_types_supported": [
@@ -50672,9 +50428,6 @@
               "license": {
                 "catalog_id": "LIC-2207",
                 "name": "Adobe Creative Cloud",
-                "name_aliases": [
-                  "Adobe CC"
-                ],
                 "vendor": "Adobe",
                 "license_cost_usd": 720,
                 "license_types_supported": [
@@ -50782,13 +50535,13 @@
         "first_name": "Isabel",
         "last_name": "Santos"
       },
-      "fr": {
-        "first_name": "Gabriel",
-        "last_name": "Morel"
-      },
       "fr-CA": {
-        "first_name": "Luc",
-        "last_name": "Lacroix"
+        "first_name": "Simon",
+        "last_name": "Benoît"
+      },
+      "fr": {
+        "first_name": "Raphaël",
+        "last_name": "Bertrand"
       }
     },
     "romanized_culture_overrides": {
@@ -50796,13 +50549,13 @@
         "first_name": "Isabel",
         "last_name": "Santos"
       },
-      "fr": {
-        "first_name": "Gabriel",
-        "last_name": "Morel"
-      },
       "fr-CA": {
-        "first_name": "Luc",
-        "last_name": "Lacroix"
+        "first_name": "Simon",
+        "last_name": "Benoit"
+      },
+      "fr": {
+        "first_name": "Raphael",
+        "last_name": "Bertrand"
       }
     }
   },
@@ -51500,9 +51253,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Confluence",
-              "name_aliases": [
-                "Atlassian Confluence"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -51515,9 +51265,6 @@
             "APP-1002": {
               "catalog_id": "APP-1002",
               "name": "Salesforce",
-              "name_aliases": [
-                "SFDC"
-              ],
               "vendor": "Salesforce",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -51530,9 +51277,6 @@
             "APP-1003": {
               "catalog_id": "APP-1003",
               "name": "Jira",
-              "name_aliases": [
-                "Atlassian Jira"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -51546,9 +51290,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "Microsoft Project",
-              "name_aliases": [
-                "MS Project"
-              ],
               "vendor": "Microsoft",
               "license_cost_usd": 600,
               "license_types_supported": [
@@ -52128,9 +51869,6 @@
               "application": {
                 "catalog_id": "APP-1001",
                 "name": "Confluence",
-                "name_aliases": [
-                  "Atlassian Confluence"
-                ],
                 "vendor": "Atlassian",
                 "requires_manager_approval": false,
                 "available_access_levels": [
@@ -52215,13 +51953,13 @@
         "first_name": "Tomasz",
         "last_name": "Lewandowski"
       },
-      "fr": {
-        "first_name": "Eric",
-        "last_name": "Rousseau"
-      },
       "fr-CA": {
-        "first_name": "Christian",
-        "last_name": "Gagne"
+        "first_name": "Normand",
+        "last_name": "Dion"
+      },
+      "fr": {
+        "first_name": "Éric",
+        "last_name": "Bonnet"
       }
     },
     "romanized_culture_overrides": {
@@ -52229,13 +51967,13 @@
         "first_name": "Tomasz",
         "last_name": "Lewandowski"
       },
+      "fr-CA": {
+        "first_name": "Normand",
+        "last_name": "Dion"
+      },
       "fr": {
         "first_name": "Eric",
-        "last_name": "Rousseau"
-      },
-      "fr-CA": {
-        "first_name": "Christian",
-        "last_name": "Gagne"
+        "last_name": "Bonnet"
       }
     }
   },
@@ -52337,8 +52075,8 @@
         "employees": {
           "EMP046829": {
             "employee_id": "EMP046829",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1991-04-17",
             "phone_last_four": "9274",
             "otp_code": "418263",
@@ -53333,13 +53071,13 @@
         "first_name": "Ananya",
         "last_name": "Sharma"
       },
-      "fr": {
-        "first_name": "Sylvie",
-        "last_name": "Michel"
-      },
       "fr-CA": {
-        "first_name": "Maude",
+        "first_name": "Lise",
         "last_name": "Paquette"
+      },
+      "fr": {
+        "first_name": "Camille",
+        "last_name": "Legrand"
       }
     },
     "romanized_culture_overrides": {
@@ -53347,13 +53085,13 @@
         "first_name": "Ananya",
         "last_name": "Sharma"
       },
-      "fr": {
-        "first_name": "Sylvie",
-        "last_name": "Michel"
-      },
       "fr-CA": {
-        "first_name": "Maude",
+        "first_name": "Lise",
         "last_name": "Paquette"
+      },
+      "fr": {
+        "first_name": "Camille",
+        "last_name": "Legrand"
       }
     }
   },
@@ -53958,9 +53696,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Slack",
-              "name_aliases": [
-                "slack messenger"
-              ],
               "vendor": "Salesforce",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -53974,9 +53709,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 649,
               "license_types_supported": [
@@ -54873,13 +54605,13 @@
         "first_name": "Camille",
         "last_name": "Dubois"
       },
-      "fr": {
-        "first_name": "Élise",
-        "last_name": "Lefebvre"
-      },
       "fr-CA": {
-        "first_name": "Claudine",
-        "last_name": "Bourgeois"
+        "first_name": "Noémie",
+        "last_name": "Cloutier"
+      },
+      "fr": {
+        "first_name": "Sophie",
+        "last_name": "Garnier"
       }
     },
     "romanized_culture_overrides": {
@@ -54887,13 +54619,13 @@
         "first_name": "Camille",
         "last_name": "Dubois"
       },
-      "fr": {
-        "first_name": "Elise",
-        "last_name": "Lefebvre"
-      },
       "fr-CA": {
-        "first_name": "Claudine",
-        "last_name": "Bourgeois"
+        "first_name": "Noemie",
+        "last_name": "Cloutier"
+      },
+      "fr": {
+        "first_name": "Sophie",
+        "last_name": "Garnier"
       }
     }
   },
@@ -55364,7 +55096,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Confluence",
-              "name_aliases": [],
               "vendor": "Atlassian",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -55377,7 +55108,6 @@
             "APP-1002": {
               "catalog_id": "APP-1002",
               "name": "Datadog",
-              "name_aliases": [],
               "vendor": "Datadog",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -55389,7 +55119,6 @@
             "APP-1003": {
               "catalog_id": "APP-1003",
               "name": "Salesforce",
-              "name_aliases": [],
               "vendor": "Salesforce",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -55407,7 +55136,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "IntelliJ",
-              "name_aliases": [],
               "vendor": "JetBrains",
               "license_cost_usd": 599,
               "license_types_supported": [
@@ -55418,9 +55146,6 @@
             "LIC-2002": {
               "catalog_id": "LIC-2002",
               "name": "Adobe Acrobat Pro",
-              "name_aliases": [
-                "Acrobat Pro"
-              ],
               "vendor": "Adobe",
               "license_cost_usd": 240,
               "license_types_supported": [
@@ -55734,7 +55459,6 @@
               "application": {
                 "catalog_id": "APP-1001",
                 "name": "Confluence",
-                "name_aliases": [],
                 "vendor": "Atlassian",
                 "requires_manager_approval": false,
                 "available_access_levels": [
@@ -55817,7 +55541,6 @@
               "application": {
                 "catalog_id": "APP-1002",
                 "name": "Datadog",
-                "name_aliases": [],
                 "vendor": "Datadog",
                 "requires_manager_approval": true,
                 "available_access_levels": [
@@ -55920,7 +55643,6 @@
               "license": {
                 "catalog_id": "LIC-2001",
                 "name": "IntelliJ",
-                "name_aliases": [],
                 "vendor": "JetBrains",
                 "license_cost_usd": 599,
                 "license_types_supported": [
@@ -55986,13 +55708,13 @@
         "first_name": "Kai",
         "last_name": "Taniguchi"
       },
-      "fr": {
-        "first_name": "Sandrine",
-        "last_name": "Guerin"
-      },
       "fr-CA": {
-        "first_name": "Helene",
-        "last_name": "Desjardins"
+        "first_name": "Francine",
+        "last_name": "Morin"
+      },
+      "fr": {
+        "first_name": "Christine",
+        "last_name": "Mercier"
       }
     },
     "romanized_culture_overrides": {
@@ -56000,13 +55722,13 @@
         "first_name": "Kai",
         "last_name": "Taniguchi"
       },
-      "fr": {
-        "first_name": "Sandrine",
-        "last_name": "Guerin"
-      },
       "fr-CA": {
-        "first_name": "Helene",
-        "last_name": "Desjardins"
+        "first_name": "Francine",
+        "last_name": "Morin"
+      },
+      "fr": {
+        "first_name": "Christine",
+        "last_name": "Mercier"
       }
     }
   },
@@ -56086,8 +55808,8 @@
         "employees": {
           "EMP061537": {
             "employee_id": "EMP061537",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1991-07-14",
             "phone_last_four": "4488",
             "otp_code": "615372",
@@ -56933,13 +56655,13 @@
         "first_name": "Trevor",
         "last_name": "Blackwood"
       },
-      "fr": {
-        "first_name": "Clément",
-        "last_name": "Lambert"
-      },
       "fr-CA": {
+        "first_name": "Sylvain",
+        "last_name": "St-Pierre"
+      },
+      "fr": {
         "first_name": "Alexandre",
-        "last_name": "Thibault"
+        "last_name": "Bernard"
       }
     },
     "romanized_culture_overrides": {
@@ -56947,13 +56669,13 @@
         "first_name": "Trevor",
         "last_name": "Blackwood"
       },
-      "fr": {
-        "first_name": "Clement",
-        "last_name": "Lambert"
-      },
       "fr-CA": {
+        "first_name": "Sylvain",
+        "last_name": "St-Pierre"
+      },
+      "fr": {
         "first_name": "Alexandre",
-        "last_name": "Thibault"
+        "last_name": "Bernard"
       }
     }
   },
@@ -58068,13 +57790,13 @@
         "first_name": "Henrik",
         "last_name": "Berg"
       },
-      "fr": {
-        "first_name": "Alain",
-        "last_name": "Petit"
-      },
       "fr-CA": {
-        "first_name": "Olivier",
-        "last_name": "Dufour"
+        "first_name": "Christian",
+        "last_name": "Girard"
+      },
+      "fr": {
+        "first_name": "Sylvain",
+        "last_name": "Robert"
       }
     },
     "romanized_culture_overrides": {
@@ -58082,13 +57804,13 @@
         "first_name": "Henrik",
         "last_name": "Berg"
       },
-      "fr": {
-        "first_name": "Alain",
-        "last_name": "Petit"
-      },
       "fr-CA": {
-        "first_name": "Olivier",
-        "last_name": "Dufour"
+        "first_name": "Christian",
+        "last_name": "Girard"
+      },
+      "fr": {
+        "first_name": "Sylvain",
+        "last_name": "Robert"
       }
     }
   },
@@ -58189,8 +57911,8 @@
         "employees": {
           "EMP062918": {
             "employee_id": "EMP062918",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1992-04-18",
             "phone_last_four": "1753",
             "otp_code": "481926",
@@ -58548,9 +58270,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Confluence",
-              "name_aliases": [
-                "Atlassian Confluence"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -58562,9 +58281,6 @@
             "APP-1002": {
               "catalog_id": "APP-1002",
               "name": "Salesforce",
-              "name_aliases": [
-                "SFDC"
-              ],
               "vendor": "Salesforce",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -58581,9 +58297,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "Figma",
-              "name_aliases": [
-                "Figma Design"
-              ],
               "vendor": "Figma",
               "license_cost_usd": 480,
               "license_types_supported": [
@@ -58594,9 +58307,6 @@
             "LIC-2002": {
               "catalog_id": "LIC-2002",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 699,
               "license_types_supported": [
@@ -58993,9 +58703,6 @@
               "application": {
                 "catalog_id": "APP-1001",
                 "name": "Confluence",
-                "name_aliases": [
-                  "Atlassian Confluence"
-                ],
                 "vendor": "Atlassian",
                 "requires_manager_approval": false,
                 "available_access_levels": [
@@ -59069,9 +58776,6 @@
               "license": {
                 "catalog_id": "LIC-2001",
                 "name": "Figma",
-                "name_aliases": [
-                  "Figma Design"
-                ],
                 "vendor": "Figma",
                 "license_cost_usd": 480,
                 "license_types_supported": [
@@ -59141,13 +58845,13 @@
         "first_name": "Eve",
         "last_name": "MacDonald"
       },
-      "fr": {
-        "first_name": "Florence",
-        "last_name": "Mercier"
-      },
       "fr-CA": {
-        "first_name": "Camille",
-        "last_name": "Therrien"
+        "first_name": "Micheline",
+        "last_name": "Lemieux"
+      },
+      "fr": {
+        "first_name": "Justine",
+        "last_name": "Muller"
       }
     },
     "romanized_culture_overrides": {
@@ -59155,13 +58859,13 @@
         "first_name": "Eve",
         "last_name": "MacDonald"
       },
-      "fr": {
-        "first_name": "Florence",
-        "last_name": "Mercier"
-      },
       "fr-CA": {
-        "first_name": "Camille",
-        "last_name": "Therrien"
+        "first_name": "Micheline",
+        "last_name": "Lemieux"
+      },
+      "fr": {
+        "first_name": "Justine",
+        "last_name": "Muller"
       }
     }
   },
@@ -60006,13 +59710,13 @@
         "first_name": "Nia",
         "last_name": "Williams"
       },
-      "fr": {
-        "first_name": "Nathalie",
-        "last_name": "Vincent"
-      },
       "fr-CA": {
-        "first_name": "Valerie",
-        "last_name": "Dubois"
+        "first_name": "Émilie",
+        "last_name": "Dubé"
+      },
+      "fr": {
+        "first_name": "Coralie",
+        "last_name": "Durand"
       }
     },
     "romanized_culture_overrides": {
@@ -60020,13 +59724,13 @@
         "first_name": "Nia",
         "last_name": "Williams"
       },
-      "fr": {
-        "first_name": "Nathalie",
-        "last_name": "Vincent"
-      },
       "fr-CA": {
-        "first_name": "Valerie",
-        "last_name": "Dubois"
+        "first_name": "Emilie",
+        "last_name": "Dube"
+      },
+      "fr": {
+        "first_name": "Coralie",
+        "last_name": "Durand"
       }
     }
   },
@@ -60505,9 +60209,6 @@
             "APP-2001": {
               "catalog_id": "APP-2001",
               "name": "Confluence",
-              "name_aliases": [
-                "Atlassian Confluence"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -60520,9 +60221,6 @@
             "APP-2002": {
               "catalog_id": "APP-2002",
               "name": "Slack",
-              "name_aliases": [
-                "Slack Enterprise"
-              ],
               "vendor": "Slack",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -60536,9 +60234,6 @@
             "LIC-3001": {
               "catalog_id": "LIC-3001",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 599,
               "license_types_supported": [
@@ -60668,10 +60363,6 @@
           "BLD1": {
             "building_code": "BLD1",
             "name": "Headquarters",
-            "name_aliases": [
-              "HQ",
-              "Main Office"
-            ],
             "floors": {
               "FL2": {
                 "desks": {
@@ -61095,9 +60786,6 @@
               "application": {
                 "catalog_id": "APP-2001",
                 "name": "Confluence",
-                "name_aliases": [
-                  "Atlassian Confluence"
-                ],
                 "vendor": "Atlassian",
                 "requires_manager_approval": false,
                 "available_access_levels": [
@@ -61164,13 +60852,13 @@
         "first_name": "Marco De",
         "last_name": "Luca"
       },
-      "fr": {
-        "first_name": "Gabriel",
-        "last_name": "Rousseau"
-      },
       "fr-CA": {
-        "first_name": "Mathieu",
-        "last_name": "Couture"
+        "first_name": "Michel",
+        "last_name": "Leclerc"
+      },
+      "fr": {
+        "first_name": "Jérôme",
+        "last_name": "Leroy"
       }
     },
     "romanized_culture_overrides": {
@@ -61178,13 +60866,13 @@
         "first_name": "Marco De",
         "last_name": "Luca"
       },
-      "fr": {
-        "first_name": "Gabriel",
-        "last_name": "Rousseau"
-      },
       "fr-CA": {
-        "first_name": "Mathieu",
-        "last_name": "Couture"
+        "first_name": "Michel",
+        "last_name": "Leclerc"
+      },
+      "fr": {
+        "first_name": "Jerome",
+        "last_name": "Leroy"
       }
     }
   },
@@ -61302,8 +60990,8 @@
         "employees": {
           "EMP034817": {
             "employee_id": "EMP034817",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1992-07-18",
             "phone_last_four": "9246",
             "otp_code": "381642",
@@ -61793,9 +61481,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Slack",
-              "name_aliases": [
-                "slack"
-              ],
               "vendor": "Salesforce",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -61809,10 +61494,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ",
-                "IntelliJ IDEA"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 599,
               "license_types_supported": [
@@ -62484,13 +62165,13 @@
         "first_name": "Ava",
         "last_name": "Chen"
       },
-      "fr": {
-        "first_name": "Catherine",
-        "last_name": "Mercier"
-      },
       "fr-CA": {
-        "first_name": "Maude",
-        "last_name": "Lacroix"
+        "first_name": "Diane",
+        "last_name": "Benoît"
+      },
+      "fr": {
+        "first_name": "Clémence",
+        "last_name": "Durand"
       }
     },
     "romanized_culture_overrides": {
@@ -62498,13 +62179,13 @@
         "first_name": "Ava",
         "last_name": "Chen"
       },
-      "fr": {
-        "first_name": "Catherine",
-        "last_name": "Mercier"
-      },
       "fr-CA": {
-        "first_name": "Maude",
-        "last_name": "Lacroix"
+        "first_name": "Diane",
+        "last_name": "Benoit"
+      },
+      "fr": {
+        "first_name": "Clemence",
+        "last_name": "Durand"
       }
     }
   },
@@ -62979,9 +62660,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Confluence",
-              "name_aliases": [
-                "Atlassian Confluence"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -62994,9 +62672,6 @@
             "APP-1002": {
               "catalog_id": "APP-1002",
               "name": "Jira",
-              "name_aliases": [
-                "Atlassian Jira"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -63011,7 +62686,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "Figma",
-              "name_aliases": [],
               "vendor": "Figma",
               "license_cost_usd": 180,
               "license_types_supported": [
@@ -63022,9 +62696,6 @@
             "LIC-2002": {
               "catalog_id": "LIC-2002",
               "name": "Adobe Creative Cloud",
-              "name_aliases": [
-                "Creative Cloud"
-              ],
               "vendor": "Adobe",
               "license_cost_usd": 720,
               "license_types_supported": [
@@ -63429,9 +63100,6 @@
               "application": {
                 "catalog_id": "APP-1001",
                 "name": "Confluence",
-                "name_aliases": [
-                  "Atlassian Confluence"
-                ],
                 "vendor": "Atlassian",
                 "requires_manager_approval": false,
                 "available_access_levels": [
@@ -63506,7 +63174,6 @@
               "license": {
                 "catalog_id": "LIC-2001",
                 "name": "Figma",
-                "name_aliases": [],
                 "vendor": "Figma",
                 "license_cost_usd": 180,
                 "license_types_supported": [
@@ -63618,13 +63285,13 @@
         "first_name": "Liam",
         "last_name": "O'Sullivan"
       },
-      "fr": {
-        "first_name": "Thomas",
-        "last_name": "Morel"
-      },
       "fr-CA": {
-        "first_name": "Gabriel",
-        "last_name": "Dubé"
+        "first_name": "Sébastien",
+        "last_name": "Côté"
+      },
+      "fr": {
+        "first_name": "Patrick",
+        "last_name": "Dumont"
       }
     },
     "romanized_culture_overrides": {
@@ -63632,13 +63299,13 @@
         "first_name": "Liam",
         "last_name": "O'Sullivan"
       },
-      "fr": {
-        "first_name": "Thomas",
-        "last_name": "Morel"
-      },
       "fr-CA": {
-        "first_name": "Gabriel",
-        "last_name": "Dube"
+        "first_name": "Sebastien",
+        "last_name": "Cote"
+      },
+      "fr": {
+        "first_name": "Patrick",
+        "last_name": "Dumont"
       }
     }
   },
@@ -63754,8 +63421,8 @@
         "employees": {
           "EMP057382": {
             "employee_id": "EMP057382",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1991-09-14",
             "phone_last_four": "4190",
             "otp_code": "731904",
@@ -64099,9 +63766,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Slack",
-              "name_aliases": [
-                "slack"
-              ],
               "vendor": "Salesforce",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -64115,10 +63779,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ",
-                "IDEA"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 599,
               "license_types_supported": [
@@ -64979,13 +64639,13 @@
         "first_name": "Yuki",
         "last_name": "Mori"
       },
-      "fr": {
-        "first_name": "Baptiste",
-        "last_name": "Michel"
-      },
       "fr-CA": {
-        "first_name": "Mathieu",
-        "last_name": "Renaud"
+        "first_name": "Éric",
+        "last_name": "Leblanc"
+      },
+      "fr": {
+        "first_name": "Olivier",
+        "last_name": "Petit"
       }
     },
     "romanized_culture_overrides": {
@@ -64993,13 +64653,13 @@
         "first_name": "Yuki",
         "last_name": "Mori"
       },
-      "fr": {
-        "first_name": "Baptiste",
-        "last_name": "Michel"
-      },
       "fr-CA": {
-        "first_name": "Mathieu",
-        "last_name": "Renaud"
+        "first_name": "Eric",
+        "last_name": "Leblanc"
+      },
+      "fr": {
+        "first_name": "Olivier",
+        "last_name": "Petit"
       }
     }
   },
@@ -66179,7 +65839,7 @@
     },
     "starting_utterances": {
       "en": "Hi, I have a few things I need help with for my office move.",
-      "fr": "Bonjour, j’ai besoin d’aide pour quelques petites choses liées à mon déménagement de bureau.",
+      "fr": "Bonjour, j’ai besoin d’aide pour quelques petites choses liés à mon déménagement de bureau.",
       "fr-CA": "Bonjour, j’ai quelques trucs pour lesquels j’aurais besoin d’aide pour mon déménagement de bureau."
     },
     "culture_overrides": {
@@ -66187,13 +65847,13 @@
         "first_name": "Jasmine",
         "last_name": "Park"
       },
-      "fr": {
-        "first_name": "Christine",
-        "last_name": "Mercier"
-      },
       "fr-CA": {
+        "first_name": "Amélie",
+        "last_name": "Beaulieu"
+      },
+      "fr": {
         "first_name": "Sarah",
-        "last_name": "Gagnon"
+        "last_name": "Richard"
       }
     },
     "romanized_culture_overrides": {
@@ -66201,13 +65861,13 @@
         "first_name": "Jasmine",
         "last_name": "Park"
       },
-      "fr": {
-        "first_name": "Christine",
-        "last_name": "Mercier"
-      },
       "fr-CA": {
+        "first_name": "Amelie",
+        "last_name": "Beaulieu"
+      },
+      "fr": {
         "first_name": "Sarah",
-        "last_name": "Gagnon"
+        "last_name": "Richard"
       }
     }
   },
@@ -66922,9 +66582,6 @@
             "APP-0042": {
               "catalog_id": "APP-0042",
               "name": "Confluence",
-              "name_aliases": [
-                "Atlassian Confluence"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -66937,9 +66594,6 @@
             "APP-0101": {
               "catalog_id": "APP-0101",
               "name": "Jira",
-              "name_aliases": [
-                "Atlassian Jira"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -66954,10 +66608,6 @@
             "LIC-0018": {
               "catalog_id": "LIC-0018",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ IDEA",
-                "IntelliJ"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 599,
               "license_types_supported": [
@@ -67674,9 +67324,6 @@
               "application": {
                 "catalog_id": "APP-0042",
                 "name": "Confluence",
-                "name_aliases": [
-                  "Atlassian Confluence"
-                ],
                 "vendor": "Atlassian",
                 "requires_manager_approval": true,
                 "available_access_levels": [
@@ -67870,13 +67517,13 @@
         "first_name": "Priya",
         "last_name": "Ramaswamy"
       },
-      "fr": {
-        "first_name": "Marine",
-        "last_name": "Roussel"
-      },
       "fr-CA": {
-        "first_name": "Nathalie",
-        "last_name": "Poirier"
+        "first_name": "Diane",
+        "last_name": "Rousseau"
+      },
+      "fr": {
+        "first_name": "Justine",
+        "last_name": "Roussel"
       }
     },
     "romanized_culture_overrides": {
@@ -67884,13 +67531,13 @@
         "first_name": "Priya",
         "last_name": "Ramaswamy"
       },
-      "fr": {
-        "first_name": "Marine",
-        "last_name": "Roussel"
-      },
       "fr-CA": {
-        "first_name": "Nathalie",
-        "last_name": "Poirier"
+        "first_name": "Diane",
+        "last_name": "Rousseau"
+      },
+      "fr": {
+        "first_name": "Justine",
+        "last_name": "Roussel"
       }
     }
   },
@@ -67971,8 +67618,8 @@
         "employees": {
           "EMP074192": {
             "employee_id": "EMP074192",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1992-11-18",
             "phone_last_four": "5639",
             "otp_code": "417263",
@@ -68858,13 +68505,13 @@
         "first_name": "Priya",
         "last_name": "Chakraborty"
       },
-      "fr": {
-        "first_name": "Lea",
-        "last_name": "Mercier"
-      },
       "fr-CA": {
-        "first_name": "Marie",
-        "last_name": "Rousseau"
+        "first_name": "Jeanne",
+        "last_name": "Martel"
+      },
+      "fr": {
+        "first_name": "Sandrine",
+        "last_name": "Laurent"
       }
     },
     "romanized_culture_overrides": {
@@ -68872,13 +68519,13 @@
         "first_name": "Priya",
         "last_name": "Chakraborty"
       },
-      "fr": {
-        "first_name": "Lea",
-        "last_name": "Mercier"
-      },
       "fr-CA": {
-        "first_name": "Marie",
-        "last_name": "Rousseau"
+        "first_name": "Jeanne",
+        "last_name": "Martel"
+      },
+      "fr": {
+        "first_name": "Sandrine",
+        "last_name": "Laurent"
       }
     }
   },
@@ -69350,9 +68997,6 @@
             "APP-1201": {
               "catalog_id": "APP-1201",
               "name": "Confluence",
-              "name_aliases": [
-                "Atlassian Confluence"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -69365,9 +69009,6 @@
             "APP-1344": {
               "catalog_id": "APP-1344",
               "name": "Datadog",
-              "name_aliases": [
-                "DataDog"
-              ],
               "vendor": "Datadog",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -69380,9 +69021,6 @@
             "APP-1550": {
               "catalog_id": "APP-1550",
               "name": "Jira",
-              "name_aliases": [
-                "Atlassian Jira"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -69397,9 +69035,6 @@
             "LIC-2201": {
               "catalog_id": "LIC-2201",
               "name": "IntelliJ",
-              "name_aliases": [
-                "JetBrains IntelliJ IDEA"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 649,
               "license_types_supported": [
@@ -69410,9 +69045,6 @@
             "LIC-2310": {
               "catalog_id": "LIC-2310",
               "name": "Adobe Creative Cloud",
-              "name_aliases": [
-                "Adobe CC"
-              ],
               "vendor": "Adobe",
               "license_cost_usd": 1200,
               "license_types_supported": [
@@ -69423,9 +69055,6 @@
             "LIC-2402": {
               "catalog_id": "LIC-2402",
               "name": "Visual Studio Enterprise",
-              "name_aliases": [
-                "VS Enterprise"
-              ],
               "vendor": "Microsoft",
               "license_cost_usd": 899,
               "license_types_supported": [
@@ -69744,9 +69373,6 @@
               "application": {
                 "catalog_id": "APP-1201",
                 "name": "Confluence",
-                "name_aliases": [
-                  "Atlassian Confluence"
-                ],
                 "vendor": "Atlassian",
                 "requires_manager_approval": false,
                 "available_access_levels": [
@@ -69813,9 +69439,6 @@
               "application": {
                 "catalog_id": "APP-1344",
                 "name": "Datadog",
-                "name_aliases": [
-                  "DataDog"
-                ],
                 "vendor": "Datadog",
                 "requires_manager_approval": true,
                 "available_access_levels": [
@@ -69903,9 +69526,6 @@
               "license": {
                 "catalog_id": "LIC-2201",
                 "name": "IntelliJ",
-                "name_aliases": [
-                  "JetBrains IntelliJ IDEA"
-                ],
                 "vendor": "JetBrains",
                 "license_cost_usd": 649,
                 "license_types_supported": [
@@ -69987,9 +69607,6 @@
               "license": {
                 "catalog_id": "LIC-2310",
                 "name": "Adobe Creative Cloud",
-                "name_aliases": [
-                  "Adobe CC"
-                ],
                 "vendor": "Adobe",
                 "license_cost_usd": 1200,
                 "license_types_supported": [
@@ -70055,13 +69672,13 @@
         "first_name": "Daniel",
         "last_name": "Kim"
       },
-      "fr": {
-        "first_name": "Thomas",
-        "last_name": "Rousseau"
-      },
       "fr-CA": {
-        "first_name": "Pierre",
+        "first_name": "Gilles",
         "last_name": "Dubé"
+      },
+      "fr": {
+        "first_name": "Guillaume",
+        "last_name": "Morin"
       }
     },
     "romanized_culture_overrides": {
@@ -70069,13 +69686,13 @@
         "first_name": "Daniel",
         "last_name": "Kim"
       },
-      "fr": {
-        "first_name": "Thomas",
-        "last_name": "Rousseau"
-      },
       "fr-CA": {
-        "first_name": "Pierre",
+        "first_name": "Gilles",
         "last_name": "Dube"
+      },
+      "fr": {
+        "first_name": "Guillaume",
+        "last_name": "Morin"
       }
     }
   },
@@ -70188,8 +69805,8 @@
         "employees": {
           "EMP086541": {
             "employee_id": "EMP086541",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1991-09-22",
             "phone_last_four": "3297",
             "otp_code": "481926",
@@ -70717,10 +70334,6 @@
           "BLD3": {
             "building_code": "BLD3",
             "name": "Headquarters",
-            "name_aliases": [
-              "HQ",
-              "Head Office"
-            ],
             "floors": {
               "FL2": {
                 "desks": {
@@ -71257,13 +70870,13 @@
         "first_name": "Sasha",
         "last_name": "Petrov"
       },
-      "fr": {
-        "first_name": "Charlotte",
-        "last_name": "Laurent"
-      },
       "fr-CA": {
-        "first_name": "Lise",
-        "last_name": "Cote"
+        "first_name": "Hélène",
+        "last_name": "Desjardins"
+      },
+      "fr": {
+        "first_name": "Louise",
+        "last_name": "Morin"
       }
     },
     "romanized_culture_overrides": {
@@ -71271,13 +70884,13 @@
         "first_name": "Sasha",
         "last_name": "Petrov"
       },
-      "fr": {
-        "first_name": "Charlotte",
-        "last_name": "Laurent"
-      },
       "fr-CA": {
-        "first_name": "Lise",
-        "last_name": "Cote"
+        "first_name": "Helene",
+        "last_name": "Desjardins"
+      },
+      "fr": {
+        "first_name": "Louise",
+        "last_name": "Morin"
       }
     }
   },
@@ -71863,9 +71476,6 @@
             "APP-1042": {
               "catalog_id": "APP-1042",
               "name": "Confluence",
-              "name_aliases": [
-                "Atlassian Confluence"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -71878,9 +71488,6 @@
             "APP-1088": {
               "catalog_id": "APP-1088",
               "name": "Salesforce",
-              "name_aliases": [
-                "SFDC"
-              ],
               "vendor": "Salesforce",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -71898,9 +71505,6 @@
             "LIC-2044": {
               "catalog_id": "LIC-2044",
               "name": "Figma",
-              "name_aliases": [
-                "Figma Design"
-              ],
               "vendor": "Figma",
               "license_cost_usd": 180,
               "license_types_supported": [
@@ -71911,9 +71515,6 @@
             "LIC-2051": {
               "catalog_id": "LIC-2051",
               "name": "Adobe Creative Cloud",
-              "name_aliases": [
-                "Adobe CC"
-              ],
               "vendor": "Adobe",
               "license_cost_usd": 720,
               "license_types_supported": [
@@ -72500,9 +72101,6 @@
               "application": {
                 "catalog_id": "APP-1042",
                 "name": "Confluence",
-                "name_aliases": [
-                  "Atlassian Confluence"
-                ],
                 "vendor": "Atlassian",
                 "requires_manager_approval": false,
                 "available_access_levels": [
@@ -72569,9 +72167,6 @@
               "license": {
                 "catalog_id": "LIC-2044",
                 "name": "Figma",
-                "name_aliases": [
-                  "Figma Design"
-                ],
                 "vendor": "Figma",
                 "license_cost_usd": 180,
                 "license_types_supported": [
@@ -72637,13 +72232,13 @@
         "first_name": "Jin",
         "last_name": "Li"
       },
-      "fr": {
-        "first_name": "Lucas",
-        "last_name": "Laurent"
-      },
       "fr-CA": {
-        "first_name": "Louis",
-        "last_name": "Paquette"
+        "first_name": "Antoine",
+        "last_name": "Charbonneau"
+      },
+      "fr": {
+        "first_name": "Éric",
+        "last_name": "Roussel"
       }
     },
     "romanized_culture_overrides": {
@@ -72651,13 +72246,13 @@
         "first_name": "Jin",
         "last_name": "Li"
       },
-      "fr": {
-        "first_name": "Lucas",
-        "last_name": "Laurent"
-      },
       "fr-CA": {
-        "first_name": "Louis",
-        "last_name": "Paquette"
+        "first_name": "Antoine",
+        "last_name": "Charbonneau"
+      },
+      "fr": {
+        "first_name": "Eric",
+        "last_name": "Roussel"
       }
     }
   },
@@ -73834,13 +73429,13 @@
         "first_name": "Astrid",
         "last_name": "Holm"
       },
-      "fr": {
-        "first_name": "Romain",
-        "last_name": "Laurent"
-      },
       "fr-CA": {
-        "first_name": "Luc",
-        "last_name": "Fournier"
+        "first_name": "Jean",
+        "last_name": "Gauthier"
+      },
+      "fr": {
+        "first_name": "Clément",
+        "last_name": "Perrin"
       }
     },
     "romanized_culture_overrides": {
@@ -73848,13 +73443,13 @@
         "first_name": "Astrid",
         "last_name": "Holm"
       },
-      "fr": {
-        "first_name": "Romain",
-        "last_name": "Laurent"
-      },
       "fr-CA": {
-        "first_name": "Luc",
-        "last_name": "Fournier"
+        "first_name": "Jean",
+        "last_name": "Gauthier"
+      },
+      "fr": {
+        "first_name": "Clement",
+        "last_name": "Perrin"
       }
     }
   },
@@ -73956,8 +73551,8 @@
         "employees": {
           "EMP063517": {
             "employee_id": "EMP063517",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1992-04-18",
             "phone_last_four": "7948",
             "otp_code": "418263",
@@ -74318,9 +73913,6 @@
             "APP-2001": {
               "catalog_id": "APP-2001",
               "name": "Slack",
-              "name_aliases": [
-                "slack"
-              ],
               "vendor": "Slack Technologies",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -74335,10 +73927,6 @@
             "LIC-1001": {
               "catalog_id": "LIC-1001",
               "name": "Adobe Creative Cloud",
-              "name_aliases": [
-                "Adobe CC",
-                "Creative Cloud"
-              ],
               "vendor": "Adobe",
               "license_cost_usd": 780,
               "license_types_supported": [
@@ -74349,10 +73937,6 @@
             "LIC-1002": {
               "catalog_id": "LIC-1002",
               "name": "IntelliJ IDEA",
-              "name_aliases": [
-                "JetBrains IntelliJ IDEA",
-                "IntelliJ"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 599,
               "license_types_supported": [
@@ -74502,10 +74086,6 @@
           "BLD1": {
             "building_code": "BLD1",
             "name": "Headquarters",
-            "name_aliases": [
-              "HQ",
-              "Head Office"
-            ],
             "floors": {
               "FL2": {
                 "desks": {
@@ -74836,10 +74416,6 @@
               "license": {
                 "catalog_id": "LIC-1001",
                 "name": "Adobe Creative Cloud",
-                "name_aliases": [
-                  "Adobe CC",
-                  "Creative Cloud"
-                ],
                 "vendor": "Adobe",
                 "license_cost_usd": 780,
                 "license_types_supported": [
@@ -75012,13 +74588,13 @@
         "first_name": "Omar",
         "last_name": "Hassan"
       },
-      "fr": {
-        "first_name": "Bernard",
-        "last_name": "Andre"
-      },
       "fr-CA": {
-        "first_name": "Sylvain",
-        "last_name": "Dubois"
+        "first_name": "Simon",
+        "last_name": "Côté"
+      },
+      "fr": {
+        "first_name": "Patrick",
+        "last_name": "Robin"
       }
     },
     "romanized_culture_overrides": {
@@ -75026,13 +74602,13 @@
         "first_name": "Omar",
         "last_name": "Hassan"
       },
-      "fr": {
-        "first_name": "Bernard",
-        "last_name": "Andre"
-      },
       "fr-CA": {
-        "first_name": "Sylvain",
-        "last_name": "Dubois"
+        "first_name": "Simon",
+        "last_name": "Cote"
+      },
+      "fr": {
+        "first_name": "Patrick",
+        "last_name": "Robin"
       }
     }
   },
@@ -75635,9 +75211,6 @@
             "APP-2101": {
               "catalog_id": "APP-2101",
               "name": "Datadog",
-              "name_aliases": [
-                "datadog"
-              ],
               "vendor": "Datadog",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -75650,9 +75223,6 @@
             "APP-2205": {
               "catalog_id": "APP-2205",
               "name": "Confluence",
-              "name_aliases": [
-                "confluence"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -75667,9 +75237,6 @@
             "LIC-3104": {
               "catalog_id": "LIC-3104",
               "name": "Figma",
-              "name_aliases": [
-                "figma"
-              ],
               "vendor": "Figma",
               "license_cost_usd": 180,
               "license_types_supported": [
@@ -75680,9 +75247,6 @@
             "LIC-3111": {
               "catalog_id": "LIC-3111",
               "name": "Lucidchart",
-              "name_aliases": [
-                "lucidchart"
-              ],
               "vendor": "Lucid Software",
               "license_cost_usd": 96,
               "license_types_supported": [
@@ -76249,9 +75813,6 @@
               "application": {
                 "catalog_id": "APP-2101",
                 "name": "Datadog",
-                "name_aliases": [
-                  "datadog"
-                ],
                 "vendor": "Datadog",
                 "requires_manager_approval": true,
                 "available_access_levels": [
@@ -76339,9 +75900,6 @@
               "license": {
                 "catalog_id": "LIC-3104",
                 "name": "Figma",
-                "name_aliases": [
-                  "figma"
-                ],
                 "vendor": "Figma",
                 "license_cost_usd": 180,
                 "license_types_supported": [
@@ -76545,13 +76103,13 @@
         "first_name": "Evelyn",
         "last_name": "Hayes"
       },
-      "fr": {
-        "first_name": "Daniel",
-        "last_name": "Francois"
-      },
       "fr-CA": {
-        "first_name": "Christian",
-        "last_name": "Therrien"
+        "first_name": "Sylvain",
+        "last_name": "Boucher"
+      },
+      "fr": {
+        "first_name": "Mathieu",
+        "last_name": "Mercier"
       }
     },
     "romanized_culture_overrides": {
@@ -76559,13 +76117,13 @@
         "first_name": "Evelyn",
         "last_name": "Hayes"
       },
-      "fr": {
-        "first_name": "Daniel",
-        "last_name": "Francois"
-      },
       "fr-CA": {
-        "first_name": "Christian",
-        "last_name": "Therrien"
+        "first_name": "Sylvain",
+        "last_name": "Boucher"
+      },
+      "fr": {
+        "first_name": "Mathieu",
+        "last_name": "Mercier"
       }
     }
   },
@@ -76678,8 +76236,8 @@
         "employees": {
           "EMP037294": {
             "employee_id": "EMP037294",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1991-04-22",
             "phone_last_four": "5681",
             "otp_code": "418263",
@@ -77045,9 +76603,6 @@
             "APP-2104": {
               "catalog_id": "APP-2104",
               "name": "Confluence",
-              "name_aliases": [
-                "Atlassian Confluence"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -77060,7 +76615,6 @@
             "APP-1101": {
               "catalog_id": "APP-1101",
               "name": "Slack",
-              "name_aliases": [],
               "vendor": "Slack",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -77074,9 +76628,6 @@
             "LIC-3001": {
               "catalog_id": "LIC-3001",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 599,
               "license_types_supported": [
@@ -77469,9 +77020,6 @@
               "application": {
                 "catalog_id": "APP-2104",
                 "name": "Confluence",
-                "name_aliases": [
-                  "Atlassian Confluence"
-                ],
                 "vendor": "Atlassian",
                 "requires_manager_approval": true,
                 "available_access_levels": [
@@ -77688,13 +77236,13 @@
         "first_name": "Natalie",
         "last_name": "Bauer"
       },
-      "fr": {
-        "first_name": "Christine",
-        "last_name": "Morel"
-      },
       "fr-CA": {
-        "first_name": "Sophie",
-        "last_name": "Caron"
+        "first_name": "Josée",
+        "last_name": "Ouellet"
+      },
+      "fr": {
+        "first_name": "Lucie",
+        "last_name": "Michel"
       }
     },
     "romanized_culture_overrides": {
@@ -77702,13 +77250,13 @@
         "first_name": "Natalie",
         "last_name": "Bauer"
       },
-      "fr": {
-        "first_name": "Christine",
-        "last_name": "Morel"
-      },
       "fr-CA": {
-        "first_name": "Sophie",
-        "last_name": "Caron"
+        "first_name": "Josee",
+        "last_name": "Ouellet"
+      },
+      "fr": {
+        "first_name": "Lucie",
+        "last_name": "Michel"
       }
     }
   },
@@ -78304,9 +77852,6 @@
             "APP-1007": {
               "catalog_id": "APP-1007",
               "name": "Confluence",
-              "name_aliases": [
-                "Atlassian Confluence"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -78319,9 +77864,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Slack",
-              "name_aliases": [
-                "Slack Workspace"
-              ],
               "vendor": "Slack",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -78334,9 +77876,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 699,
               "license_types_supported": [
@@ -79033,9 +78572,6 @@
               "application": {
                 "catalog_id": "APP-1007",
                 "name": "Confluence",
-                "name_aliases": [
-                  "Atlassian Confluence"
-                ],
                 "vendor": "Atlassian",
                 "requires_manager_approval": true,
                 "available_access_levels": [
@@ -79187,13 +78723,13 @@
         "first_name": "Priya",
         "last_name": "Ramaswamy"
       },
-      "fr": {
-        "first_name": "Sylvie",
-        "last_name": "Bertrand"
-      },
       "fr-CA": {
-        "first_name": "Josée",
-        "last_name": "Lessard"
+        "first_name": "Amélie",
+        "last_name": "Côté"
+      },
+      "fr": {
+        "first_name": "Catherine",
+        "last_name": "Blanc"
       }
     },
     "romanized_culture_overrides": {
@@ -79201,13 +78737,13 @@
         "first_name": "Priya",
         "last_name": "Ramaswamy"
       },
-      "fr": {
-        "first_name": "Sylvie",
-        "last_name": "Bertrand"
-      },
       "fr-CA": {
-        "first_name": "Josee",
-        "last_name": "Lessard"
+        "first_name": "Amelie",
+        "last_name": "Cote"
+      },
+      "fr": {
+        "first_name": "Catherine",
+        "last_name": "Blanc"
       }
     }
   },
@@ -79914,9 +79450,6 @@
             "APP-2001": {
               "catalog_id": "APP-2001",
               "name": "Confluence",
-              "name_aliases": [
-                "Atlassian Confluence"
-              ],
               "vendor": "Atlassian",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -79929,9 +79462,6 @@
             "APP-2002": {
               "catalog_id": "APP-2002",
               "name": "Salesforce",
-              "name_aliases": [
-                "SFDC"
-              ],
               "vendor": "Salesforce",
               "requires_manager_approval": true,
               "available_access_levels": [
@@ -79946,9 +79476,6 @@
             "LIC-3001": {
               "catalog_id": "LIC-3001",
               "name": "Figma",
-              "name_aliases": [
-                "Figma Design"
-              ],
               "vendor": "Figma",
               "license_cost_usd": 180,
               "license_types_supported": [
@@ -79959,9 +79486,6 @@
             "LIC-3002": {
               "catalog_id": "LIC-3002",
               "name": "Adobe Creative Cloud",
-              "name_aliases": [
-                "Adobe CC"
-              ],
               "vendor": "Adobe",
               "license_cost_usd": 840,
               "license_types_supported": [
@@ -80588,9 +80112,6 @@
               "application": {
                 "catalog_id": "APP-2001",
                 "name": "Confluence",
-                "name_aliases": [
-                  "Atlassian Confluence"
-                ],
                 "vendor": "Atlassian",
                 "requires_manager_approval": true,
                 "available_access_levels": [
@@ -80678,9 +80199,6 @@
               "license": {
                 "catalog_id": "LIC-3001",
                 "name": "Figma",
-                "name_aliases": [
-                  "Figma Design"
-                ],
                 "vendor": "Figma",
                 "license_cost_usd": 180,
                 "license_types_supported": [
@@ -80742,13 +80260,13 @@
         "first_name": "Ivan",
         "last_name": "Moreau"
       },
-      "fr": {
-        "first_name": "Pierre",
-        "last_name": "Mercier"
-      },
       "fr-CA": {
-        "first_name": "Eric",
-        "last_name": "Paquette"
+        "first_name": "Claude",
+        "last_name": "Morin"
+      },
+      "fr": {
+        "first_name": "Vincent",
+        "last_name": "Moreau"
       }
     },
     "romanized_culture_overrides": {
@@ -80756,13 +80274,13 @@
         "first_name": "Ivan",
         "last_name": "Moreau"
       },
-      "fr": {
-        "first_name": "Pierre",
-        "last_name": "Mercier"
-      },
       "fr-CA": {
-        "first_name": "Eric",
-        "last_name": "Paquette"
+        "first_name": "Claude",
+        "last_name": "Morin"
+      },
+      "fr": {
+        "first_name": "Vincent",
+        "last_name": "Moreau"
       }
     }
   },
@@ -80845,8 +80363,8 @@
         "employees": {
           "EMP061748": {
             "employee_id": "EMP061748",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1990-11-18",
             "phone_last_four": "3824",
             "otp_code": "615204",
@@ -81617,13 +81135,13 @@
         "first_name": "Brett",
         "last_name": "Sullivan"
       },
-      "fr": {
-        "first_name": "Stéphane",
-        "last_name": "Guérin"
-      },
       "fr-CA": {
-        "first_name": "Jonathan",
-        "last_name": "Pelletier"
+        "first_name": "Réal",
+        "last_name": "Beaulieu"
+      },
+      "fr": {
+        "first_name": "Édouard",
+        "last_name": "Blanc"
       }
     },
     "romanized_culture_overrides": {
@@ -81631,13 +81149,13 @@
         "first_name": "Brett",
         "last_name": "Sullivan"
       },
-      "fr": {
-        "first_name": "Stephane",
-        "last_name": "Guerin"
-      },
       "fr-CA": {
-        "first_name": "Jonathan",
-        "last_name": "Pelletier"
+        "first_name": "Real",
+        "last_name": "Beaulieu"
+      },
+      "fr": {
+        "first_name": "Edouard",
+        "last_name": "Blanc"
       }
     }
   },
@@ -82208,9 +81726,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Slack",
-              "name_aliases": [
-                "slack"
-              ],
               "vendor": "Salesforce",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -82225,10 +81740,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ",
-                "IDEA"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 599,
               "license_types_supported": [
@@ -82683,13 +82194,13 @@
         "first_name": "Cassidy",
         "last_name": "Monroe"
       },
-      "fr": {
-        "first_name": "Étienne",
-        "last_name": "François"
-      },
       "fr-CA": {
-        "first_name": "Serge",
+        "first_name": "Luc",
         "last_name": "Simard"
+      },
+      "fr": {
+        "first_name": "Gabriel",
+        "last_name": "Moreau"
       }
     },
     "romanized_culture_overrides": {
@@ -82697,13 +82208,13 @@
         "first_name": "Cassidy",
         "last_name": "Monroe"
       },
-      "fr": {
-        "first_name": "Etienne",
-        "last_name": "Francois"
-      },
       "fr-CA": {
-        "first_name": "Serge",
+        "first_name": "Luc",
         "last_name": "Simard"
+      },
+      "fr": {
+        "first_name": "Gabriel",
+        "last_name": "Moreau"
       }
     }
   },
@@ -82783,8 +82294,8 @@
         "employees": {
           "EMP082463": {
             "employee_id": "EMP082463",
-            "first_name": "<FIRST_NAME>",
-            "last_name": "<LAST_NAME>",
+            "first_name": "<FIRST_NAME_ROMANIZED>",
+            "last_name": "<LAST_NAME_ROMANIZED>",
             "date_of_birth": "1990-04-18",
             "phone_last_four": "7195",
             "otp_code": "481926",
@@ -83554,13 +83065,13 @@
         "first_name": "Patrick",
         "last_name": "Duffy"
       },
-      "fr": {
-        "first_name": "Arthur",
-        "last_name": "Thomas"
-      },
       "fr-CA": {
+        "first_name": "François",
+        "last_name": "Côté"
+      },
+      "fr": {
         "first_name": "Alain",
-        "last_name": "Dubois"
+        "last_name": "Martinez"
       }
     },
     "romanized_culture_overrides": {
@@ -83568,13 +83079,13 @@
         "first_name": "Patrick",
         "last_name": "Duffy"
       },
-      "fr": {
-        "first_name": "Arthur",
-        "last_name": "Thomas"
-      },
       "fr-CA": {
+        "first_name": "Francois",
+        "last_name": "Cote"
+      },
+      "fr": {
         "first_name": "Alain",
-        "last_name": "Dubois"
+        "last_name": "Martinez"
       }
     }
   },
@@ -84491,13 +84002,13 @@
         "first_name": "Quinn",
         "last_name": "Hartley"
       },
-      "fr": {
-        "first_name": "Gabriel",
-        "last_name": "Martin"
-      },
       "fr-CA": {
-        "first_name": "Louis",
-        "last_name": "Beaulieu"
+        "first_name": "Jacques",
+        "last_name": "Pelletier"
+      },
+      "fr": {
+        "first_name": "Michel",
+        "last_name": "Roussel"
       }
     },
     "romanized_culture_overrides": {
@@ -84505,13 +84016,13 @@
         "first_name": "Quinn",
         "last_name": "Hartley"
       },
-      "fr": {
-        "first_name": "Gabriel",
-        "last_name": "Martin"
-      },
       "fr-CA": {
-        "first_name": "Louis",
-        "last_name": "Beaulieu"
+        "first_name": "Jacques",
+        "last_name": "Pelletier"
+      },
+      "fr": {
+        "first_name": "Michel",
+        "last_name": "Roussel"
       }
     }
   },
@@ -84979,9 +84490,6 @@
             "APP-1001": {
               "catalog_id": "APP-1001",
               "name": "Slack",
-              "name_aliases": [
-                "slack"
-              ],
               "vendor": "Slack",
               "requires_manager_approval": false,
               "available_access_levels": [
@@ -84996,10 +84504,6 @@
             "LIC-2001": {
               "catalog_id": "LIC-2001",
               "name": "JetBrains IntelliJ IDEA",
-              "name_aliases": [
-                "IntelliJ",
-                "IntelliJ IDEA"
-              ],
               "vendor": "JetBrains",
               "license_cost_usd": 599,
               "license_types_supported": [
@@ -85471,13 +84975,13 @@
         "first_name": "Sienna",
         "last_name": "Walsh"
       },
-      "fr": {
-        "first_name": "Charlotte",
-        "last_name": "Moreau"
-      },
       "fr-CA": {
-        "first_name": "Annie",
-        "last_name": "Bouchard"
+        "first_name": "Céline",
+        "last_name": "Vaillancourt"
+      },
+      "fr": {
+        "first_name": "Florence",
+        "last_name": "Richard"
       }
     },
     "romanized_culture_overrides": {
@@ -85485,13 +84989,13 @@
         "first_name": "Sienna",
         "last_name": "Walsh"
       },
-      "fr": {
-        "first_name": "Charlotte",
-        "last_name": "Moreau"
-      },
       "fr-CA": {
-        "first_name": "Annie",
-        "last_name": "Bouchard"
+        "first_name": "Celine",
+        "last_name": "Vaillancourt"
+      },
+      "fr": {
+        "first_name": "Florence",
+        "last_name": "Richard"
       }
     }
   }

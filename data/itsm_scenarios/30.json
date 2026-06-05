@@ -437,10 +437,6 @@
         }
       },
       "name": "Downtown Engineering Center",
-      "name_aliases": [
-        "Downtown",
-        "Engineering Center"
-      ],
       "parking_zones": {
         "PZA": {
           "covered": true,

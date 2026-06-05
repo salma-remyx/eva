@@ -357,7 +357,7 @@
         "completed_date": null,
         "status": "not_completed"
       },
-      "first_name": "<FIRST_NAME>",
+      "first_name": "<FIRST_NAME_ROMANIZED>",
       "floor_code": "FL2",
       "group_memberships": [
         {
@@ -388,7 +388,7 @@
       "hire_date": "2021-06-14",
       "is_manager": false,
       "last_desk_assignment_date": null,
-      "last_name": "<LAST_NAME>",
+      "last_name": "<LAST_NAME_ROMANIZED>",
       "last_parking_assignment_date": null,
       "manager_auth_code": null,
       "manager_employee_id": "EMP054210",
@@ -624,9 +624,6 @@
         "catalog_id": "APP-1001",
         "department_restrictions": [],
         "name": "Slack",
-        "name_aliases": [
-          "slack"
-        ],
         "requires_manager_approval": false,
         "vendor": "Salesforce"
       }
@@ -640,9 +637,6 @@
           "temporary"
         ],
         "name": "Microsoft Visio",
-        "name_aliases": [
-          "Visio"
-        ],
         "vendor": "Microsoft"
       }
     }

@@ -518,9 +518,6 @@
         "catalog_id": "APP-1020",
         "department_restrictions": [],
         "name": "Slack",
-        "name_aliases": [
-          "slack"
-        ],
         "requires_manager_approval": false,
         "vendor": "Salesforce"
       },
@@ -532,9 +529,6 @@
         "catalog_id": "APP-2048",
         "department_restrictions": [],
         "name": "Datadog",
-        "name_aliases": [
-          "datadog"
-        ],
         "requires_manager_approval": true,
         "vendor": "Datadog"
       }
@@ -548,9 +542,6 @@
           "temporary"
         ],
         "name": "JetBrains IntelliJ IDEA",
-        "name_aliases": [
-          "IntelliJ"
-        ],
         "vendor": "JetBrains"
       }
     }

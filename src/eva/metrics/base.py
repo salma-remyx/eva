@@ -126,10 +126,7 @@ class MetricContext:
         self.agent_id = agent_id
         self.current_date_time = current_date_time
         self.language = language
-        try:
-            self.language_display_name = LANGUAGE_DISPLAY_NAMES[Language(language)]
-        except (ValueError, KeyError):
-            self.language_display_name = language
+        self.language_display_name = LANGUAGE_DISPLAY_NAMES.get(Language(language), language)
 
         # Processed log data
         self.transcribed_assistant_turns = transcribed_assistant_turns or {}

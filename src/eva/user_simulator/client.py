@@ -24,7 +24,7 @@ from eva.user_simulator.audio_interface import ELEVENLABS_OUTPUT_RATE, BotToBotA
 from eva.user_simulator.event_logger import ElevenLabsEventLogger
 from eva.user_simulator.perturbation import AudioPerturbator
 from eva.utils.audio_utils import save_pcm_as_wav
-from eva.utils.culture import get_user_language_directive
+from eva.utils.culture import add_user_language_directive
 from eva.utils.logging import current_record_id, get_logger
 from eva.utils.prompt_manager import PromptManager
 
@@ -191,14 +191,9 @@ class UserSimulator:
 
             # Append a language directive to the persona so the simulator speaks
             # in the target language even if its voice agent could default to English.
-            if self._language and self._language.lower() not in ("en", "english"):
-                try:
-                    lang_display = LANGUAGE_DISPLAY_NAMES[Language(self._language)]
-                except (ValueError, KeyError):
-                    lang_display = self._language
-                directive = get_user_language_directive(self._language, lang_display)
-                if directive:
-                    user_persona = f"{user_persona}\n\n{directive}"
+            user_persona = add_user_language_directive(
+                self._language, LANGUAGE_DISPLAY_NAMES.get(Language(self._language), self._language), user_persona
+            )
 
             # Derive domain from agent_id (e.g. "agent_airline" → "airline")
             domain = self.agent_id.removeprefix("agent_")

@@ -253,7 +253,7 @@
         "completed_date": "2025-11-18",
         "status": "completed"
       },
-      "first_name": "<FIRST_NAME>",
+      "first_name": "<FIRST_NAME_ROMANIZED>",
       "floor_code": "FL2",
       "group_memberships": [
         {
@@ -278,7 +278,7 @@
       "hire_date": "2019-05-20",
       "is_manager": true,
       "last_desk_assignment_date": "2026-02-01",
-      "last_name": "<LAST_NAME>",
+      "last_name": "<LAST_NAME_ROMANIZED>",
       "last_parking_assignment_date": "2026-01-10",
       "manager_auth_code": "K4M2P9",
       "manager_employee_id": "EMP010001",

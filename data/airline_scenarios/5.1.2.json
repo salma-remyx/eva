@@ -33,8 +33,8 @@
         {
           "elite_status": null,
           "email": "<FIRST_NAME_ROMANIZED>.<LAST_NAME_ROMANIZED>@gmail.com",
-          "first_name": "<FIRST_NAME>",
-          "last_name": "<LAST_NAME>",
+          "first_name": "<FIRST_NAME_ROMANIZED>",
+          "last_name": "<LAST_NAME_ROMANIZED>",
           "meal_preference": "none",
           "passenger_id": "PAX001",
           "phone": "<PHONE>",

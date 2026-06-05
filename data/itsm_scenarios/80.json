@@ -522,9 +522,6 @@
         "catalog_id": "APP-1201",
         "department_restrictions": [],
         "name": "Confluence",
-        "name_aliases": [
-          "Atlassian Confluence"
-        ],
         "requires_manager_approval": false,
         "vendor": "Atlassian"
       },
@@ -537,9 +534,6 @@
         "catalog_id": "APP-1344",
         "department_restrictions": [],
         "name": "Datadog",
-        "name_aliases": [
-          "DataDog"
-        ],
         "requires_manager_approval": true,
         "vendor": "Datadog"
       },
@@ -552,9 +546,6 @@
         "catalog_id": "APP-1550",
         "department_restrictions": [],
         "name": "Jira",
-        "name_aliases": [
-          "Atlassian Jira"
-        ],
         "requires_manager_approval": false,
         "vendor": "Atlassian"
       }
@@ -568,9 +559,6 @@
           "temporary"
         ],
         "name": "IntelliJ",
-        "name_aliases": [
-          "JetBrains IntelliJ IDEA"
-        ],
         "vendor": "JetBrains"
       },
       "LIC-2310": {
@@ -581,9 +569,6 @@
           "permanent"
         ],
         "name": "Adobe Creative Cloud",
-        "name_aliases": [
-          "Adobe CC"
-        ],
         "vendor": "Adobe"
       },
       "LIC-2402": {
@@ -593,9 +578,6 @@
           "permanent"
         ],
         "name": "Visual Studio Enterprise",
-        "name_aliases": [
-          "VS Enterprise"
-        ],
         "vendor": "Microsoft"
       }
     }

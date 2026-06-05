@@ -811,9 +811,6 @@
         "catalog_id": "APP-0042",
         "department_restrictions": [],
         "name": "Confluence",
-        "name_aliases": [
-          "Atlassian Confluence"
-        ],
         "requires_manager_approval": true,
         "vendor": "Atlassian"
       },
@@ -826,9 +823,6 @@
         "catalog_id": "APP-0101",
         "department_restrictions": [],
         "name": "Jira",
-        "name_aliases": [
-          "Atlassian Jira"
-        ],
         "requires_manager_approval": false,
         "vendor": "Atlassian"
       }
@@ -842,10 +836,6 @@
           "temporary"
         ],
         "name": "JetBrains IntelliJ IDEA",
-        "name_aliases": [
-          "IntelliJ IDEA",
-          "IntelliJ"
-        ],
         "vendor": "JetBrains"
       }
     }

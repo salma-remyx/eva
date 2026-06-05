@@ -187,7 +187,7 @@ def resolve_user_config(
     return _replace_in(copy.deepcopy(user_config), first, last, first_rom, last_rom, phone, comp_first, comp_first_rom)
 
 
-def get_user_language_directive(language: str, language_display_name: str) -> str | None:
+def add_user_language_directive(language: str, language_display_name: str, user_persona: str) -> str | None:
     """Return the language directive appended to the user-simulator persona.
 
     Returns None for English (no directive needed). The same string is used both
@@ -195,14 +195,15 @@ def get_user_language_directive(language: str, language_display_name: str) -> st
     (so the judge sees the exact instruction the simulator received).
     """
     if not language or language.lower() in {"en", "english"}:
-        return None
-    return (
+        return user_persona
+    directive = (
         f"Speak ONLY in {language_display_name}. Do not switch to English even if the agent does. "
         "All translatable values should be translated when talking to the agent. "
         "For example, if you are telling the agent about a location like 'downtown office' and you are speaking Spanish, say 'oficina del centro'. "
         "If you are talking about a date that you read as MM/DD/YYYY, you should say it in the culturally appropriate format. "
         "Distinct proper names (e.g. 'IntelliJ', 'Google') should be kept in their original form."
     )
+    return f"{user_persona}\n\n{directive}"
 
 
 def get_language_addendum(language: str) -> str | None:

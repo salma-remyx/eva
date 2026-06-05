@@ -58,10 +58,7 @@ def build_transcription_prompt(language: str | None = None) -> str:
     """
     prompt = DEFAULT_TRANSCRIPTION_PROMPT
     if language and language != "en":
-        try:
-            display_name = LANGUAGE_DISPLAY_NAMES[Language(language)]
-        except (KeyError, ValueError):
-            display_name = language
+        display_name = LANGUAGE_DISPLAY_NAMES.get(Language(language), language)
         prompt += f"\n- The audio is primarily in {display_name}. Transcribe in that language."
     return prompt
 

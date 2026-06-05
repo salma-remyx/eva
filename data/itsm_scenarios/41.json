@@ -521,9 +521,6 @@
         "catalog_id": "APP-2001",
         "department_restrictions": [],
         "name": "Slack",
-        "name_aliases": [
-          "slack"
-        ],
         "requires_manager_approval": false,
         "vendor": "Slack Technologies"
       }
@@ -537,10 +534,6 @@
           "temporary"
         ],
         "name": "Adobe Creative Cloud",
-        "name_aliases": [
-          "adobe cc",
-          "creative cloud"
-        ],
         "vendor": "Adobe"
       },
       "LIC-1002": {
@@ -551,10 +544,6 @@
           "temporary"
         ],
         "name": "IntelliJ IDEA",
-        "name_aliases": [
-          "jetbrains intellij idea",
-          "intellij"
-        ],
         "vendor": "JetBrains"
       },
       "LIC-1003": {
@@ -564,9 +553,6 @@
           "permanent"
         ],
         "name": "Microsoft Visio",
-        "name_aliases": [
-          "visio"
-        ],
         "vendor": "Microsoft"
       }
     }

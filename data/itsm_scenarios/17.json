@@ -357,7 +357,7 @@
         "completed_date": null,
         "status": "not_completed"
       },
-      "first_name": "<FIRST_NAME>",
+      "first_name": "<FIRST_NAME_ROMANIZED>",
       "floor_code": "FL2",
       "group_memberships": [
         {
@@ -388,7 +388,7 @@
       "hire_date": "2021-06-14",
       "is_manager": false,
       "last_desk_assignment_date": "2026-04-01",
-      "last_name": "<LAST_NAME>",
+      "last_name": "<LAST_NAME_ROMANIZED>",
       "last_parking_assignment_date": null,
       "manager_auth_code": null,
       "manager_employee_id": "EMP071245",
@@ -518,9 +518,6 @@
         "catalog_id": "APP-1001",
         "department_restrictions": [],
         "name": "Slack",
-        "name_aliases": [
-          "slack app"
-        ],
         "requires_manager_approval": false,
         "vendor": "Salesforce"
       },
@@ -533,9 +530,6 @@
         "catalog_id": "APP-1042",
         "department_restrictions": [],
         "name": "Confluence",
-        "name_aliases": [
-          "wiki"
-        ],
         "requires_manager_approval": true,
         "vendor": "Atlassian"
       }
@@ -549,9 +543,6 @@
           "temporary"
         ],
         "name": "Figma",
-        "name_aliases": [
-          "figma design"
-        ],
         "vendor": "Figma"
       },
       "LIC-2011": {
@@ -562,10 +553,6 @@
           "temporary"
         ],
         "name": "JetBrains IntelliJ IDEA",
-        "name_aliases": [
-          "intellij",
-          "idea"
-        ],
         "vendor": "JetBrains"
       }
     }

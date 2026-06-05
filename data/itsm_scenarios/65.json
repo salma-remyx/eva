@@ -803,9 +803,6 @@
         "catalog_id": "APP-1001",
         "department_restrictions": [],
         "name": "Confluence",
-        "name_aliases": [
-          "Atlassian Confluence"
-        ],
         "requires_manager_approval": false,
         "vendor": "Atlassian"
       },
@@ -818,9 +815,6 @@
         "catalog_id": "APP-1002",
         "department_restrictions": [],
         "name": "Salesforce",
-        "name_aliases": [
-          "SFDC"
-        ],
         "requires_manager_approval": true,
         "vendor": "Salesforce"
       },
@@ -832,9 +826,6 @@
         "catalog_id": "APP-1003",
         "department_restrictions": [],
         "name": "Jira",
-        "name_aliases": [
-          "Atlassian Jira"
-        ],
         "requires_manager_approval": false,
         "vendor": "Atlassian"
       }
@@ -848,9 +839,6 @@
           "temporary"
         ],
         "name": "Microsoft Project",
-        "name_aliases": [
-          "MS Project"
-        ],
         "vendor": "Microsoft"
       }
     }

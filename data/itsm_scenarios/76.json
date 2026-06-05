@@ -507,9 +507,6 @@
         "catalog_id": "APP-1001",
         "department_restrictions": [],
         "name": "Confluence",
-        "name_aliases": [
-          "Atlassian Confluence"
-        ],
         "requires_manager_approval": false,
         "vendor": "Atlassian"
       },
@@ -522,9 +519,6 @@
         "catalog_id": "APP-1002",
         "department_restrictions": [],
         "name": "Jira",
-        "name_aliases": [
-          "Atlassian Jira"
-        ],
         "requires_manager_approval": true,
         "vendor": "Atlassian"
       }
@@ -538,7 +532,6 @@
           "temporary"
         ],
         "name": "Figma",
-        "name_aliases": [],
         "vendor": "Figma"
       },
       "LIC-2002": {
@@ -549,9 +542,6 @@
           "temporary"
         ],
         "name": "Adobe Creative Cloud",
-        "name_aliases": [
-          "Creative Cloud"
-        ],
         "vendor": "Adobe"
       }
     }

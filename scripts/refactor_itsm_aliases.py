@@ -60,12 +60,6 @@ ALIASES_DIR = DATA_DIR / f"{DOMAIN}_aliases"
 # across these so no language loses aliases during the refactor.
 EXISTING_LANGUAGES = ["fr", "fr-CA"]
 
-ALIAS_PATHS: list[tuple[str, ...]] = [
-    ("facilities", "buildings"),
-    ("facilities", "zones"),
-    ("software_catalog",),
-]
-
 _SLUG_RE = re.compile(r"[^a-z0-9]+")
 
 
@@ -76,21 +70,21 @@ def slugify(name: str) -> str:
     return s
 
 
-def _get_nested(obj: dict, keys: tuple[str, ...]) -> dict[str, Any]:
-    for k in keys:
-        obj = obj.get(k, {}) if isinstance(obj, dict) else {}
-    return obj
+def _iter_alias_entries(obj: Any) -> list[dict]:
+    """Recursively find every dict containing both ``name`` and ``name_aliases``.
 
-
-def _iter_alias_entries(data: dict) -> list[dict]:
+    Path-agnostic: catches entries at any nesting depth (top-level
+    ``software_catalog`` as well as ``software_catalog.applications/licenses``).
+    """
     out: list[dict] = []
-    for path in ALIAS_PATHS:
-        section = _get_nested(data, path)
-        if not isinstance(section, dict):
-            continue
-        for entry in section.values():
-            if isinstance(entry, dict) and "name" in entry and "name_aliases" in entry:
-                out.append(entry)
+    if isinstance(obj, dict):
+        if "name" in obj and "name_aliases" in obj:
+            out.append(obj)
+        for v in obj.values():
+            out.extend(_iter_alias_entries(v))
+    elif isinstance(obj, list):
+        for item in obj:
+            out.extend(_iter_alias_entries(item))
     return out
 
 
@@ -105,27 +99,44 @@ def _strip_alias_fields(data: dict) -> bool:
     return changed
 
 
-def aggregate() -> dict[str, dict]:
-    """Build {name: {translatable, base, extras}} across all scenario files and the dataset."""
+def _load_existing_index() -> dict[str, dict]:
+    """Load already-written alias files keyed by canonical ``name``."""
+    if not ALIASES_DIR.exists():
+        return {}
+    return {(d := json.loads(p.read_text(encoding="utf-8")))["name"]: d for p in ALIASES_DIR.glob("*.json")}
+
+
+def aggregate(existing: dict[str, dict]) -> dict[str, dict]:
+    """Build {name: {translatable, base, extras}} for names not yet in ``existing``.
+
+    Entries lacking ``name_aliases_base``/``name_aliases_translatable`` (never went
+    through the original migrate_aliases.py pass) are treated as non-translatable
+    with their inline ``name_aliases`` promoted to ``base``. Those were missed
+    because the old path list didn't recurse into ``software_catalog.applications/licenses``.
+    """
     agg: dict[str, dict] = {}
 
     def absorb(entry: dict) -> None:
         name = entry["name"]
-        base = list(entry.get("name_aliases_base") or [])
-        translatable = bool(entry.get("name_aliases_translatable"))
-        base_set = set(base)
-        extras = [a for a in entry.get("name_aliases", []) if a not in base_set]
-        rec = agg.setdefault(
-            name,
-            {"translatable": translatable, "base": list(base), "extras": set()},
-        )
-        # Union the base list across occurrences (preserve original order, append new).
+        if name in existing:
+            return  # already captured in a prior migration pass
+        inline = list(entry.get("name_aliases") or [])
+        if "name_aliases_base" in entry or "name_aliases_translatable" in entry:
+            base = list(entry.get("name_aliases_base") or [])
+            translatable = bool(entry.get("name_aliases_translatable"))
+            base_set = set(base)
+            extras = [a for a in inline if a not in base_set]
+        else:
+            # Never-migrated entry: inline aliases ARE the base; assume non-translatable
+            # (these turned out to be brand/product names: Confluence, Jira, SFDC, ...).
+            base = inline
+            translatable = False
+            extras = []
+        rec = agg.setdefault(name, {"translatable": translatable, "base": list(base), "extras": set()})
         for a in base:
             if a not in rec["base"]:
                 rec["base"].append(a)
         rec["extras"].update(extras)
-        # translatable flag should be consistent — if it varies we prefer translatable=True
-        # so any extras keep being eligible for translation.
         rec["translatable"] = rec["translatable"] or translatable
 
     for path in sorted(SCENARIO_DIR.glob("*.json")):
@@ -189,9 +200,12 @@ def strip_scenarios(dry_run: bool) -> tuple[int, int]:
     if DATASET.exists():
         records = json.loads(DATASET.read_text(encoding="utf-8"))
         any_change = False
+        # Walk the whole record, not just expected_scenario_db: tool_response payloads
+        # under ground_truth.events also carry name_aliases that need stripping. The
+        # resolver injects aliases at scenario-DB load only, so any frozen alias list
+        # buried in golden tool responses would drift from the runtime-resolved form.
         for rec in records:
-            db = (rec.get("ground_truth") or {}).get("expected_scenario_db") or {}
-            if _strip_alias_fields(db):
+            if _strip_alias_fields(rec):
                 any_change = True
                 dataset_changed += 1
         if any_change and not dry_run:
@@ -204,16 +218,17 @@ def main() -> int:
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
-    agg = aggregate()
-    print(f"Aggregated {len(agg)} unique names.")
-    nt = [n for n, r in agg.items() if not r["translatable"] and r["extras"]]
-    if nt:
-        print(f"WARNING: {len(nt)} non-translatable name(s) had extras (kept under translations anyway): {nt}")
+    existing = _load_existing_index()
+    print(f"Existing alias files: {len(existing)}")
+    agg = aggregate(existing)
+    print(f"New unique names to add: {len(agg)}")
+    if agg:
+        print(f"  → {sorted(agg.keys())}")
 
     written = write_alias_files(agg, args.dry_run)
     scen_n, ds_n = strip_scenarios(args.dry_run)
     verb = "would write" if args.dry_run else "wrote"
-    print(f"{verb} {written} alias files to {ALIASES_DIR.relative_to(REPO_ROOT)}/")
+    print(f"{verb} {written} new alias files to {ALIASES_DIR.relative_to(REPO_ROOT)}/")
     verb = "would strip" if args.dry_run else "stripped"
     print(f"{verb} alias fields from {scen_n} scenario files and {ds_n} dataset entries")
     return 0
