@@ -16,7 +16,8 @@ from importlib.abc import Loader, MetaPathFinder
 from importlib.machinery import ModuleSpec
 from pathlib import Path
 from types import ModuleType
-from typing import TypedDict
+
+from typing_extensions import TypedDict
 
 
 def _stub_heavy_imports() -> None:
