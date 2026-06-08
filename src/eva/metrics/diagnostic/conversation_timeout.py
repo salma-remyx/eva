@@ -18,6 +18,9 @@ class ConversationTimeoutMetric(CodeMetric):
     async def compute(self, context: MetricContext) -> MetricScore:
         try:
             reason = context.conversation_ended_reason
+            # Note that `timeout` is treated differently from `inactivity_timeout`. `inactivity_timeout`
+            # indicates that there was a problem with the simulation whereas `timeout` indicates
+            # that the model could not complete the conversation on time.
             timed_out = reason == "timeout"
             score = 0.0 if timed_out else 1.0
 

@@ -234,8 +234,9 @@ class ValidationRunner:
 
             threshold = float(self.thresholds.get(metric_name, 1.0))
             if score is None or score < threshold:
+                score_str = f"{score:.2f}" if score is not None else "None"
                 logger.debug(
-                    f"Record {record_id}: Metric '{metric_name}' score {score:.2f} < threshold {threshold:.2f}"
+                    f"Record {record_id}: Metric '{metric_name}' score {score_str} < threshold {threshold:.2f}"
                 )
                 failed_metrics.append(metric_name)
                 if metric_score.details:

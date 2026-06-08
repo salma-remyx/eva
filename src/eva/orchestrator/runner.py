@@ -161,7 +161,7 @@ class BenchmarkRunner:
         rerun_history: dict[str, list[dict]] = {}
         timeout_attempt_counts: dict[str, int] = {}
         timeout_validation_cache: dict[str, dict[int, ValidationResult]] = {}
-        max_timeout_attempts = int(self.config.validation_thresholds.get("max_timeout_attempts", 3))
+        max_timeout_attempts = int(self.config.validation_thresholds.get("max_timeout_attempts", 1))
         timeout_accepted_ids: set[str] = set()
         started_at = datetime.now()
 
@@ -343,7 +343,7 @@ class BenchmarkRunner:
                 if current_vr and current_vr.passed:
                     logger.info(
                         f"Record {oid} timed out {timeout_attempt_counts[oid]} times, "
-                        f"current attempt passed LLM validation — accepting"
+                        f"current attempt passed LLM validation - accepting"
                     )
                     self._accept_timeout_record(
                         oid,
@@ -376,21 +376,26 @@ class BenchmarkRunner:
                                     str(self.output_dir / "records" / f"{oid}_failed_attempt_{attempt_number}"),
                                 )
                             shutil.move(str(archive_dir), str(record_dir))
-                        self._accept_timeout_record(
-                            oid,
-                            failed_this_attempt,
-                            finished_ids,
-                            newly_timeout_accepted,
-                            metrics_runner,
-                            metrics_background_tasks,
-                        )
-                        accepted_from_archive = True
-                        break
+                            self._accept_timeout_record(
+                                oid,
+                                failed_this_attempt,
+                                finished_ids,
+                                newly_timeout_accepted,
+                                metrics_runner,
+                                metrics_background_tasks,
+                            )
+                            accepted_from_archive = True
+                            break
+                        else:
+                            logger.warning(
+                                f"Record {oid}: archive dir for attempt {prev_attempt} not found at "
+                                f"{archive_dir} - cannot restore, skipping"
+                            )
 
                 if not accepted_from_archive:
                     logger.info(
                         f"Record {oid} timed out {timeout_attempt_counts[oid]} times, "
-                        f"no attempt passed LLM validation — staying pending"
+                        f"no attempt passed LLM validation - staying pending"
                     )
 
             if newly_timeout_accepted:

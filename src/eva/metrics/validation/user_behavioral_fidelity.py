@@ -89,14 +89,14 @@ class UserBehavioralFidelityMetric(ConversationTextJudgeMetric):
         )
         if context.conversation_ended_reason == "timeout":
             conversation_end = (
-                "a system timeout — the conversation exceeded the allowed time limit. "
+                "a system timeout - the conversation exceeded the allowed time limit. "
                 "The user did NOT end the call; the system terminated the conversation."
             )
         elif agent_timeout:
             conversation_end = "the agent's failure to respond to the final user turn."
         elif context.conversation_ended_reason == "inactivity_timeout":
             conversation_end = (
-                "an inactivity timeout — neither the user nor the agent spoke for an extended period. "
+                "an inactivity timeout - neither the user nor the agent spoke for an extended period. "
                 "The user did NOT end the call; the system terminated the conversation due to silence."
             )
         else:
