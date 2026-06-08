@@ -939,7 +939,7 @@ class MetricsRunner:
         Returns a dict with the mean of mean_ms values for each latency type
         that has at least one non-null entry.
         """
-        latency_keys = ["llm_latency", "stt_latency", "tts_latency"]
+        latency_keys = ["llm_latency", "stt_latency", "tts_latency", "model_response_latency"]
         collected: dict[str, list[float]] = {k: [] for k in latency_keys}
 
         for _record_id, record_dir in self._discover_record_dirs(self.run_dir, self.record_ids):

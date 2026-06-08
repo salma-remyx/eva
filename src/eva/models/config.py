@@ -440,12 +440,14 @@ class RunConfig(BaseSettings):
         init=False,
     )
 
-    validation_thresholds: dict[str, float] = Field(
+    validation_thresholds: dict[str, float | int] = Field(
         {
             "conversation_valid_end": 1.0,
             "user_behavioral_fidelity": 1.0,
+            "max_time_limit_attempts": 1,
         },
-        description="Validation metric thresholds for rerun decisions (JSON)",
+        description="Validation metric thresholds and settings for rerun decisions (JSON). "
+        "max_time_limit_attempts sets the max number of attempts that timeout before accepting a run for evaluation. Default is 1.",
     )
 
     # Multi-attempt (for pass@k evaluation)
@@ -505,11 +507,11 @@ class RunConfig(BaseSettings):
         le=100,
         description="Maximum number of concurrent conversations",
     )
-    conversation_timeout_seconds: int = Field(
-        360,
+    conversation_time_limit_seconds: int = Field(
+        600,
         ge=30,
         le=10000,
-        description="Timeout for each conversation in seconds",
+        description="Max conversation duration in seconds",
     )
 
     # Output

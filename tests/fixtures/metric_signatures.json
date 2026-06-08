@@ -35,6 +35,12 @@
     "source_hash": "91b71c803d77",
     "version": "v0.1"
   },
+  "ConversationTimeLimitExceededMetric": {
+    "name": "conversation_completed_on_time",
+    "prompt_hash": null,
+    "source_hash": "0628e2833ac5",
+    "version": "v0.1"
+  },
   "ConversationValidEndMetric": {
     "name": "conversation_valid_end",
     "prompt_hash": null,
@@ -92,7 +98,7 @@
   "UserBehavioralFidelityMetric": {
     "name": "user_behavioral_fidelity",
     "prompt_hash": "21527fa8d79b",
-    "source_hash": "c1c200d0fdcb",
+    "source_hash": "c6fb73aef9d3",
     "version": "v0.1"
   },
   "UserSpeechFidelityMetric": {
