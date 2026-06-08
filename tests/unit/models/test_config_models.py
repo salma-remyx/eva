@@ -828,6 +828,39 @@ class TestSelfEndpointingSTTAutowire:
         )
 
 
+class TestLatencyOptimizationFlags:
+    def test_defaults_off(self):
+        c = _config(env_vars=_BASE_ENV)
+        assert c.model.pre_tool_speech == "off"
+        assert c.model.llm_streaming is False
+
+    def test_set_via_env(self):
+        c = _config(
+            env_vars=_BASE_ENV | {"EVA_MODEL__PRE_TOOL_SPEECH": "auto", "EVA_MODEL__LLM_STREAMING": "true"}
+        )
+        assert c.model.pre_tool_speech == "auto"
+        assert c.model.llm_streaming is True
+
+    @pytest.mark.parametrize("value", ["bogus", "force"])
+    def test_invalid_pre_tool_speech_rejected(self, value):
+        with pytest.raises(ValueError):
+            _config(env_vars=_BASE_ENV | {"EVA_MODEL__PRE_TOOL_SPEECH": value})
+
+
+class TestParallelToolCallsConfig:
+    def test_default_is_none(self):
+        m = ModelConfig(llm="gpt-5.2")
+        assert m.parallel_tool_calls is None
+
+    def test_false_via_env(self):
+        c = _config(env_vars=_BASE_ENV | {"EVA_MODEL__PARALLEL_TOOL_CALLS": "false"})
+        assert c.model.parallel_tool_calls is False
+
+    def test_true_via_env(self):
+        c = _config(env_vars=_BASE_ENV | {"EVA_MODEL__PARALLEL_TOOL_CALLS": "true"})
+        assert c.model.parallel_tool_calls is True
+
+
 class TestApiKeyRedactionInPipelineModels:
     """api_key redaction works for all three pipeline config types via RunConfig serialization."""
 

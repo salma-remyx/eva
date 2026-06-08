@@ -185,6 +185,20 @@ class ModelConfig(BaseModel):
         ),
     )
 
+    # CASCADE-only latency controls.
+    pre_tool_speech: str = Field(
+        "off",
+        description="Prompt a model-generated lead-in before tool calls: 'off' or 'auto'.",
+    )
+    llm_streaming: bool = Field(
+        False,
+        description="Stream Chat Completions output to TTS sentence-by-sentence.",
+    )
+    parallel_tool_calls: bool | None = Field(
+        None,
+        description="Forward parallel_tool_calls when tools are present; None leaves provider defaults.",
+    )
+
     @property
     def pipeline_type(self) -> "PipelineType":
         """Detected pipeline mode based on which selector is set."""
@@ -260,6 +274,19 @@ class ModelConfig(BaseModel):
             else:
                 logger.info(f"STT '{self.stt}': auto-setting {field}='{target}' (self-endpointing).")
             setattr(self, field, target)
+        return self
+
+    @model_validator(mode="after")
+    def _validate_latency_optimizations(self) -> "ModelConfig":
+        allowed = {"off", "auto"}
+        if self.pre_tool_speech not in allowed:
+            raise ValueError(f"pre_tool_speech must be one of {sorted(allowed)}, got '{self.pre_tool_speech}'")
+        any_set = self.pre_tool_speech != "off" or self.llm_streaming or self.parallel_tool_calls is not None
+        if any_set and self.pipeline_type != PipelineType.CASCADE:
+            logger.warning(
+                "Cascade LLM flags (pre_tool_speech / llm_streaming / parallel_tool_calls) apply only "
+                f"to the CASCADE pipeline; they will be ignored for pipeline_type={self.pipeline_type}."
+            )
         return self
 
 

@@ -282,11 +282,12 @@ class PipecatAssistantServer(AbstractAssistantServer):
                     self.pipeline_config.tts_params,
                 )
                 # Create LLM client for agentic system (separate from Pipecat LLM service)
-                llm_client = LiteLLMClient(model=self.pipeline_config.llm)
+                llm_client = LiteLLMClient(
+                    model=self.pipeline_config.llm,
+                    parallel_tool_calls=self.pipeline_config.parallel_tool_calls,
+                )
 
-                # Self-endpointing STT (Cartesia ink-2): log its turn diagnostics. Turn boundaries
-                # come from the service's own frames via the external strategies (auto-forced in
-                # ModelConfig); these handlers are diagnostics only and do not affect aggregation.
+                # Cartesia ink-2 turn events are logged as diagnostics only.
                 if isinstance(stt, CartesiaTurnsSTTService):
                     self._register_ink2_diagnostics(stt)
 
@@ -408,6 +409,8 @@ class PipecatAssistantServer(AbstractAssistantServer):
                     audit_log=self.audit_log,
                     llm_client=llm_client,
                     output_dir=self.output_dir,
+                    pre_tool_speech=self.pipeline_config.pre_tool_speech,
+                    llm_streaming=self.pipeline_config.llm_streaming,
                 )
                 agent_processor.on_assistant_response = lambda msg: self._save_transcript_message_from_turn(
                     role="assistant", content=msg, timestamp=self._current_iso_timestamp()
