@@ -33400,7 +33400,7 @@
     "starting_utterances": {
       "en": "Hi, I've got a couple of facilities things I need help with.",
       "fr": "Bonjour, j’ai quelques sujets liés aux services généraux pour lesquels j’ai besoin d’aide.",
-      "fr-CA": "Bonjour, j’ai quelques affaires liés aux installations pour lesquelles j’ai besoin d’aide."
+      "fr-CA": "Bonjour, j’ai quelques affaires liées aux installations pour lesquelles j’ai besoin d’aide."
     },
     "culture_overrides": {
       "en": {
@@ -34424,8 +34424,8 @@
     },
     "starting_utterances": {
       "en": "Hi, I've got a couple of workplace requests I need help with.",
-      "fr": "Bonjour, j’ai quelques demandes liés au lieu de travail pour lesquelles j’ai besoin d’aide.",
-      "fr-CA": "Bonjour, j’ai quelques demandes liés au milieu de travail pour lesquelles j’ai besoin d’aide."
+      "fr": "Bonjour, j’ai quelques demandes liées au lieu de travail pour lesquelles j’ai besoin d’aide.",
+      "fr-CA": "Bonjour, j’ai quelques demandes liées au milieu de travail pour lesquelles j’ai besoin d’aide."
     },
     "culture_overrides": {
       "en": {
@@ -42433,8 +42433,8 @@
     },
     "starting_utterances": {
       "en": "Hi, I've got a couple of workplace requests I need help with.",
-      "fr": "Bonjour, j’ai quelques demandes liés au lieu de travail pour lesquelles j’ai besoin d’aide.",
-      "fr-CA": "Bonjour, j’ai quelques demandes liés au milieu de travail pour lesquelles j’ai besoin d’aide."
+      "fr": "Bonjour, j’ai quelques demandes liées au lieu de travail pour lesquelles j’ai besoin d’aide.",
+      "fr-CA": "Bonjour, j’ai quelques demandes liées au milieu de travail pour lesquelles j’ai besoin d’aide."
     },
     "culture_overrides": {
       "en": {
@@ -65839,7 +65839,7 @@
     },
     "starting_utterances": {
       "en": "Hi, I have a few things I need help with for my office move.",
-      "fr": "Bonjour, j’ai besoin d’aide pour quelques petites choses liés à mon déménagement de bureau.",
+      "fr": "Bonjour, j’ai besoin d’aide pour quelques petites choses liées à mon déménagement de bureau.",
       "fr-CA": "Bonjour, j’ai quelques trucs pour lesquels j’aurais besoin d’aide pour mon déménagement de bureau."
     },
     "culture_overrides": {

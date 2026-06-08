@@ -257,7 +257,6 @@
   "preserve_combining_marks": false,
   "decimal_separator": "comma",
   "thousand_separators": [
-    "dot",
     "space"
   ]
 }
