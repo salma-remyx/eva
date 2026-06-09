@@ -2577,12 +2577,12 @@ def render_record_detail(selected_run_dir: Path):
         if transcript_df.empty:
             st.info("No transcript data available")
         else:
+            transcript_df = transcript_df.set_index(["timestamp", "role"])
             column_config = {
-                "content": st.column_config.TextColumn(width="large"),
-                "timestamp": st.column_config.TextColumn(width="small"),
-                "role": st.column_config.TextColumn(width="small"),
+                "timestamp": st.column_config.DatetimeColumn(format="YYYY-MM-DD HH:mm:ss.SSS"),
+                "role": st.column_config.MultiselectColumn(options=("user", "assistant"), color=("purple", "blue")),
             }
-            st.dataframe(transcript_df, hide_index=True, column_config=column_config)
+            st.dataframe(transcript_df, column_config=column_config)
 
     with tab3:
         render_metrics_tab(metrics)
