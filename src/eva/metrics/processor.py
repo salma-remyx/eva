@@ -715,13 +715,14 @@ def _label_trailing_assistant_turn(context: "_ProcessorContext", last_entry: dic
             {"role": "assistant", "content": labeled, "type": "intended", "turn_id": trailing_turn_id}
         )
 
-    # Sync intended + transcribed (skip intended for S2S — no intended text exists)
-    if context.pipeline_type != PipelineType.S2S:
-        context.intended_assistant_turns[trailing_turn_id] = labeled
+    # Append the label to the aggregated turn text (skip intended for S2S — no intended text exists).
+    if context.intended_assistant_turns.get(trailing_turn_id) and context.pipeline_type != PipelineType.S2S:
+        context.intended_assistant_turns[trailing_turn_id] += f" {AnnotationLabel.CUT_OFF_ON_ITS_OWN}"
     if context.transcribed_assistant_turns.get(trailing_turn_id):
         context.transcribed_assistant_turns[trailing_turn_id] += f" {AnnotationLabel.CUT_OFF_ON_ITS_OWN}"
     else:
-        context.transcribed_assistant_turns[trailing_turn_id] = labeled
+        # STT produced no text for the final turn — back from the (already-labeled) intended text.
+        context.transcribed_assistant_turns[trailing_turn_id] = context.intended_assistant_turns.get(trailing_turn_id)
 
     logger.info(f"Record {context.record_id}: Labeled trailing assistant at turn {trailing_turn_id}")
 
