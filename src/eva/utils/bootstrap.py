@@ -1,8 +1,4 @@
-"""Percentile bootstrap primitives for sample-mean confidence intervals.
-
-This module is pure: numpy in, numpy/floats out. It has no eva imports and
-is safe to use from anywhere in the package.
-"""
+"""Bootstrap primitives for sample-mean confidence intervals."""
 
 from __future__ import annotations
 
@@ -17,22 +13,13 @@ ALPHA = 0.05
 
 
 def run_seed(run_id: str) -> int:
-    """Stable, run-dependent seed derived from the run directory name.
-
-    Uses ``hashlib.sha256`` rather than Python's built-in ``hash()`` because the
-    latter is salted per interpreter process — re-invoking ``eva metrics`` on the
-    same run would otherwise yield slightly different CI bounds. SHA-based hashing
-    is byte-stable across processes.
-    """
+    """Seed from ``run_id`` using SHA-256; process-stable unlike Python's ``hash()``, so CI bounds are consistent across ``eva metrics`` invocations on the same run."""
     h = hashlib.sha256(run_id.encode()).digest()
     return int.from_bytes(h[:4], "big") % (2**31)
 
 
 def bootstrap_resample(values: np.ndarray, n_boot: int, seed: int) -> np.ndarray:
-    """Return ``n_boot`` resampled means of ``values``.
-
-    Returns a zero-length array for empty input.
-    """
+    """Return ``n_boot`` resampled means of ``values``."""
     values = np.asarray(values, dtype=float)
     if len(values) == 0:
         return np.array([], dtype=float)
@@ -48,12 +35,7 @@ def bootstrap_ci(
     seed: int,
     alpha: float = ALPHA,
 ) -> tuple[float | None, float | None]:
-    """95% bootstrap CI on the mean (default alpha=0.05).
-
-    ``seed`` is keyword-only and required: callers must supply a deliberate
-    seed (typically from ``run_seed(run_dir.name)``) so behavior is deterministic.
-
-    """
+    """95% bootstrap CI on the mean (default alpha=0.05)."""
     if len(values) == 0:
         return None, None
     boot = bootstrap_resample(values, n_boot=n_boot, seed=seed)
@@ -87,11 +69,7 @@ def mean_ci_fields(
     seed: int,
     decimals: int = 4,
 ) -> dict[str, Any]:
-    """Return ``mean_ci_lower`` / ``mean_ci_upper`` / ``mean_ci_n_scenarios``.
-
-    Empty ``scenario_values`` yields ``None`` bounds and ``n_scenarios=0``; otherwise
-    returns a percentile bootstrap CI on the mean.
-    """
+    """Percentile bootstrap CI on the mean of ``scenario_values``, plus scenario count."""
     if len(scenario_values) == 0:
         return {"mean_ci_lower": None, "mean_ci_upper": None, "mean_ci_n_scenarios": 0}
     lower, upper = bootstrap_ci(scenario_values, seed=seed)
