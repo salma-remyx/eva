@@ -701,16 +701,10 @@ def _label_trailing_assistant_turn(context: "_ProcessorContext", last_entry: dic
     if trailing_turn_id is None:
         return
 
-    text = (
-        context.conversation_trace[-1]["content"]
-        if last_entry.get("role") == "assistant"
-        else context.intended_assistant_turns[trailing_turn_id]
-    )
-    labeled = f"{text} {AnnotationLabel.CUT_OFF_ON_ITS_OWN}"
-
     if last_entry.get("role") == "assistant":
-        context.conversation_trace[-1]["content"] = labeled
+        context.conversation_trace[-1]["content"] += f" {AnnotationLabel.CUT_OFF_ON_ITS_OWN}"
     else:
+        labeled = f"{context.intended_assistant_turns[trailing_turn_id]} {AnnotationLabel.CUT_OFF_ON_ITS_OWN}"
         context.conversation_trace.append(
             {"role": "assistant", "content": labeled, "type": "intended", "turn_id": trailing_turn_id}
         )
