@@ -54,7 +54,7 @@ def named_ci_fields(
     seed: int,
     decimals: int = 4,
 ) -> dict[str, float | None]:
-    """Return ``{name}_ci_lower`` / ``{name}_ci_upper`` for each ``(name, sample)`` pair."""
+    """Percentile bootstrap CI on the mean of each named metric in ``samples``."""
     out: dict[str, float | None] = {}
     for name, sample in samples.items():
         if not sample:
