@@ -1873,9 +1873,9 @@ def render_metrics_tab(metrics: RecordMetrics | None):
                 if metric_score.normalized_score is not None
                 else f"**{metric_name}**"
             ):
-                col1, col2 = st.columns([1, 3])
+                cols = iter(st.columns([1, 3]))
 
-                with col1:
+                with next(cols):
                     st.metric("Score", f"{metric_score.score:.3f}" if metric_score.score is not None else "N/A")
                     st.metric(
                         "Normalized",
@@ -1898,7 +1898,7 @@ def render_metrics_tab(metrics: RecordMetrics | None):
                                 prefix = "⚠ " if flagged else ""
                                 st.markdown(f"{prefix}**{label}:** {score_str}")
 
-                with col2:
+                with next(cols):
                     if metric_score.details:
                         st.markdown("**Details:**")
                         if "explanation" in metric_score.details:
@@ -1978,14 +1978,14 @@ def render_processed_data_tab(metrics: RecordMetrics | None):
             st.info("No tool responses data")
 
     # Transcripts by speaker
-    col1, col2 = st.columns(2)
-    with col1:
+    cols = iter(st.columns(2))
+    with next(cols):
         with st.expander("Assistant Transcript (by Turn)"):
             if context.get("transcribed_assistant_turns"):
                 st.json(context["transcribed_assistant_turns"])
             else:
                 st.info("No assistant transcript data")
-    with col2:
+    with next(cols):
         with st.expander("User Transcript (by Turn)"):
             if context.get("transcribed_user_turns"):
                 st.json(context["transcribed_user_turns"])
@@ -1993,14 +1993,14 @@ def render_processed_data_tab(metrics: RecordMetrics | None):
                 st.info("No user transcript data")
 
     # TTS text
-    col1, col2 = st.columns(2)
-    with col1:
+    cols = iter(st.columns(2))
+    with next(cols):
         with st.expander("Assistant TTS Text (by Turn)"):
             if context.get("intended_assistant_turns"):
                 st.json(context["intended_assistant_turns"])
             else:
                 st.info("No assistant TTS text data")
-    with col2:
+    with next(cols):
         with st.expander("User TTS Text (by Turn)"):
             if context.get("intended_user_turns"):
                 st.json(context["intended_user_turns"])
@@ -2506,15 +2506,15 @@ def render_record_detail(selected_run_dir: Path):
 
     # Result summary
     if result:
-        col1, col2, col3 = st.columns(3)
-        with col1:
+        cols = iter(st.columns(3))
+        with next(cols):
             if result.completed:
                 st.success(f"Completed ({result.conversation_ended_reason or 'ok'})")
             else:
                 st.warning(f"Failed: {result.error or 'unknown'}")
-        with col2:
+        with next(cols):
             st.metric("Duration", f"{result.duration_seconds:.1f}s")
-        with col3:
+        with next(cols):
             st.metric("Turns", result.num_turns)
 
     # Audio player
@@ -2550,20 +2550,19 @@ def render_record_detail(selected_run_dir: Path):
     preload_audio_data(selected_record_dir)
 
     # Tabs
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(
-        [
-            "Conversation Trace",
-            "Transcript",
-            "Metrics Detail",
-            "Processed Data",
-            "Turn Taking Analysis",
-        ]
+    tab_names = (
+        "Conversation Trace",
+        "Transcript",
+        "Metrics Detail",
+        "Processed Data",
+        "Turn Taking Analysis",
     )
+    tabs = iter(st.tabs(tab_names))
 
-    with tab1:
+    with next(tabs):
         render_conversation_trace_tab(metrics, selected_record_dir)
 
-    with tab2:
+    with next(tabs):
         st.markdown("### Transcript")
         transcript_df = None
         if metrics and metrics.context and "turns_transcript" in metrics.context:
@@ -2584,13 +2583,13 @@ def render_record_detail(selected_run_dir: Path):
             }
             st.dataframe(transcript_df, column_config=column_config)
 
-    with tab3:
+    with next(tabs):
         render_metrics_tab(metrics)
 
-    with tab4:
+    with next(tabs):
         render_processed_data_tab(metrics)
 
-    with tab5:
+    with next(tabs):
         render_audio_analysis_tab(selected_record_dir)
 
 
