@@ -109,7 +109,7 @@ class SpeechFidelityBaseMetric(AudioJudgeMetric):
                 rating = response_item.get("rating")
                 transcript = response_item.get("transcript")
                 explanation = response_item.get("explanation", "")
-                failure_modes = response_item.get("failure_modes") or []
+                failure_modes = response_item.get("failure_modes")
                 if not isinstance(failure_modes, list):
                     failure_modes = []
 
