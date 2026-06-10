@@ -37,7 +37,7 @@ def _bare_server() -> DeepgramAssistantServer:
     """Build a server without running __init__ (which needs file-backed tool config)."""
     srv = object.__new__(DeepgramAssistantServer)
     srv._audio_sample_rate = 24000
-    srv._language = "en"
+    srv.language = "en"
     srv._listen_model = "nova-3"
     srv._think_provider = "open_ai"
     srv._think_model = "gpt-4o-mini"

@@ -103,10 +103,11 @@ class DeepgramAssistantServer(AbstractAssistantServer):
 
         s2s_params = self.pipeline_config.s2s_params or {}
         self._api_key: str = s2s_params.get("api_key", "")
-        # ``think_model`` is the LLM driving the agent; used as the metrics label.
-        # Accept ``model`` as an alias for the contract's "model required" convention.
+        # ``model`` is the exact LLM id sent to Deepgram (required).
         self._think_model: str = s2s_params["model"]
-        self._model = self._think_model
+        # Metrics/run_id label, decoupled from the (often long) Deepgram model id:
+        # an explicit ``think_label`` if provided, else the model id itself.
+        self._model = s2s_params.get("think_label") or self._think_model
         self._think_provider: str = s2s_params.get("think_provider", _DEFAULT_THINK_PROVIDER)
         self._listen_model: str = s2s_params.get("listen_model", _DEFAULT_LISTEN_MODEL)
         self._speak_model: str = s2s_params.get("speak_model", _DEFAULT_SPEAK_MODEL)

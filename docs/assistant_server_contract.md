@@ -548,10 +548,15 @@ server and a good template for a new S2S framework.
 Notable points specific to Deepgram:
 
 - **Config.** `framework: deepgram`, `model: {s2s: deepgram, s2s_params: {...}}`. Recognised
-  `s2s_params`: `api_key` (required), `think_provider` (default `open_ai`),
-  `think_model` / `model` (LLM + metrics label, default `gpt-4o-mini`),
-  `listen_model` (STT, default `nova-3`), `speak_model` (TTS, default `aura-2-thalia-en`),
-  `language` (default `en`).
+  `s2s_params`: `api_key` and `model` (both **required**; `model` is the exact Deepgram LLM id,
+  e.g. `gpt-4o-mini` or `claude-haiku-4-5`), `think_provider` (default `open_ai`; use `anthropic`
+  for Claude models), `think_label` (optional short metrics/run_id label — Deepgram still receives
+  `model`), `listen_model` (STT, default `nova-3`), `speak_model` (TTS, default `aura-2-thalia-en`).
+  The conversation language comes from the run's `language` (base server), not `s2s_params`.
+- **Evaluation.** Although configured via `s2s`, Deepgram is scored as a **cascade** pipeline
+  (`get_pipeline_type` → `CASCADE`), since it runs STT→LLM→TTS internally — so STT/TTS metrics
+  (`stt_wer`, `transcription_accuracy_key_entities`, `speakability`) run. `pipeline_parts` exposes
+  `{stt, llm, tts}` so the run_id/folder shows the three component models.
 - **Settings.** Sent once on connect via `send_settings(AgentV1Settings)`. Built from a plain
   dict and validated with `AgentV1Settings.model_validate(...)`, which resolves the
   discriminated provider unions. Audio is `linear16` @ 24 kHz both directions with output
