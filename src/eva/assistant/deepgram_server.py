@@ -64,9 +64,7 @@ KEEPALIVE_INTERVAL_S = 5.0
 # Defaults for the Voice Agent listen/think/speak providers (overridable via s2s_params).
 _DEFAULT_LISTEN_MODEL = "nova-3"
 _DEFAULT_THINK_PROVIDER = "open_ai"
-_DEFAULT_THINK_MODEL = "gpt-4o-mini"
 _DEFAULT_SPEAK_MODEL = "aura-2-thalia-en"
-_DEFAULT_LANGUAGE = "en"
 
 
 def _agent_tools_to_deepgram(agent: AgentConfig) -> list[dict[str, Any]] | None:
@@ -107,12 +105,11 @@ class DeepgramAssistantServer(AbstractAssistantServer):
         self._api_key: str = s2s_params.get("api_key", "")
         # ``think_model`` is the LLM driving the agent; used as the metrics label.
         # Accept ``model`` as an alias for the contract's "model required" convention.
-        self._think_model: str = s2s_params.get("think_model") or s2s_params.get("model") or _DEFAULT_THINK_MODEL
+        self._think_model: str = s2s_params["model"]
         self._model = self._think_model
         self._think_provider: str = s2s_params.get("think_provider", _DEFAULT_THINK_PROVIDER)
         self._listen_model: str = s2s_params.get("listen_model", _DEFAULT_LISTEN_MODEL)
         self._speak_model: str = s2s_params.get("speak_model", _DEFAULT_SPEAK_MODEL)
-        self._language: str = s2s_params.get("language", _DEFAULT_LANGUAGE)
 
         # Build system prompt (same pattern as the other realtime/S2S servers)
         prompt_manager = PromptManager()
@@ -216,7 +213,7 @@ class DeepgramAssistantServer(AbstractAssistantServer):
                 "output": {"encoding": "linear16", "sample_rate": self._audio_sample_rate, "container": "none"},
             },
             "agent": {
-                "language": self._language,
+                "language": self.language,
                 "greeting": self.initial_message,
                 "listen": {"provider": {"type": "deepgram", "model": self._listen_model}},
                 "think": think,
