@@ -5,11 +5,12 @@ from unittest.mock import MagicMock
 from deepgram.agent.v1.types.agent_v1settings import AgentV1Settings
 
 from eva.assistant.deepgram_server import (
-    INITIAL_MESSAGE,
     DeepgramAssistantServer,
     _agent_tools_to_deepgram,
 )
 from eva.models.agents import AgentConfig, AgentTool, AgentToolParameter
+
+INITIAL_MESSAGE = "Hello! How can I help you today?"
 
 
 def _agent_with_tools() -> AgentConfig:
@@ -44,6 +45,7 @@ def _bare_server() -> DeepgramAssistantServer:
     srv._speak_model = "aura-2-thalia-en"
     srv._system_prompt = "you are a helpful assistant"
     srv._functions = None
+    srv.initial_message = INITIAL_MESSAGE
     return srv
 
 

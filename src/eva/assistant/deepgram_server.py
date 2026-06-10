@@ -42,7 +42,7 @@ from eva.assistant.audio_bridge import (
     pcm16_24k_to_mulaw_8k,
     sync_buffer_to_position,
 )
-from eva.assistant.base_server import INITIAL_MESSAGE, AbstractAssistantServer
+from eva.assistant.base_server import AbstractAssistantServer
 from eva.models.agents import AgentConfig
 from eva.utils.logging import get_logger
 from eva.utils.prompt_manager import PromptManager
@@ -217,7 +217,7 @@ class DeepgramAssistantServer(AbstractAssistantServer):
             },
             "agent": {
                 "language": self._language,
-                "greeting": INITIAL_MESSAGE,
+                "greeting": self.initial_message,
                 "listen": {"provider": {"type": "deepgram", "model": self._listen_model}},
                 "think": think,
                 "speak": {"provider": {"type": "deepgram", "model": self._speak_model}},
