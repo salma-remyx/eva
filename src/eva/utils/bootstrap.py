@@ -62,8 +62,8 @@ def named_ci_fields(
             out[f"{name}_ci_upper"] = None
             continue
         lower, upper = bootstrap_ci(sample, seed=seed)
-        out[f"{name}_ci_lower"] = round(lower, decimals)
-        out[f"{name}_ci_upper"] = round(upper, decimals)
+        out[f"{name}_ci_lower"] = round(lower, decimals) if lower is not None else None
+        out[f"{name}_ci_upper"] = round(upper, decimals) if upper is not None else None
     return out
 
 
