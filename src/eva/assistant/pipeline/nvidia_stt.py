@@ -61,6 +61,12 @@ _FINALIZE_TIMEOUT_SECS = 3.0
 # 20 ms/chunk ≈ 1 s) and prepending them on utterance start fixes the truncation.
 _PRE_ROLL_CHUNKS = 50  # 50 × 20 ms ≈ 1 s
 
+# Riva gRPC chunk size in samples.  The reference transcribe_file.py uses 1600
+# samples (100 ms at 16 kHz).  Pipecat feeds us 320-sample (20 ms) frames, so
+# we aggregate 5 frames into one Riva-sized chunk before yielding to the gRPC
+# stream.  Sending undersized chunks causes high word-deletion rates.
+_RIVA_CHUNK_SAMPLES = 1600  # 100 ms at 16 kHz
+
 # Seconds after a Parakeet `completed` (with no VAD) before auto-finalizing.
 # Gives VAD a chance to catch up; if it doesn't, Parakeet's own sentence
 # detection serves as the fallback signal.
@@ -653,11 +659,19 @@ class NVidiaRivaSTTService(STTService):
             )
 
             def _audio_iter():
+                """Buffer 20 ms pipecat chunks into 100 ms Riva chunks."""
+                target_bytes = _RIVA_CHUNK_SAMPLES * 2  # 16-bit mono
+                buf = bytearray()
                 while True:
                     chunk = audio_q.get()
                     if chunk is None:
+                        if buf:
+                            yield bytes(buf)  # flush tail
                         return
-                    yield chunk
+                    buf.extend(chunk)
+                    while len(buf) >= target_bytes:
+                        yield bytes(buf[:target_bytes])
+                        del buf[:target_bytes]
 
             transcript_parts: list[str] = []
             last_text: str = ""
