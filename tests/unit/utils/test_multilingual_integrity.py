@@ -21,6 +21,7 @@ from eva.utils.culture import (
     _names_for,
     _phone_for,
     _replace_in,
+    _resolve_locations,
     resolve_scenario_db,
     resolve_user_config,
     resolve_user_goal,
@@ -290,18 +291,23 @@ def _load_scenario(domain: str, record_id) -> dict:
     return json.loads((_domain_paths(domain)["scenarios"] / f"{record_id}.json").read_text())
 
 
-def _resolve_params(params, culture_overrides, language, romanized_culture_overrides):
-    """Resolve <FIRST_NAME>/<LAST_NAME>/... placeholders in tool call params.
+def _resolve_params(params, culture_overrides, language, romanized_culture_overrides, aliases_index=None):
+    """Resolve name and location placeholders in tool call params.
 
-    Tools match name and name_aliases bidirectionally, so canonical English
-    facility/catalog names (e.g. "Downtown") work as-is in every language.
+    - ``<FIRST_NAME>`` / ``<LAST_NAME>`` / ... → per-language name values.
+    - ``<LOC:Name>`` → language-appropriate alias (e.g. "campus est" in French),
+      so the tool receives the translated form and exercises the name_aliases
+      lookup chain end-to-end.
     """
     from eva.utils.culture import _companion_for, _names_for, _phone_for
 
     first, last, first_rom, last_rom = _names_for(culture_overrides, romanized_culture_overrides, language)
     phone = _phone_for(culture_overrides, language)
     comp_first, comp_first_rom = _companion_for(culture_overrides, romanized_culture_overrides, language)
-    return _replace_in(copy.deepcopy(params), first, last, first_rom, last_rom, phone, comp_first, comp_first_rom)
+    resolved = _replace_in(copy.deepcopy(params), first, last, first_rom, last_rom, phone, comp_first, comp_first_rom)
+    if aliases_index:
+        resolved = _resolve_locations(resolved, aliases_index, language)
+    return resolved
 
 
 def _make_executor(domain: str, sample_record_id) -> ToolExecutor:
@@ -365,6 +371,8 @@ async def _replay_record(executor: ToolExecutor, record: dict, language: str, pa
     executor.db["_current_date"] = record["current_date_time"].split(" ")[0]
     executor._tool_call_counts = {}
 
+    aliases_index = _load_aliases_index(str(paths["aliases"])) if paths["aliases"].exists() else {}
+
     trace = record["ground_truth"]["expected_trace"]["trace"]
     subs: dict[str, str] = {}
     # Pair tool_calls with their immediate following tool_response (standard trace layout).
@@ -375,13 +383,15 @@ async def _replay_record(executor: ToolExecutor, record: dict, language: str, pa
             i += 1
             continue
         tool_name = event["tool_name"]
-        params = _resolve_params(event.get("params", {}), co, language, rco)
+        params = _resolve_params(event.get("params", {}), co, language, rco, aliases_index)
         params = _apply_subs(params, subs)
         actual_response = await executor.execute(tool_name, params)
         # Build trace_response with the same culture resolution + sub chain so the
         # comparison only flags genuinely different IDs (not placeholder mismatches).
         if i + 1 < len(trace) and trace[i + 1].get("event_type") == "tool_response":
-            trace_response = _apply_subs(_resolve_params(trace[i + 1].get("response", {}), co, language, rco), subs)
+            trace_response = _apply_subs(
+                _resolve_params(trace[i + 1].get("response", {}), co, language, rco, aliases_index), subs
+            )
             _collect_id_subs(trace_response, actual_response, subs)
         i += 1
 

@@ -2493,7 +2493,7 @@
             "event_type": "tool_call",
             "tool_name": "check_room_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "date": "2026-10-15",
               "start_time": "14:00",
               "end_time": "15:30",
@@ -2525,7 +2525,7 @@
             "event_type": "tool_call",
             "tool_name": "check_room_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "date": "2026-10-15",
               "start_time": "14:00",
               "end_time": "15:30",
@@ -7299,7 +7299,7 @@
               "current_asset_tag": "AST-LPT-284719",
               "laptop_os": "macos",
               "laptop_size": "16_inch",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL2"
             }
           },
@@ -8026,7 +8026,7 @@
               "request_type": "monitor_bundle",
               "justification": "new_setup",
               "monitor_size": "27_inch",
-              "delivery_building": "East Campus",
+              "delivery_building": "<LOC:East Campus>",
               "delivery_floor": "FL1"
             }
           },
@@ -13157,7 +13157,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL2"
             }
           },
@@ -13195,7 +13195,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL3"
             }
           },
@@ -15015,7 +15015,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "East Campus",
+              "building_code": "<LOC:East Campus>",
               "floor_code": "FL1"
             }
           },
@@ -15855,7 +15855,7 @@
             "event_type": "tool_call",
             "tool_name": "check_parking_availability",
             "params": {
-              "zone_code": "Executive Garage"
+              "zone_code": "<LOC:Executive Garage>"
             }
           },
           {
@@ -16699,7 +16699,7 @@
             "params": {
               "employee_id": "EMP055555",
               "equipment_type": "ergonomic_chair",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL2"
             }
           },
@@ -17483,7 +17483,7 @@
             "params": {
               "employee_id": "EMP091654",
               "equipment_type": "footrest",
-              "delivery_building": "East Campus",
+              "delivery_building": "<LOC:East Campus>",
               "delivery_floor": "FL1"
             }
           },
@@ -18346,7 +18346,7 @@
             "event_type": "tool_call",
             "tool_name": "check_room_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL2",
               "date": "2026-06-30",
               "start_time": "14:00",
@@ -19122,7 +19122,7 @@
             "event_type": "tool_call",
             "tool_name": "check_room_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL2",
               "date": "2026-10-20",
               "start_time": "10:00",
@@ -19163,7 +19163,7 @@
             "event_type": "tool_call",
             "tool_name": "check_room_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "date": "2026-10-20",
               "start_time": "10:00",
               "end_time": "11:30",
@@ -19195,7 +19195,7 @@
             "event_type": "tool_call",
             "tool_name": "check_room_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL3",
               "date": "2026-10-20",
               "start_time": "10:00",
@@ -25846,7 +25846,7 @@
             "params": {
               "ticket_number": "INC0048271",
               "employee_id": "EMP052847",
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL3",
               "preferred_date": "2026-04-22",
               "time_window": "morning"
@@ -25954,7 +25954,7 @@
               "current_asset_tag": "AST-LPT-284719",
               "laptop_os": "windows",
               "laptop_size": "14_inch",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL3"
             }
           },
@@ -28248,7 +28248,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL2"
             }
           },
@@ -29132,7 +29132,7 @@
               "current_asset_tag": "AST-LPT-284719",
               "laptop_os": "macos",
               "laptop_size": "14_inch",
-              "delivery_building": "East Campus",
+              "delivery_building": "<LOC:East Campus>",
               "delivery_floor": "FL1"
             }
           },
@@ -29243,7 +29243,7 @@
               "request_type": "monitor_bundle",
               "justification": "new_setup",
               "monitor_size": "27_inch",
-              "delivery_building": "East Campus",
+              "delivery_building": "<LOC:East Campus>",
               "delivery_floor": "FL1"
             }
           },
@@ -33394,7 +33394,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL2"
             }
           },
@@ -33413,7 +33413,7 @@
             "event_type": "tool_call",
             "tool_name": "check_parking_availability",
             "params": {
-              "zone_code": "Executive Garage"
+              "zone_code": "<LOC:Executive Garage>"
             }
           },
           {
@@ -33447,7 +33447,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL3"
             }
           },
@@ -34405,7 +34405,7 @@
             "params": {
               "employee_id": "EMP054829",
               "equipment_type": "ergonomic_chair",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL2"
             }
           },
@@ -34449,7 +34449,7 @@
             "event_type": "tool_call",
             "tool_name": "check_room_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "date": "2026-07-06",
               "start_time": "10:00",
               "end_time": "11:00",
@@ -36717,7 +36717,7 @@
               "justification": "replacement",
               "current_asset_tag": "AST-MON-667315",
               "monitor_size": "32_inch",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL3"
             }
           },
@@ -36754,7 +36754,7 @@
             "params": {
               "employee_id": "EMP042768",
               "equipment_type": "monitor_arm",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL3"
             }
           },
@@ -41333,7 +41333,7 @@
               "current_asset_tag": "AST-LPT-284719",
               "laptop_os": "windows",
               "laptop_size": "16_inch",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL2"
             }
           },
@@ -41409,7 +41409,7 @@
             "params": {
               "employee_id": "EMP057491",
               "equipment_type": "standing_desk_converter",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL2"
             }
           },
@@ -42342,7 +42342,7 @@
             "event_type": "tool_call",
             "tool_name": "check_parking_availability",
             "params": {
-              "zone_code": "North Surface Lot"
+              "zone_code": "<LOC:North Surface Lot>"
             }
           },
           {
@@ -42414,7 +42414,7 @@
             "event_type": "tool_call",
             "tool_name": "check_room_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL2",
               "date": "2026-11-16",
               "start_time": "13:00",
@@ -42452,7 +42452,7 @@
             "event_type": "tool_call",
             "tool_name": "check_room_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL3",
               "date": "2026-11-16",
               "start_time": "13:00",
@@ -43591,7 +43591,7 @@
             "params": {
               "ticket_number": "INC0048271",
               "employee_id": "EMP041573",
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL2",
               "preferred_date": "2026-04-15",
               "time_window": "afternoon"
@@ -43691,7 +43691,7 @@
               "current_asset_tag": "AST-LPT-284719",
               "laptop_os": "windows",
               "laptop_size": "14_inch",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL2"
             }
           },
@@ -43802,7 +43802,7 @@
               "request_type": "monitor_bundle",
               "justification": "new_setup",
               "monitor_size": "27_inch",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL2"
             }
           },
@@ -44843,7 +44843,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL2"
             }
           },
@@ -44878,7 +44878,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL3"
             }
           },
@@ -44954,7 +44954,7 @@
             "event_type": "tool_call",
             "tool_name": "check_parking_availability",
             "params": {
-              "zone_code": "Executive Garage"
+              "zone_code": "<LOC:Executive Garage>"
             }
           },
           {
@@ -45062,7 +45062,7 @@
             "params": {
               "employee_id": "EMP035784",
               "equipment_type": "ergonomic_chair",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL3"
             }
           },
@@ -47103,7 +47103,7 @@
               "current_asset_tag": "AST-LPT-284719",
               "laptop_os": "macos",
               "laptop_size": "13_inch",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL2"
             }
           },
@@ -47179,7 +47179,7 @@
             "params": {
               "employee_id": "EMP058374",
               "equipment_type": "standing_desk_converter",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL2"
             }
           },
@@ -47215,7 +47215,7 @@
             "event_type": "tool_call",
             "tool_name": "check_room_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "date": "2026-05-08",
               "start_time": "09:00",
               "end_time": "09:30",
@@ -49469,7 +49469,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL2"
             }
           },
@@ -49504,7 +49504,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL3"
             }
           },
@@ -49572,7 +49572,7 @@
             "event_type": "tool_call",
             "tool_name": "check_parking_availability",
             "params": {
-              "zone_code": "North Surface Lot"
+              "zone_code": "<LOC:North Surface Lot>"
             }
           },
           {
@@ -50642,7 +50642,7 @@
             "params": {
               "employee_id": "EMP073291",
               "equipment_type": "footrest",
-              "delivery_building": "East Campus",
+              "delivery_building": "<LOC:East Campus>",
               "delivery_floor": "FL1"
             }
           },
@@ -53050,7 +53050,7 @@
               "current_asset_tag": "AST-LPT-284719",
               "laptop_os": "windows",
               "laptop_size": "16_inch",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL3"
             }
           },
@@ -53159,7 +53159,7 @@
               "justification": "replacement",
               "current_asset_tag": "AST-MON-193552",
               "monitor_size": "32_inch",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL3"
             }
           },
@@ -53214,7 +53214,7 @@
             "params": {
               "employee_id": "EMP046829",
               "equipment_type": "ergonomic_chair",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL3"
             }
           },
@@ -54516,7 +54516,7 @@
             "params": {
               "ticket_number": "INC0048271",
               "employee_id": "EMP067248",
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL2",
               "preferred_date": "2026-05-20",
               "time_window": "morning"
@@ -54616,7 +54616,7 @@
               "current_asset_tag": "AST-LPT-284719",
               "laptop_os": "macos",
               "laptop_size": "14_inch",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL2"
             }
           },
@@ -54672,7 +54672,7 @@
             "event_type": "tool_call",
             "tool_name": "check_room_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "date": "2026-05-19",
               "start_time": "10:00",
               "end_time": "12:00",
@@ -57729,7 +57729,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL2"
             }
           },
@@ -57764,7 +57764,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL3"
             }
           },
@@ -57865,7 +57865,7 @@
             "params": {
               "employee_id": "EMP039517",
               "equipment_type": "ergonomic_chair",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL3"
             }
           },
@@ -57901,7 +57901,7 @@
             "event_type": "tool_call",
             "tool_name": "check_room_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "date": "2026-06-03",
               "start_time": "11:00",
               "end_time": "12:00",
@@ -58879,7 +58879,7 @@
               "request_type": "monitor_bundle",
               "justification": "new_setup",
               "monitor_size": "24_inch",
-              "delivery_building": "East Campus",
+              "delivery_building": "<LOC:East Campus>",
               "delivery_floor": "FL1"
             }
           },
@@ -59815,7 +59815,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL2"
             }
           },
@@ -59850,7 +59850,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL3"
             }
           },
@@ -59925,7 +59925,7 @@
             "params": {
               "employee_id": "EMP075483",
               "equipment_type": "footrest",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL3"
             }
           },
@@ -60985,7 +60985,7 @@
               "current_asset_tag": "AST-LPT-284719",
               "laptop_os": "windows",
               "laptop_size": "14_inch",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL2"
             }
           },
@@ -62116,7 +62116,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL2"
             }
           },
@@ -62151,7 +62151,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL3"
             }
           },
@@ -62219,7 +62219,7 @@
             "event_type": "tool_call",
             "tool_name": "check_parking_availability",
             "params": {
-              "zone_code": "North Surface Lot"
+              "zone_code": "<LOC:North Surface Lot>"
             }
           },
           {
@@ -62307,7 +62307,7 @@
             "params": {
               "employee_id": "EMP034817",
               "equipment_type": "ergonomic_chair",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL3"
             }
           },
@@ -62343,7 +62343,7 @@
             "event_type": "tool_call",
             "tool_name": "check_room_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "date": "2026-03-13",
               "start_time": "14:00",
               "end_time": "15:00",
@@ -63568,7 +63568,7 @@
             "params": {
               "employee_id": "EMP092157",
               "equipment_type": "footrest",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL2"
             }
           },
@@ -64619,7 +64619,7 @@
             "params": {
               "ticket_number": "INC0048271",
               "employee_id": "EMP057382",
-              "building_code": "East Campus",
+              "building_code": "<LOC:East Campus>",
               "floor_code": "FL1",
               "preferred_date": "2026-05-27",
               "time_window": "morning"
@@ -64735,7 +64735,7 @@
               "current_asset_tag": "AST-LPT-284719",
               "laptop_os": "macos",
               "laptop_size": "16_inch",
-              "delivery_building": "East Campus",
+              "delivery_building": "<LOC:East Campus>",
               "delivery_floor": "FL1"
             }
           },
@@ -64859,7 +64859,7 @@
               "request_type": "monitor_bundle",
               "justification": "new_setup",
               "monitor_size": "27_inch",
-              "delivery_building": "East Campus",
+              "delivery_building": "<LOC:East Campus>",
               "delivery_floor": "FL1"
             }
           },
@@ -64922,7 +64922,7 @@
             "params": {
               "employee_id": "EMP057382",
               "equipment_type": "standing_desk_converter",
-              "delivery_building": "East Campus",
+              "delivery_building": "<LOC:East Campus>",
               "delivery_floor": "FL1"
             }
           },
@@ -65861,7 +65861,7 @@
               "current_asset_tag": "AST-LPT-284719",
               "laptop_os": "windows",
               "laptop_size": "14_inch",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL3"
             }
           },
@@ -65972,7 +65972,7 @@
               "request_type": "monitor_bundle",
               "justification": "new_setup",
               "monitor_size": "24_inch",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL3"
             }
           },
@@ -65999,7 +65999,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL2"
             }
           },
@@ -66034,7 +66034,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL3"
             }
           },
@@ -66094,7 +66094,7 @@
             "event_type": "tool_call",
             "tool_name": "check_parking_availability",
             "params": {
-              "zone_code": "Executive Garage"
+              "zone_code": "<LOC:Executive Garage>"
             }
           },
           {
@@ -67730,7 +67730,7 @@
             "event_type": "tool_call",
             "tool_name": "check_room_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "date": "2026-08-28",
               "start_time": "10:00",
               "end_time": "11:30",
@@ -71071,7 +71071,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL2"
             }
           },
@@ -71189,7 +71189,7 @@
             "params": {
               "employee_id": "EMP086541",
               "equipment_type": "monitor_arm",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL3"
             }
           },
@@ -73474,7 +73474,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL2"
             }
           },
@@ -73509,7 +73509,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL3"
             }
           },
@@ -73582,7 +73582,7 @@
             "event_type": "tool_call",
             "tool_name": "check_parking_availability",
             "params": {
-              "zone_code": "Executive Garage"
+              "zone_code": "<LOC:Executive Garage>"
             }
           },
           {
@@ -73662,7 +73662,7 @@
             "event_type": "tool_call",
             "tool_name": "check_room_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL2",
               "date": "2026-11-23",
               "start_time": "13:00",
@@ -73700,7 +73700,7 @@
             "event_type": "tool_call",
             "tool_name": "check_room_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL3",
               "date": "2026-11-23",
               "start_time": "13:00",
@@ -74764,7 +74764,7 @@
               "request_type": "monitor_bundle",
               "justification": "new_setup",
               "monitor_size": "27_inch",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL2"
             }
           },
@@ -74943,7 +74943,7 @@
             "params": {
               "employee_id": "EMP063517",
               "equipment_type": "footrest",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL2"
             }
           },
@@ -76364,7 +76364,7 @@
             "event_type": "tool_call",
             "tool_name": "check_room_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "date": "2026-10-05",
               "start_time": "09:00",
               "end_time": "10:30",
@@ -77526,7 +77526,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL2"
             }
           },
@@ -77561,7 +77561,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL3"
             }
           },
@@ -77631,7 +77631,7 @@
             "params": {
               "employee_id": "EMP037294",
               "equipment_type": "ergonomic_keyboard",
-              "delivery_building": "Headquarters",
+              "delivery_building": "<LOC:Headquarters>",
               "delivery_floor": "FL3"
             }
           },
@@ -78887,7 +78887,7 @@
             "event_type": "tool_call",
             "tool_name": "check_room_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "date": "2026-08-22",
               "start_time": "11:00",
               "end_time": "12:00",
@@ -79086,7 +79086,7 @@
             "event_type": "tool_call",
             "tool_name": "check_desk_availability",
             "params": {
-              "building_code": "Headquarters",
+              "building_code": "<LOC:Headquarters>",
               "floor_code": "FL3"
             }
           },
@@ -85394,7 +85394,7 @@
               "current_asset_tag": "AST-LPT-284719",
               "laptop_os": "macos",
               "laptop_size": "16_inch",
-              "delivery_building": "East Campus",
+              "delivery_building": "<LOC:East Campus>",
               "delivery_floor": "FL1"
             }
           },
