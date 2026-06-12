@@ -717,9 +717,7 @@ class RunConfig(BaseSettings):
         if self.user_simulator.provider != "openai_realtime":
             return self
         if not os.environ.get("OPENAI_API_KEY"):
-            raise ValueError(
-                "EVA_USER_SIMULATOR__PROVIDER=openai_realtime requires OPENAI_API_KEY to be set."
-            )
+            raise ValueError("EVA_USER_SIMULATOR__PROVIDER=openai_realtime requires OPENAI_API_KEY to be set.")
         return self
 
     @model_validator(mode="before")
