@@ -34,6 +34,7 @@ class TestPercentile:
 def _make_worker(tmp_path: Path) -> ConversationWorker:
     config = MagicMock()
     config.conversation_time_limit_seconds = 60
+    config.conversation_timeout_seconds = 60
     record = MagicMock()
     record.id = "test-record"
     record.current_date_time = "2026-01-01T00:00:00"
@@ -225,7 +226,15 @@ class TestUserSimulatorSelection:
         worker = _make_worker(tmp_path)
         worker.config.user_simulator = MagicMock(provider="openai_realtime")
         worker.config.perturbation = None
+        worker.config.language = "en"
+        worker.config.conversation_timeout_seconds = 60
         worker.agent.id = "agent_itsm"
+
+        resolved_goal = {"high_level_user_goal": "test goal", "starting_utterance": "Hi"}
+        resolved_persona = {"user_persona_id": 1}
+        monkeypatch.setattr("eva.orchestrator.worker.resolve_user_goal", MagicMock(return_value=resolved_goal))
+        monkeypatch.setattr("eva.orchestrator.worker.resolve_user_config", MagicMock(return_value=resolved_persona))
+
         simulator = MagicMock()
         factory = MagicMock(return_value=simulator)
         monkeypatch.setattr("eva.orchestrator.worker.create_user_simulator", factory)
@@ -236,13 +245,14 @@ class TestUserSimulatorSelection:
         factory.assert_called_once_with(
             worker.config.user_simulator,
             current_date_time=worker.record.current_date_time,
-            persona_config=worker.record.user_config,
-            goal=worker.record.user_goal,
+            persona_config=resolved_persona,
+            goal=resolved_goal,
             server_url="ws://localhost:9999/ws",
             output_dir=worker.output_dir,
             agent_id="agent_itsm",
             timeout=60,
             perturbation_config=None,
+            language="en",
         )
 
     def test_worker_timeout_reserves_provider_cleanup_window(self, tmp_path):
