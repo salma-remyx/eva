@@ -1125,7 +1125,7 @@ class TestUserSimulatorConfig:
 
         assert "model" in caplog.text
         assert not hasattr(run_config.user_simulator, "model")
-        assert run_config.user_simulator.provider == "elevenlabs"
+        assert isinstance(run_config.user_simulator, ElevenLabsSimulatorConfig)
 
     def test_openai_realtime_rejects_accent_perturbation_during_config_load(self):
         with pytest.raises(ValidationError, match="Accent perturbations require the ElevenLabs user simulator"):

@@ -606,7 +606,7 @@ class RunConfig(BaseSettings):
         config is unused and conflicting env vars are harmless.
         """
         if (
-            self.user_simulator.provider == "openai_realtime"
+            isinstance(self.user_simulator, OpenAIRealtimeSimulatorConfig)
             and self.perturbation is not None
             and self.perturbation.accent is not None
         ):
@@ -683,7 +683,7 @@ class RunConfig(BaseSettings):
     @model_validator(mode="after")
     def _check_language_personas(self) -> "RunConfig":
         """When a non-English language is set, validate matching agent IDs and mutual exclusivity."""
-        if self.language == Language.EN or self.user_simulator.provider != "elevenlabs":
+        if self.language == Language.EN or not isinstance(self.user_simulator, ElevenLabsSimulatorConfig):
             return self
 
         key = self.language.value.upper().replace("-", "_")
@@ -714,7 +714,7 @@ class RunConfig(BaseSettings):
     @model_validator(mode="after")
     def _check_openai_realtime_simulator(self) -> "RunConfig":
         """When openai_realtime user simulator is selected, OPENAI_API_KEY must be present."""
-        if self.user_simulator.provider != "openai_realtime":
+        if not isinstance(self.user_simulator, OpenAIRealtimeSimulatorConfig):
             return self
         if not os.environ.get("OPENAI_API_KEY"):
             raise ValueError("EVA_USER_SIMULATOR__PROVIDER=openai_realtime requires OPENAI_API_KEY to be set.")

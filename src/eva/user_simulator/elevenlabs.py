@@ -18,16 +18,13 @@ from elevenlabs.conversational_ai.conversation import (
 
 from eva.models.config import PerturbationConfig
 from eva.user_simulator.audio_bridge import ELEVENLABS_OUTPUT_RATE, ElevenLabsAudioInterface
-from eva.user_simulator.base import AbstractUserSimulator, load_behavior_prompts
+from eva.user_simulator.base import AbstractUserSimulator
 from eva.utils.audio_utils import save_pcm_as_wav
 from eva.utils.logging import current_record_id, get_logger
 
 logger = get_logger(__name__)
 
 _PERSONA_GENDER = {1: "F", 2: "M"}
-
-
-_load_behavior_prompts = load_behavior_prompts
 
 
 class ElevenLabsUserSimulator(AbstractUserSimulator):
