@@ -367,14 +367,14 @@ class ConversationWorker:
             server_url=f"ws://localhost:{self.port}/ws",
             output_dir=self.output_dir,
             agent_id=self.agent.id,
-            timeout=self.config.conversation_timeout_seconds,
+            timeout=self._conversation_guard_timeout_seconds(),
             perturbation_config=self.config.perturbation,
             language=language,
         )
 
     def _conversation_guard_timeout_seconds(self) -> int:
         """Keep the worker guard outside the provider's timeout and cleanup window."""
-        return self.config.conversation_timeout_seconds + USER_SIMULATOR_SHUTDOWN_GRACE_SECONDS
+        return self.config.conversation_time_limit_seconds + USER_SIMULATOR_SHUTDOWN_GRACE_SECONDS
 
     async def _run_conversation(self) -> str:
         """Run the conversation until completion.
