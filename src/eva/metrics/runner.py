@@ -566,6 +566,7 @@ class MetricsRunner:
             language,
             record.romanized_culture_overrides,
             record.starting_utterances,
+            aliases_dir=self._aliases_path,
         )
         resolved_user_config = resolve_user_config(
             record.user_config, record.culture_overrides, language, record.romanized_culture_overrides
