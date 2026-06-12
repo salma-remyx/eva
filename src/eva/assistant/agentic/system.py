@@ -59,9 +59,7 @@ def _pair_orphaned_tool_calls(messages: list[dict[str, Any]]) -> list[dict[str, 
         tool_calls = msg.get("tool_calls") if msg.get("role") == "assistant" else None
         if tool_calls:
             call_ids = [
-                cid
-                for tc in tool_calls
-                if isinstance(tc, dict) and isinstance((cid := tc.get("id")), str) and cid
+                cid for tc in tool_calls if isinstance(tc, dict) and isinstance((cid := tc.get("id")), str) and cid
             ]
             answered: set[str] = set()
             j = i + 1
@@ -72,7 +70,9 @@ def _pair_orphaned_tool_calls(messages: list[dict[str, Any]]) -> list[dict[str, 
                 j += 1
             for cid in call_ids:
                 if cid not in answered:
-                    logger.warning(f"Pairing orphaned tool_call {cid} with a synthetic result (interrupted/transferred)")
+                    logger.warning(
+                        f"Pairing orphaned tool_call {cid} with a synthetic result (interrupted/transferred)"
+                    )
                     repaired.append(
                         {
                             "role": "tool",
@@ -144,12 +144,7 @@ class AgenticSystem:
             datetime=self.current_date_time,
         )
         if self.pre_tool_speech == "auto":
-            self.system_prompt += (
-                "\n\n## Responsiveness\n"
-                "Before calling a tool, say one brief sentence first. For lookups, use a short lead-in "
-                '(e.g. "Let me pull that up."). Before any action that changes a booking or charges money, '
-                "state what you'll do and the cost, get confirmation, then call the tool."
-            )
+            self.system_prompt += "\n\n" + self.prompt_manager.get_prompt("agent.pre_tool_speech")
         # Build tools for the LLM
         self.tools = agent.build_tools_for_agent()
 
