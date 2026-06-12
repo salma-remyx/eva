@@ -143,7 +143,7 @@ def create_stt_service(
         )
 
     elif model_lower == "cartesia-multilingual":
-        logger.info(f"Using Cartesia multilingual STT (ink-whisper): {params['model']}")
+        logger.info(f"Using Cartesia multilingual STT: {params['model']}")
         return CartesiaSTTService(
             api_key=api_key,
             live_options=CartesiaLiveOptions(
