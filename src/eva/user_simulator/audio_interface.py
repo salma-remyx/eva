@@ -102,7 +102,7 @@ class BotToBotAudioInterface(AudioInterface):
         self.input_stream_task = None
 
         self.input_callback = None  # Callback for assistant audio for elevenlabs to hear
-        self.send_queue: asyncio.Queue[bytes] = asyncio.Queue()
+        self.send_queue: asyncio.Queue[tuple[bytes, bytes]] = asyncio.Queue()
         self.audio_buffer: asyncio.Queue[bytes] = asyncio.Queue()
 
         # Track audio timing state
@@ -110,6 +110,10 @@ class BotToBotAudioInterface(AudioInterface):
         self._assistant_audio_active = False  # framework_agent speaking
         self._user_audio_ended_time = None  # Track when user audio ended for silence sending
         self._assistant_audio_ended_time = None  # Track when assistant audio ended for silence sending
+        # Set when we close the user audio window early (assistant responded while user buffer
+        # still has bytes). Prevents _send_to_assistant() from reopening the window for the
+        # remaining buffered bytes, which would create a spurious second audio_start event.
+        self._user_audio_window_closed = False
 
         # Shutdown state
         self._stopping = False
@@ -242,10 +246,9 @@ class BotToBotAudioInterface(AudioInterface):
                 clean_audio = audio
                 if self._perturbator is not None:
                     audio = self._perturbator.apply(audio)
-                self.send_queue.put_nowait(audio)
-                if self.record_callback:
-                    self.record_callback("user", audio)
-                    self.record_callback("user_clean", clean_audio)
+                # Queue (perturbed, clean) tuple — recording happens at actual send time
+                # in _send_to_assistant() so the recording timeline matches real playback.
+                self.send_queue.put_nowait((audio, clean_audio))
             except asyncio.QueueFull:
                 logger.warning("Send queue full, dropping audio")
 
@@ -387,6 +390,7 @@ class BotToBotAudioInterface(AudioInterface):
     async def _on_user_audio_start(self) -> None:
         """Handle user audio starting."""
         self._user_audio_active = True
+        self._user_audio_window_closed = False  # Reset so the next turn can close normally
         self._user_audio_ended_time = None
         timestamp_ms = time.time()
 
@@ -443,8 +447,25 @@ class BotToBotAudioInterface(AudioInterface):
 
     def _on_assistant_audio_start(self) -> None:
         """Handle assistant audio starting."""
+        current_time = asyncio.get_event_loop().time()
+
+        # If user audio is still "open" in the event log, close it now. The assistant's
+        # VAD has determined the user is done — that is the semantically correct end time
+        # for turn-taking analysis. Without this, TTS-generated audio that was buffered
+        # and streamed at real-time pace keeps the window open 20-30s longer than the
+        # actual speech, causing false agent_interrupt detections in the metric.
+        # We also set _user_audio_window_closed so the send loop doesn't reopen the
+        # window for any remaining buffered bytes.
+        if self._user_audio_active:
+            if self.event_logger:
+                self.event_logger.log_audio_end("elevenlabs_user")
+            self._user_audio_active = False
+            self._user_audio_window_closed = True
+            self._user_audio_ended_time = current_time
+            logger.info("🎤 User audio END (assistant responded — closing user audio window early)")
+
         if self._user_audio_ended_time is not None:
-            latency = asyncio.get_event_loop().time() - self._user_audio_ended_time
+            latency = current_time - self._user_audio_ended_time
             self._latency_measurements.append(latency)
             logger.info(f"✅ Assistant responded after {latency:.2f}s - stopping assistant silence")
             self._user_audio_ended_time = None
@@ -615,6 +636,7 @@ class BotToBotAudioInterface(AudioInterface):
         send_interval = SEND_CHUNK_DURATION_MS / 1000.0
 
         pending_audio = b""
+        pending_clean = b""
         # Use absolute time targets to prevent drift from processing overhead
         stream_start_time: float | None = None  # Set when first audio chunk arrives
         silence_start_time: float | None = None  # Set when silence sending begins
@@ -642,8 +664,9 @@ class BotToBotAudioInterface(AudioInterface):
                 else:
                     timeout = IDLE_POLL_TIMEOUT_S
                 try:
-                    pcm_audio = await asyncio.wait_for(self.send_queue.get(), timeout=timeout)
+                    pcm_audio, clean_audio = await asyncio.wait_for(self.send_queue.get(), timeout=timeout)
                     pending_audio += pcm_audio
+                    pending_clean += clean_audio
                     # Initialize/reset stream start time when audio arrives after idle/silence
                     if stream_start_time is None or not self._user_audio_active:
                         stream_start_time = asyncio.get_event_loop().time()
@@ -663,10 +686,14 @@ class BotToBotAudioInterface(AudioInterface):
                     # Extract one chunk
                     chunk = pending_audio[:pcm_chunk_size]
                     pending_audio = pending_audio[pcm_chunk_size:]
+                    clean_chunk = pending_clean[:pcm_chunk_size]
+                    pending_clean = pending_clean[pcm_chunk_size:]
 
                     if self.websocket:
-                        # Mark start of user audio on first chunk
-                        if not self._user_audio_active:
+                        # Mark start of user audio on first chunk.
+                        # Skip if the window was closed early (assistant responded while
+                        # we still had buffered bytes) to avoid a spurious audio_start.
+                        if not self._user_audio_active and not self._user_audio_window_closed:
                             await self._on_user_audio_start()
 
                         # Convert to μ-law and send
@@ -675,6 +702,10 @@ class BotToBotAudioInterface(AudioInterface):
                             audio_chunks_sent += 1
                             # Calculate next send time based on absolute target (prevents drift)
                             next_send_time = stream_start_time + (audio_chunks_sent * send_interval)
+                            # Record at send time so timestamps match actual playback timeline
+                            if self.record_callback:
+                                self.record_callback("user", chunk)
+                                self.record_callback("user_clean", clean_chunk)
                             if audio_chunks_sent % LOG_INTERVAL_AUDIO_SEND == 0:
                                 logger.debug(f"→ Sent audio chunk {audio_chunks_sent}")
 
@@ -689,6 +720,7 @@ class BotToBotAudioInterface(AudioInterface):
                             # Align to sample boundary (2 bytes per sample)
                             aligned_len = (original_len // PCM_SAMPLE_WIDTH) * PCM_SAMPLE_WIDTH
                             padded_chunk = pending_audio[:aligned_len] + b"\x00" * (pcm_chunk_size - aligned_len)
+                            padded_clean = pending_clean[:aligned_len] + b"\x00" * (pcm_chunk_size - aligned_len)
 
                             mulaw_audio = self._convert_pcm_to_mulaw(padded_chunk)
                             if mulaw_audio and await self._send_audio_frame(mulaw_audio):
@@ -696,7 +728,12 @@ class BotToBotAudioInterface(AudioInterface):
                                 logger.info(
                                     f"Sent padded chunk ({original_len} bytes padded to {pcm_chunk_size}) - end of utterance"
                                 )
+                                # Record at send time so timestamps match actual playback timeline
+                                if self.record_callback:
+                                    self.record_callback("user", padded_chunk)
+                                    self.record_callback("user_clean", padded_clean)
                                 pending_audio = b""
+                                pending_clean = b""
 
                                 # Mark end of user audio and start sending silence for VAD
                                 if self._user_audio_active:
