@@ -80,14 +80,12 @@ class ValidationRunner:
         truly_not_finished = []
         for record_id in not_finished:
             result_path = self.run_dir / "records" / record_id / "result.json"
-            try:
+            if result_path.exists():
                 with open(result_path) as f:
                     result_data = json.load(f)
                 if result_data.get("conversation_ended_reason") == "time_limit_exceeded":
                     time_limit_ids.append(record_id)
                     continue
-            except (FileNotFoundError, json.JSONDecodeError):
-                pass
             truly_not_finished.append(record_id)
 
         logger.info(
