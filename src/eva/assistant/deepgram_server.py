@@ -112,6 +112,25 @@ class DeepgramAssistantServer(AbstractAssistantServer):
         self._listen_model: str = s2s_params.get("listen_model", _DEFAULT_LISTEN_MODEL)
         self._speak_model: str = s2s_params.get("speak_model", _DEFAULT_SPEAK_MODEL)
 
+        # --- BYO ("bring your own") think configuration (all optional) ---
+        # By default the think step uses Deepgram's *managed* provider. Supply any of
+        # the following to drive the LLM with your own credentials/endpoint instead —
+        # for an apples-to-apples comparison with the cascade pipeline (same Bedrock
+        # model) and to bypass managed-provider prompt-size limits:
+        #   think_credentials: dict -> provider.credentials (aws_bedrock IAM/STS creds).
+        #                       If omitted for aws_bedrock, built from AWS_* env vars.
+        #   think_endpoint:    dict -> think.endpoint {url, headers} (BYO key for
+        #                       anthropic/open_ai/google, which have no credentials field).
+        #   think_params:      dict -> merged into provider (e.g. temperature, version,
+        #                       reasoning_mode).
+        #   context_length:    "max" | int -> think.context_length (long-prompt support).
+        #   think_region:      str  -> region for the aws_bedrock env-credential builder.
+        self._think_credentials: dict[str, Any] | None = s2s_params.get("think_credentials")
+        self._think_endpoint: dict[str, Any] | None = s2s_params.get("think_endpoint")
+        self._think_params: dict[str, Any] = s2s_params.get("think_params") or {}
+        self._context_length: Any = s2s_params.get("context_length")
+        self._think_region: str | None = s2s_params.get("think_region") or s2s_params.get("region")
+
         # Build system prompt (same pattern as the other realtime/S2S servers)
         prompt_manager = PromptManager()
         self._system_prompt = prompt_manager.get_prompt(
@@ -194,6 +213,52 @@ class DeepgramAssistantServer(AbstractAssistantServer):
     # Settings
     # ------------------------------------------------------------------
 
+    def _build_think_provider(self) -> dict[str, Any]:
+        """Build the think ``provider`` object: managed by default, BYO if configured."""
+        provider: dict[str, Any] = {"type": self._think_provider, "model": self._think_model}
+        # Optional provider-level params (temperature, version, reasoning_mode, ...).
+        provider.update(self._think_params)
+        # BYO credentials. Only aws_bedrock carries provider.credentials; for
+        # anthropic/open_ai/google, BYO is done via think.endpoint instead.
+        if self._think_credentials is not None:
+            provider["credentials"] = self._think_credentials
+        elif self._think_provider == "aws_bedrock":
+            creds = self._aws_credentials_from_env()
+            if creds is not None:
+                provider["credentials"] = creds
+        return provider
+
+    def _aws_credentials_from_env(self) -> dict[str, Any] | None:
+        """IAM/STS credentials for aws_bedrock BYO think, from the standard AWS_* env vars.
+
+        Mirrors how the cascade pipeline reaches Bedrock, so the agent's think step can
+        use the *same* model and credentials for an apples-to-apples comparison.
+        """
+        import os
+
+        access_key = os.environ.get("AWS_ACCESS_KEY_ID")
+        secret_key = os.environ.get("AWS_SECRET_ACCESS_KEY")
+        if not (access_key and secret_key):
+            logger.warning(
+                "think_provider=aws_bedrock but AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY are not set; "
+                "pass think_credentials explicitly or set the AWS_* env vars"
+            )
+            return None
+        region = self._think_region or os.environ.get("AWS_REGION") or os.environ.get("AWS_DEFAULT_REGION")
+        if not region:
+            region = "us-east-1"
+            logger.warning("No region for aws_bedrock think; defaulting to us-east-1 (set s2s_params.think_region)")
+        session_token = os.environ.get("AWS_SESSION_TOKEN")
+        creds: dict[str, Any] = {
+            "type": "sts" if session_token else "iam",
+            "region": region,
+            "access_key_id": access_key,
+            "secret_access_key": secret_key,
+        }
+        if session_token:
+            creds["session_token"] = session_token
+        return creds
+
     def _build_settings(self) -> AgentV1Settings:
         """Build the Voice Agent ``Settings`` message.
 
@@ -201,11 +266,16 @@ class DeepgramAssistantServer(AbstractAssistantServer):
         resolves the discriminated provider unions and produces the correct wire JSON.
         """
         think: dict[str, Any] = {
-            "provider": {"type": self._think_provider, "model": self._think_model},
+            "provider": self._build_think_provider(),
             "prompt": self._system_prompt,
         }
         if self._functions:
             think["functions"] = self._functions
+        # BYO endpoint (anthropic/open_ai/google) and long-prompt context window.
+        if self._think_endpoint:
+            think["endpoint"] = self._think_endpoint
+        if self._context_length is not None:
+            think["context_length"] = self._context_length
 
         settings_dict: dict[str, Any] = {
             "type": "Settings",
@@ -247,6 +317,13 @@ class DeepgramAssistantServer(AbstractAssistantServer):
         _user_speech_start_ts: str | None = None  # From the simulator's VAD
         _user_speech_stop_ts: str | None = None  # From the simulator's VAD
         _assistant_turn_start_ts: str | None = None  # Wall-clock ms of first audio chunk
+
+        # Fail-loud bookkeeping: a healthy conversation has the model replying to user
+        # turns. If the user speaks but the agent only ever emits its greeting (or a
+        # fatal Error arrives), the think step failed and we surface it loudly.
+        _user_turn_count = 0
+        _assistant_turn_count = 0  # includes the model-initiated greeting
+        _fatal_error: str | None = None
 
         # Outbound mulaw chunks; drained by the pacer at real-time rate.
         audio_output_queue: asyncio.Queue[bytes] = asyncio.Queue()
@@ -340,9 +417,10 @@ class DeepgramAssistantServer(AbstractAssistantServer):
                         pass
 
                 def _flush_assistant_turn(interrupted: bool) -> None:
-                    nonlocal _assistant_turn_text, _in_model_turn, _assistant_turn_start_ts
+                    nonlocal _assistant_turn_text, _in_model_turn, _assistant_turn_start_ts, _assistant_turn_count
                     full_text = " ".join(_assistant_turn_text).strip()
                     if full_text:
+                        _assistant_turn_count += 1
                         text = f"{full_text} [interrupted]" if interrupted else full_text
                         self.audit_log.append_assistant_output(text, timestamp_ms=_assistant_turn_start_ts)
                         if interrupted:
@@ -372,6 +450,7 @@ class DeepgramAssistantServer(AbstractAssistantServer):
                     """
                     nonlocal _assistant_turn_text, _in_model_turn, _user_speaking
                     nonlocal _user_speech_start_ts, _user_speech_stop_ts, _assistant_turn_start_ts
+                    nonlocal _user_turn_count, _fatal_error
                     try:
                         async for raw in connection._websocket:
                             if not self._running:
@@ -425,6 +504,7 @@ class DeepgramAssistantServer(AbstractAssistantServer):
                                     continue
                                 if event.get("role") == "user":
                                     _user_speaking = False
+                                    _user_turn_count += 1
                                     logger.info(f"User transcription: {text}")
                                     self.audit_log.append_user_input(text, timestamp_ms=_user_speech_start_ts)
                                     _user_speech_start_ts = None
@@ -464,10 +544,33 @@ class DeepgramAssistantServer(AbstractAssistantServer):
                                         )
                                     )
 
+                            # Session-lifecycle / informational events — no action needed.
+                            # ``History`` mirrors ConversationText (already recorded);
+                            # the others confirm setup or signal the model is working.
+                            elif event_type in (
+                                "Welcome",
+                                "SettingsApplied",
+                                "History",
+                                "AgentThinking",
+                                "AgentStartedSpeaking",
+                                "PromptUpdated",
+                                "SpeakUpdated",
+                                "ThinkUpdated",
+                            ):
+                                logger.debug(f"Deepgram agent event: {event_type}")
+
                             elif event_type in ("Error", "FatalError"):
-                                logger.error(f"Deepgram agent error: {event.get('description')}")
+                                _fatal_error = event.get("description") or event_type
+                                logger.error(
+                                    f"Deepgram agent {event_type} from the think/agent service: "
+                                    f"{_fatal_error} | full={json.dumps(event)}"
+                                )
                             elif event_type == "Warning":
-                                logger.warning(f"Deepgram agent warning: {event.get('description')}")
+                                logger.warning(
+                                    f"Deepgram agent warning: {event.get('description')} | full={json.dumps(event)}"
+                                )
+                            else:
+                                logger.warning(f"Unhandled Deepgram event type={event_type}: {json.dumps(event)[:500]}")
 
                     except asyncio.CancelledError:
                         pass
@@ -523,6 +626,24 @@ class DeepgramAssistantServer(AbstractAssistantServer):
                     task.cancel()
                     with contextlib.suppress(asyncio.CancelledError):
                         await task
+
+                # Fail loud: surface a think outage instead of silently producing a
+                # clean-looking greeting-only conversation. A healthy run has the model
+                # replying to user turns; greeting-only (count<=1) after the user spoke
+                # almost always means the think provider failed (credits/entitlement/
+                # credentials) or returned nothing.
+                if _fatal_error:
+                    logger.error(
+                        f"Deepgram agent conversation FAILED: think/agent service error '{_fatal_error}'. "
+                        f"(user_turns={_user_turn_count}, assistant_turns={_assistant_turn_count})"
+                    )
+                elif _user_turn_count >= 1 and _assistant_turn_count <= 1:
+                    logger.error(
+                        "Deepgram agent produced NO think response to the caller "
+                        f"(user_turns={_user_turn_count}, assistant_turns={_assistant_turn_count}; greeting only). "
+                        "The think step likely failed silently — check Deepgram credits/entitlement for the "
+                        "think model, or supply BYO credentials (s2s_params.think_credentials / think_endpoint)."
+                    )
 
         except Exception as e:
             logger.error(f"Deepgram agent session error: {e}", exc_info=True)

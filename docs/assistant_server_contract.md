@@ -550,9 +550,29 @@ Notable points specific to Deepgram:
 - **Config.** `framework: deepgram`, `model: {s2s: deepgram, s2s_params: {...}}`. Recognised
   `s2s_params`: `api_key` and `model` (both **required**; `model` is the exact Deepgram LLM id,
   e.g. `gpt-4o-mini` or `claude-haiku-4-5`), `think_provider` (default `open_ai`; use `anthropic`
-  for Claude models), `think_label` (optional short metrics/run_id label — Deepgram still receives
-  `model`), `listen_model` (STT, default `nova-3`), `speak_model` (TTS, default `aura-2-thalia-en`).
-  The conversation language comes from the run's `language` (base server), not `s2s_params`.
+  for Claude models, `aws_bedrock`/`google`/`groq` for the others), `think_label` (optional short
+  metrics/run_id label — Deepgram still receives `model`), `listen_model` (STT, default `nova-3`),
+  `speak_model` (TTS, default `aura-2-thalia-en`). The conversation language comes from the run's
+  `language` (base server), not `s2s_params`.
+- **Managed vs. BYO think.** By default Deepgram runs the LLM with its *managed* provider
+  (Deepgram's own credentials/quota). To drive think with **your own** credentials — for an
+  apples-to-apples comparison with the cascade pipeline (same Bedrock model) and to bypass
+  managed prompt-size limits — add any of these `s2s_params`:
+  - `think_credentials` (dict) → `think.provider.credentials`. Only `aws_bedrock` takes
+    credentials (`{type: iam|sts, region, access_key_id, secret_access_key, session_token?}`).
+    If omitted for `aws_bedrock`, the server builds IAM/STS creds from `AWS_ACCESS_KEY_ID` /
+    `AWS_SECRET_ACCESS_KEY` / `AWS_SESSION_TOKEN` env vars (region from `think_region`,
+    else `AWS_REGION`/`AWS_DEFAULT_REGION`, else `us-east-1`).
+  - `think_endpoint` (dict `{url, headers}`) → `think.endpoint`. This is how `anthropic`/
+    `open_ai`/`google` BYO works (they have no `credentials` field): point at your own URL and
+    pass your key in `headers`.
+  - `think_params` (dict) → merged into `think.provider` (e.g. `temperature`, `version`,
+    `reasoning_mode`).
+  - `context_length` (`"max"` | int) → `think.context_length`, for long prompts.
+  - `think_region` (str) → region for the `aws_bedrock` env-credential builder.
+- **Fail-loud.** A think outage (provider error, or no model reply after the caller speaks —
+  greeting only) is logged at ERROR with guidance, instead of silently producing a clean-looking
+  1-turn conversation. Watch for `produced NO think response` / `conversation FAILED`.
 - **Evaluation.** Although configured via `s2s`, Deepgram is scored as a **cascade** pipeline
   (`get_pipeline_type` → `CASCADE`), since it runs STT→LLM→TTS internally — so STT/TTS metrics
   (`stt_wer`, `transcription_accuracy_key_entities`, `speakability`) run. `pipeline_parts` exposes
@@ -563,8 +583,11 @@ Notable points specific to Deepgram:
   `container: "none"` (raw PCM); `agent.greeting` carries `INITIAL_MESSAGE`.
 - **Tools.** Configured under `agent.think.functions` (no `endpoint` ⇒ *client-side*), so the
   agent emits `FunctionCallRequest` events; reply with `send_function_call_response`.
-- **Events.** `async for message in connection` yields raw `bytes` (TTS audio) or typed events
-  (`ConversationText`, `UserStartedSpeaking`, `AgentStartedSpeaking`, `AgentAudioDone`,
-  `FunctionCallRequest`, `Error`, `Warning`).
+- **Events.** The session yields raw `bytes` (TTS audio) or JSON events: `Welcome`,
+  `SettingsApplied`, `ConversationText`, `History`, `UserStartedSpeaking`, `AgentThinking`,
+  `AgentStartedSpeaking`, `AgentAudioDone`, `FunctionCallRequest`, `Error`, `Warning`. Acted-on
+  events are `ConversationText` (transcript), `AgentAudioDone` (turn end), `UserStartedSpeaking`
+  (barge-in), `FunctionCallRequest` (tool call), `Error`/`FatalError` (fail-loud); the rest are
+  informational.
 - **Limitation.** The Voice Agent event stream exposes no token-usage event, so token usage is
   not reported for this framework. Latency is still emitted on the first audio chunk per turn.
