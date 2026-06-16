@@ -311,9 +311,7 @@ def _load_names_file(path: Path) -> dict[str, list[str]]:
     return data
 
 
-async def _translate_initial_message(
-    language: str, language_name: str, llm: LLMClient, overwrite: bool = False
-) -> str:
+async def _translate_initial_message(language: str, language_name: str, llm: LLMClient, overwrite: bool = False) -> str:
     """Translate the English initial message into ``language``."""
     existing: dict[str, str] = {}
     if INITIAL_MESSAGES_PATH.exists():
