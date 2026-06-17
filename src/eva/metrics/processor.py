@@ -108,6 +108,13 @@ class _TurnExtractionState:
     audio_starts: dict[tuple[str, int], list[float]] = field(default_factory=dict)
     audio_ends: dict[tuple[str, int], list[float]] = field(default_factory=dict)
     last_audio_start_key: dict[str, tuple[str, int]] = field(default_factory=dict)
+    # Running last VAD-confirmed user speech end time per turn (seconds), updated on every
+    # user_stopped_speaking event. May be overwritten by later utterances in the same EL session.
+    vad_user_stopped_by_turn: dict[int, float] = field(default_factory=dict)
+    # VAD stop time frozen at the moment the agent audio_start fires for each turn. Captures
+    # "user was done speaking at this time" before any subsequent utterances in the same EL
+    # session can overwrite vad_user_stopped_by_turn. Used for clipping in _pair_audio_segments.
+    effective_user_speech_end: dict[int, float] = field(default_factory=dict)
     session_end_ts: float | None = None
     user_audio_open: bool = False
     assistant_audio_open: bool = False
@@ -313,6 +320,9 @@ def _handle_pipecat_event(
     uses audit_log/assistant entries (which preserve tool call boundaries), truncated in post-processing to
     only the portion that was actually spoken.
     """
+    if event["event_type"] == "user_stopped_speaking":
+        state.vad_user_stopped_by_turn[state.turn_num] = event["timestamp_ms"] / 1000
+        return
     if event["event_type"] not in ("tts_text", "llm_response"):
         return
     state.assistant_spoke_in_turn = True
@@ -414,12 +424,23 @@ def _handle_audio_start(
             if pipeline_type == PipelineType.S2S:
                 state.assistant_spoke_in_turn = True
         # Interruption: assistant audio_start overlaps an open user audio session. Flag the turn
-        # whenever there's overlap.
+        # whenever there's overlap — unless VAD already confirmed the user stopped speaking before
+        # this agent audio_start (ElevenLabs keeps the user session open through the agent's
+        # response, so session-open alone is not a reliable interrupt signal).
         # `hold_turn` if the assistant has not yet spoken.
         if state.user_audio_open and state.user_audio_started_in_turn:
-            state.assistant_interrupted_turns.add(state.turn_num)
-            if not state.assistant_processed_in_turn:
-                state.hold_turn = True
+            vad_stop = state.vad_user_stopped_by_turn.get(state.turn_num)
+            if vad_stop is None or vad_stop >= timestamp:
+                state.assistant_interrupted_turns.add(state.turn_num)
+                if not state.assistant_processed_in_turn:
+                    state.hold_turn = True
+            else:
+                # Freeze the VAD stop at this moment so that later utterances in the same
+                # EL session (which belong to the next turn's speech) cannot overwrite it.
+                # Only set once — subsequent agent audio segments (e.g. post-tool-call TTS)
+                # should not update the freeze point.
+                if state.turn_num not in state.effective_user_speech_end:
+                    state.effective_user_speech_end[state.turn_num] = vad_stop
 
     turn_idx = state.turn_num
     key = (role, turn_idx)
@@ -522,15 +543,29 @@ def _pair_audio_segments(state: "_TurnExtractionState", context: "_ProcessorCont
     """Pair audio_start/audio_end lists into (start, end) tuples per turn.
 
     If an audio_start has no matching audio_end, session_end_ts is used as fallback.
+
+    For elevenlabs_user segments, the end is capped at the VAD-confirmed speech stop time when
+    available. ElevenLabs keeps the user audio session open through the agent's response, so the
+    raw audio_end timestamp is not a reliable indicator of when the user stopped speaking.
     """
     for (role, turn_idx), starts in state.audio_starts.items():
         ends = state.audio_ends.get((role, turn_idx), [])
         segments: list[tuple[float, float]] = []
         for i, s in enumerate(starts):
             if i < len(ends):
-                segments.append((s, ends[i]))
+                end = ends[i]
             elif state.session_end_ts is not None:
-                segments.append((s, state.session_end_ts))
+                end = state.session_end_ts
+            else:
+                continue
+            if role == "elevenlabs_user":
+                # Use the frozen effective speech end if available (captures VAD stop at the
+                # moment the agent started, before later utterances in the same session
+                # could overwrite vad_user_stopped_by_turn).
+                speech_end = state.effective_user_speech_end.get(turn_idx)
+                if speech_end is not None and speech_end > s:
+                    end = min(end, speech_end)
+            segments.append((s, end))
         if segments:
             getattr(context, AUDIO_ATTR[role])[turn_idx] = segments
 
@@ -857,7 +892,7 @@ class MetricsContextProcessor:
             for line in f:
                 raw_pipecat.append(json.loads(line))
 
-        allowed_types = {"turn_start", "turn_end", "tts_text", "llm_response"}
+        allowed_types = {"turn_start", "turn_end", "tts_text", "llm_response", "user_stopped_speaking"}
         raw_pipecat = [entry for entry in raw_pipecat if entry.get("type") in allowed_types]
 
         # Some audio-native models emit llm_response (full text with spaces); some emits tts_text (per-token chunks).
@@ -867,7 +902,14 @@ class MetricsContextProcessor:
 
         grouped_pipecat = aggregate_pipecat_logs_by_type(raw_pipecat)
         for entry in grouped_pipecat:
-            if (ts := entry.get("start_timestamp")) is None:
+            # user_stopped_speaking: use end_timestamp so that when consecutive stop events
+            # (including duplicates) are merged by the aggregator, we use the last one's
+            # timestamp rather than the first — giving us the true end of user speech.
+            if entry.get("type") == "user_stopped_speaking":
+                ts = entry.get("end_timestamp")
+            else:
+                ts = entry.get("start_timestamp")
+            if ts is None:
                 continue
             history.append(
                 {

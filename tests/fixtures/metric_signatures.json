@@ -92,8 +92,8 @@
   "TurnTakingMetric": {
     "name": "turn_taking",
     "prompt_hash": null,
-    "source_hash": "0ae7b7f0fc8c",
-    "version": "v0.1"
+    "source_hash": "e8bb0b6061c8",
+    "version": "v0.2"
   },
   "UserBehavioralFidelityMetric": {
     "name": "user_behavioral_fidelity",
