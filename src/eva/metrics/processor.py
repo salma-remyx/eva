@@ -257,8 +257,13 @@ def _handle_audit_log_event(
             state.rollback_advance_consumed_by_user = True
         # While user audio is active, suppress the turn increment (user is still speaking) but still call
         # advance so that hold_turn is consumed if set.
+        # Exception: if VAD already confirmed the user stopped speaking before this event, the EL session
+        # is just being held open artificially — don't suppress the advance.
         if state.user_audio_open:
-            state.assistant_spoke_in_turn = False
+            vad_stop = state.vad_user_stopped_by_turn.get(state.turn_num)
+            event_ts = event["timestamp_ms"] / 1000
+            if vad_stop is None or vad_stop >= event_ts:
+                state.assistant_spoke_in_turn = False
         state.advance_turn_if_needed(bypass_hold=pipeline_type == PipelineType.S2S)
         turn = state.turn_num
         entry = get_entry_for_audit_log(event, turn)
