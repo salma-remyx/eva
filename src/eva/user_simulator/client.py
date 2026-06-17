@@ -464,6 +464,12 @@ class UserSimulator:
         self._reset_keepalive_counter()
         logger.info(f"🎭 User (ElevenLabs): {response}")
 
+        # Authoritative end-of-turn cue: the user agent has finished its utterance.
+        # Lets the audio interface mark end-of-utterance once the audio drains even
+        # when no partial chunk remains, so trailing silence reaches the assistant VAD.
+        if self._audio_interface:
+            self._audio_interface.notify_user_utterance_complete()
+
         self.event_logger.log_event(
             "user_speech",
             {

@@ -110,6 +110,12 @@ class BotToBotAudioInterface(AudioInterface):
         self._assistant_audio_active = False  # framework_agent speaking
         self._user_audio_ended_time = None  # Track when user audio ended for silence sending
         self._assistant_audio_ended_time = None  # Track when assistant audio ended for silence sending
+        # Set when ElevenLabs signals the user agent has finished its utterance
+        # (callback_agent_response). Used as the authoritative end-of-turn cue so
+        # we still mark end-of-utterance when the audio drains frame-aligned with
+        # no leftover partial chunk (otherwise the partial-chunk detector below
+        # never fires, no trailing silence is sent, and S2S assistant VADs stall).
+        self._user_turn_complete = False
 
         # Shutdown state
         self._stopping = False
@@ -413,10 +419,21 @@ class BotToBotAudioInterface(AudioInterface):
             except Exception as e:
                 logger.warning(f"Error sending user_speech_start event: {e}")
 
+    def notify_user_utterance_complete(self) -> None:
+        """Arm end-of-turn: the ElevenLabs user agent finished its utterance.
+
+        Called from the client's agent-response callback. The send loop fires
+        ``_on_user_audio_end`` once the audio buffer drains, even when no partial
+        chunk remains — so trailing silence is always sent for the assistant VAD.
+        """
+        self._user_turn_complete = True
+
     async def _on_user_audio_end(self, current_time: float) -> None:
         """Handle user audio ending."""
         self._user_audio_ended_time = current_time
         self._user_audio_active = False
+        # Consume the end-of-turn cue so it doesn't carry into the next turn.
+        self._user_turn_complete = False
         if self.event_logger:
             self.event_logger.log_audio_end("elevenlabs_user")
         logger.info("🎤 User audio END")
@@ -704,6 +721,23 @@ class BotToBotAudioInterface(AudioInterface):
                                     # Reset stream timing for next audio stream
                                     stream_start_time = None
                                     next_send_time = current_time + send_interval
+
+                elif (
+                    self._user_audio_active
+                    and self._user_turn_complete
+                    and not pending_audio
+                    and self.send_queue.empty()
+                ):
+                    # Exact-boundary end of utterance: ElevenLabs signaled the user
+                    # agent finished and the audio drained with no leftover partial
+                    # chunk, so the branch above never fires. Mark end after the
+                    # detection delay so trailing silence is sent and the assistant
+                    # VAD can close the turn (otherwise the conversation stalls).
+                    time_since_last_send = current_time - next_send_time + send_interval
+                    if time_since_last_send >= send_interval * USER_END_DETECTION_DELAY_INTERVALS:
+                        await self._on_user_audio_end(current_time)
+                        stream_start_time = None
+                        next_send_time = current_time + send_interval
 
                 # Send user silence/ambient noise while user is not speaking.
                 # Ambient noise streams continuously (including during assistant speech).
