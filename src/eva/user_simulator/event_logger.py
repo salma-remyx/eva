@@ -122,14 +122,18 @@ class ElevenLabsEventLogger:
         self._events.append(event)
         logger.debug(f"Audio start logged: {role}")
 
-    def log_audio_end(self, role: str) -> None:
+    def log_audio_end(self, role: str, timestamp: float | None = None) -> None:
         """Log when audio ends for a given role.
 
         Args:
             role: Either 'elevenlabs_user' or 'framework_agent'
+            timestamp: Unix timestamp (seconds) of the *actual* audio end. End-of-
+                audio is detected after a silence threshold, so callers pass the
+                real end time; otherwise the stamp would lag by that threshold and
+                shrink the following pause/latency in the timeline.
         """
         # Use Unix timestamp in seconds (as float)
-        audio_timestamp = time.time()
+        audio_timestamp = timestamp if timestamp is not None else time.time()
         # Note: For audio events, we need to store event_type and user at top level
         # not nested in data
         self._sequence += 1
@@ -148,7 +152,7 @@ class ElevenLabsEventLogger:
         self.output_path.parent.mkdir(parents=True, exist_ok=True)
 
         with open(self.output_path, "w") as f:
-            f.writelines(json.dumps(event) + "\n" for event in self._events)
+            f.writelines(json.dumps(event, ensure_ascii=False) + "\n" for event in self._events)
 
         logger.info(f"Saved {len(self._events)} ElevenLabs events to {self.output_path}")
 
