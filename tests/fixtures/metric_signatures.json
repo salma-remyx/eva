@@ -8,7 +8,7 @@
   "ConcisenessJudgeMetric": {
     "name": "conciseness",
     "prompt_hash": "57caf9a18a3c",
-    "source_hash": "e39cacd719a2",
+    "source_hash": "9f183871e45a",
     "version": "v0.1"
   },
   "ConversationCorrectlyFinishedMetric": {
@@ -20,7 +20,7 @@
   "ConversationProgressionJudgeMetric": {
     "name": "conversation_progression",
     "prompt_hash": "174cdf93b398",
-    "source_hash": "8d1a32e8a4fe",
+    "source_hash": "4e5f59c32946",
     "version": "v0.1"
   },
   "ConversationTimeLimitExceededMetric": {
@@ -38,7 +38,7 @@
   "FaithfulnessJudgeMetric": {
     "name": "faithfulness",
     "prompt_hash": "060e3f1f9e7a",
-    "source_hash": "7db40c133d8a",
+    "source_hash": "93a559d0a028",
     "version": "v0.2"
   },
   "ResponseSpeedMetric": {
@@ -56,7 +56,7 @@
   "SpeakabilityJudgeMetric": {
     "name": "speakability",
     "prompt_hash": "1e4f78cb051e",
-    "source_hash": "dd4feece62c1",
+    "source_hash": "c8a781f5795b",
     "version": "v0.2"
   },
   "SpeechFidelityMetric": {
@@ -86,7 +86,7 @@
   "TranscriptionAccuracyKeyEntitiesMetric": {
     "name": "transcription_accuracy_key_entities",
     "prompt_hash": "aa1a7fdd6df7",
-    "source_hash": "80a4d892e1f6",
+    "source_hash": "96271903ded0",
     "version": "v0.2"
   },
   "TurnTakingMetric": {
@@ -98,7 +98,7 @@
   "UserBehavioralFidelityMetric": {
     "name": "user_behavioral_fidelity",
     "prompt_hash": "21527fa8d79b",
-    "source_hash": "fded1ad48aa4",
+    "source_hash": "7f5dcec51568",
     "version": "v0.1"
   },
   "UserSpeechFidelityMetric": {
