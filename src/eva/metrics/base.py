@@ -330,7 +330,7 @@ class TextJudgeMetric(BaseMetric):
 
     # Subclasses can override these
     default_model = "gpt-5.2"
-    default_params: dict[str, Any] = {"max_tokens": 100000}
+    default_params: dict[str, Any] = {"max_tokens": 100000, "service_tier": "flex"}
     rating_scale: tuple[int, int] = (1, 3)  # (min, max)
 
     def __init__(self, config: dict[str, Any] | None = None):
