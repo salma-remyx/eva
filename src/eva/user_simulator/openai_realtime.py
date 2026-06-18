@@ -124,7 +124,7 @@ class OpenAIRealtimeUserSimulator(AbstractUserSimulator):
                 "input": {
                     "format": CALLER_INPUT_FORMAT.copy(),
                     "turn_detection": CALLER_TURN_DETECTION.copy(),
-                    "transcription": {"model": CALLER_TRANSCRIPTION_MODEL},
+                    "transcription": {"model": CALLER_TRANSCRIPTION_MODEL, "language": self._language},
                 },
             },
             "parallel_tool_calls": False,

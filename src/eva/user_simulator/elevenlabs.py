@@ -390,7 +390,7 @@ class ElevenLabsUserSimulator(AbstractUserSimulator):
             "user_speech",
             {
                 "text": response,
-                "source": "elevenlabs_agent",
+                "source": "simulated_user",
             },
         )
 
@@ -428,30 +428,6 @@ class ElevenLabsUserSimulator(AbstractUserSimulator):
             "assistant_speech",
             {
                 "text": transcript,
-                "source": "pipecat_assistant",
+                "source": "assistant",
             },
         )
-
-    def _record_audio(self, source: str, audio_data: bytes) -> None:
-        """Record audio for later analysis.
-
-        Args:
-            source: "user", "assistant", or "user_clean"
-            audio_data: Raw audio bytes
-        """
-        if source == "user":
-            self._user_audio_chunks.append(audio_data)
-        elif source == "assistant":
-            self._assistant_audio_chunks.append(audio_data)
-        elif source == "user_clean":
-            self._user_clean_audio_chunks.append(audio_data)
-
-    def get_recorded_audio(self) -> tuple[bytes, bytes]:
-        """Get the recorded audio.
-
-        Returns:
-            Tuple of (user_audio, assistant_audio) as raw bytes
-        """
-        user_audio = b"".join(self._user_audio_chunks)
-        assistant_audio = b"".join(self._assistant_audio_chunks)
-        return user_audio, assistant_audio

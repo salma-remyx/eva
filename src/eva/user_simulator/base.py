@@ -134,6 +134,12 @@ class AbstractUserSimulator(ABC):
         )
 
     def _record_audio(self, source: str, audio_data: bytes) -> None:
+        """Record audio for later analysis.
+
+        Args:
+            source: "user", "assistant", or "user_clean"
+            audio_data: Raw audio bytes
+        """
         if source == "user":
             self._user_audio_chunks.append(audio_data)
         elif source == "assistant":
@@ -142,4 +148,9 @@ class AbstractUserSimulator(ABC):
             self._user_clean_audio_chunks.append(audio_data)
 
     def get_recorded_audio(self) -> tuple[bytes, bytes]:
+        """Get the recorded audio.
+
+        Returns:
+            Tuple of (user_audio, assistant_audio) as raw bytes
+        """
         return b"".join(self._user_audio_chunks), b"".join(self._assistant_audio_chunks)
