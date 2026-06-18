@@ -38,9 +38,10 @@
       "zona de aparcamiento general"
     ],
     "de": [
-      "allgemeiner parkplatz",
-      "normaler parkplatz",
-      "oberflächenparkplatz"
+      "allgemeinen stellplatz",
+      "allgemeiner stellplatz",
+      "außenparkplatz",
+      "außenstellplatz"
     ]
   }
 }

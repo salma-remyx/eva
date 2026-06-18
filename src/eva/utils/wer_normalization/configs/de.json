@@ -1,8 +1,7 @@
 {
   "code": "de",
   "zeros": [
-    "null",
-    "zero"
+    "null"
   ],
   "cardinals": {
     "eins": 1,
@@ -32,10 +31,7 @@
     "eines": 1,
     "einem": 1,
     "einen": 1,
-    "zwo": 2,
-    "zweie": 2,
-    "dreie": 3,
-    "siebene": 7
+    "zwo": 2
   },
   "cardinals_suffixed": {
     "erste": [

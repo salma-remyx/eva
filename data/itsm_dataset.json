@@ -826,7 +826,7 @@
       "fr": "Bonjour, je suis bloqué hors de mon compte et j’ai besoin d’aide pour y accéder à nouveau.",
       "fr-CA": "Bonjour, je suis bloqué hors de mon compte et j’ai besoin d’aide pour y accéder de nouveau.",
       "es": "Hola, no puedo acceder a mi cuenta y necesito ayuda para volver a entrar.",
-      "de": "Hallo, ich bin ausgesperrt und brauche Hilfe, um wieder in mein Konto zu kommen."
+      "de": "Hallo, ich bin ausgesperrt und brauche Hilfe, um wieder an mein Konto zu kommen."
     },
     "culture_overrides": {
       "en": {
@@ -16241,7 +16241,7 @@
       "fr": "Bonjour, j’ai besoin d’aide pour obtenir une place de parking dans l’Executive Garage.",
       "fr-CA": "Bonjour, j’ai besoin d’aide pour obtenir une place de stationnement dans l’Executive Garage.",
       "es": "Hola, necesito ayuda para conseguir aparcamiento en el Executive Garage.",
-      "de": "Hallo, ich brauche Hilfe, einen Parkplatz in der Executive Garage zu bekommen."
+      "de": "Hallo, ich brauche Hilfe, einen Parkplatz im Parkhaus für Führungskräfte zu bekommen."
     },
     "culture_overrides": {
       "en": {
@@ -34176,7 +34176,7 @@
       "fr": "Bonjour, j’ai quelques sujets liés aux services généraux pour lesquels j’ai besoin d’aide.",
       "fr-CA": "Bonjour, j’ai quelques affaires liées aux installations pour lesquelles j’ai besoin d’aide.",
       "es": "Hola, tengo un par de temas de instalaciones con los que necesito ayuda.",
-      "de": "Hallo, ich habe ein paar Facility-Themen, bei denen ich Hilfe brauche."
+      "de": "Hallo, ich habe ein paar Anliegen bezüglich der Büroeinrichtungen, bei denen ich Hilfe brauche."
     },
     "culture_overrides": {
       "en": {

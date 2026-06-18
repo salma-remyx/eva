@@ -34,9 +34,11 @@
       "parking a del centro"
     ],
     "de": [
-      "garage a in der innenstadt",
-      "innenstadt-parkhaus",
-      "parkhaus a"
+      "parkhaus a",
+      "parkhaus a in der innenstadt",
+      "parkhaus im zentrum",
+      "parkhaus in der city",
+      "parkhaus in der innenstadt"
     ]
   }
 }
