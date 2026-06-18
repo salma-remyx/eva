@@ -20,7 +20,7 @@ from eva.utils.logging import add_record_log_file, current_record_id, get_logger
 
 logger = get_logger(__name__)
 
-USER_SIMULATOR_SHUTDOWN_GRACE_SECONDS = 90
+USER_SIMULATOR_SHUTDOWN_GRACE_SECONDS = 20
 
 
 def _get_server_class(framework: str) -> type[AbstractAssistantServer]:
