@@ -24,6 +24,8 @@ async def run_benchmark(config: RunConfig) -> int:
     logger = get_logger(__name__)
     router.init(config.model_list)
 
+    logger.info(f"Run ID: {config.run_id}")
+
     # Check if run_id points to an existing run
     resolved_dir = config.output_dir / config.run_id
     existing_run = (resolved_dir / "config.json").exists()
