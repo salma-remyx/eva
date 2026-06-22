@@ -159,3 +159,26 @@ class TestBuildSettingsByo:
         assert creds["type"] == "iam"
         assert creds["region"] == "us-west-2"
         assert creds["access_key_id"] == "envAK"
+
+    def test_google_custom_endpoint_omits_model(self):
+        # Deepgram custom Google endpoints want the model in the URL, not in settings.
+        srv = _bare_server()
+        srv._think_provider = "google"
+        srv._think_model = "gemini-3.5-flash"
+        srv._think_endpoint = {
+            "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:streamGenerateContent?alt=sse",
+            "headers": {"x-goog-api-key": "KEY"},
+        }
+        assert srv._omit_think_model() is True
+        think = srv._build_settings_dict()["agent"]["think"]
+        assert think["provider"] == {"type": "google"}  # no model
+        assert "streamGenerateContent" in think["endpoint"]["url"]
+
+    def test_managed_google_keeps_model(self):
+        # google WITHOUT a custom endpoint is managed -> model stays required/included.
+        srv = _bare_server()
+        srv._think_provider = "google"
+        srv._think_model = "gemini-2.5-flash"
+        assert srv._omit_think_model() is False
+        think = srv._build_settings().dict()["agent"]["think"]
+        assert think["provider"]["model"] == "gemini-2.5-flash"

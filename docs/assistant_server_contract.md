@@ -565,7 +565,11 @@ Notable points specific to Deepgram:
     else `AWS_REGION`/`AWS_DEFAULT_REGION`, else `us-east-1`).
   - `think_endpoint` (dict `{url, headers}`) → `think.endpoint`. This is how `anthropic`/
     `open_ai`/`google` BYO works (they have no `credentials` field): point at your own URL and
-    pass your key in `headers`.
+    pass your key in `headers`. **Custom Google endpoints** are special: Deepgram requires the
+    model **in the URL** (`…/models/<model>:streamGenerateContent?alt=sse`) and rejects it in
+    settings. Since the SDK's typed `AgentV1Settings` *requires* `provider.model`, the server
+    detects this case (`think_provider: google` + `think_endpoint`), omits `model`, and sends the
+    raw settings JSON via the SDK's low-level send.
   - `think_params` (dict) → merged into `think.provider` (e.g. `temperature`, `version`,
     `reasoning_mode`).
   - `context_length` (`"max"` | int) → `think.context_length`, for long prompts.

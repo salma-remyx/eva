@@ -213,9 +213,22 @@ class DeepgramAssistantServer(AbstractAssistantServer):
     # Settings
     # ------------------------------------------------------------------
 
+    def _omit_think_model(self) -> bool:
+        """Whether ``model`` must be omitted from the think provider.
+
+        Deepgram's **custom Google endpoints** require the model in the endpoint URL
+        (e.g. ``…/models/<model>:streamGenerateContent``) and reject it in settings
+        ("model should not be specified in the settings"). The SDK's typed
+        ``AgentV1Settings`` *requires* ``provider.model``, so for this case we omit
+        the field and send the raw settings JSON (see ``_handle_session``).
+        """
+        return self._think_provider == "google" and bool(self._think_endpoint)
+
     def _build_think_provider(self) -> dict[str, Any]:
         """Build the think ``provider`` object: managed by default, BYO if configured."""
-        provider: dict[str, Any] = {"type": self._think_provider, "model": self._think_model}
+        provider: dict[str, Any] = {"type": self._think_provider}
+        if not self._omit_think_model():
+            provider["model"] = self._think_model
         # Optional provider-level params (temperature, version, reasoning_mode, ...).
         provider.update(self._think_params)
         # BYO credentials. Only aws_bedrock carries provider.credentials; for
@@ -259,12 +272,8 @@ class DeepgramAssistantServer(AbstractAssistantServer):
             creds["session_token"] = session_token
         return creds
 
-    def _build_settings(self) -> AgentV1Settings:
-        """Build the Voice Agent ``Settings`` message.
-
-        Constructed from a plain dict and validated into the typed model; pydantic
-        resolves the discriminated provider unions and produces the correct wire JSON.
-        """
+    def _build_settings_dict(self) -> dict[str, Any]:
+        """Build the Voice Agent ``Settings`` as a plain dict (wire shape)."""
         think: dict[str, Any] = {
             "provider": self._build_think_provider(),
             "prompt": self._system_prompt,
@@ -277,7 +286,7 @@ class DeepgramAssistantServer(AbstractAssistantServer):
         if self._context_length is not None:
             think["context_length"] = self._context_length
 
-        settings_dict: dict[str, Any] = {
+        return {
             "type": "Settings",
             "audio": {
                 "input": {"encoding": "linear16", "sample_rate": self._audio_sample_rate},
@@ -291,7 +300,15 @@ class DeepgramAssistantServer(AbstractAssistantServer):
                 "speak": {"provider": {"type": "deepgram", "model": self._speak_model}},
             },
         }
-        return AgentV1Settings.model_validate(settings_dict)
+
+    def _build_settings(self) -> AgentV1Settings:
+        """Build the Voice Agent ``Settings`` message, validated into the typed model.
+
+        Pydantic resolves the discriminated provider unions and produces the correct
+        wire JSON. Not used for custom Google endpoints (``_omit_think_model``), whose
+        model-less provider the typed model rejects — those send the raw dict instead.
+        """
+        return AgentV1Settings.model_validate(self._build_settings_dict())
 
     # ------------------------------------------------------------------
     # Session handler
@@ -329,12 +346,17 @@ class DeepgramAssistantServer(AbstractAssistantServer):
         audio_output_queue: asyncio.Queue[bytes] = asyncio.Queue()
 
         client = AsyncDeepgramClient(api_key=self._api_key)
-        settings = self._build_settings()
 
         try:
             async with client.agent.v1.connect() as connection:
                 logger.info(f"Deepgram agent session connected (think_model={self._think_model})")
-                await connection.send_settings(settings)
+                if self._omit_think_model():
+                    # Custom Google endpoint: the typed AgentV1Settings requires
+                    # provider.model, but Deepgram wants it only in the URL. Send the
+                    # raw (model-less) settings dict via the SDK's low-level _send.
+                    await connection._send(self._build_settings_dict())
+                else:
+                    await connection.send_settings(self._build_settings())
                 fw_log.turn_start()
 
                 # ----- Concurrent tasks -----
