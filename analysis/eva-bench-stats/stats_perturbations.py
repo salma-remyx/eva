@@ -342,6 +342,54 @@ def compute_cld(
     return {name: "".join(sorted(letters[name])) for name in condition_names}
 
 
+def metric_value_cis(values_long: pd.DataFrame, config: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Bootstrap CIs on per-scenario metric values per (model, metric, condition).
+
+    Pooling matches the delta plot: per-domain CIs bootstrap within a domain;
+    the pooled CI bootstraps all per-scenario values concatenated across domains
+    (per-scenario weighting), via stats_utils.bootstrap_ci.
+
+    Returns (pooled_df, per_domain_df), columns:
+        model_label, metric, domain, condition, point, ci_lower, ci_upper, n
+    """
+    alpha: float = config["alpha"]
+    n_boot: int = config["n_bootstrap"]
+    seed: int = config["random_seed"]
+    expected_domains: list[str] = config.get("expected_domains", ["itsm", "medical_hr", "airline"])
+
+    cols = ["model_label", "metric", "domain", "condition", "point", "ci_lower", "ci_upper", "n"]
+    if values_long.empty:
+        return pd.DataFrame(columns=cols), pd.DataFrame(columns=cols)
+
+    per_domain_rows: list[dict] = []
+    pooled_rows: list[dict] = []
+
+    for (model, metric, condition), g in values_long.groupby(
+        ["model_label", "metric", "condition"], sort=False
+    ):
+        for domain in expected_domains:
+            cell = g[g["domain"] == domain]
+            if cell.empty:
+                continue
+            x = cell["value"].to_numpy()
+            cs = seed + hash(f"mv:{model}:{metric}:{condition}:{domain}") % (2**31)
+            lo, hi = bootstrap_ci(x, n_boot=n_boot, seed=cs, alpha=alpha)
+            per_domain_rows.append({
+                "model_label": model, "metric": metric, "domain": domain, "condition": condition,
+                "point": float(x.mean()), "ci_lower": lo, "ci_upper": hi, "n": len(x),
+            })
+        x_all = g["value"].to_numpy()  # concatenate across domains == delta-plot pooling
+        if len(x_all):
+            cs = seed + hash(f"mv:{model}:{metric}:{condition}:pooled") % (2**31)
+            lo, hi = bootstrap_ci(x_all, n_boot=n_boot, seed=cs, alpha=alpha)
+            pooled_rows.append({
+                "model_label": model, "metric": metric, "domain": "pooled", "condition": condition,
+                "point": float(x_all.mean()), "ci_lower": lo, "ci_upper": hi, "n": len(x_all),
+            })
+
+    return pd.DataFrame(pooled_rows, columns=cols), pd.DataFrame(per_domain_rows, columns=cols)
+
+
 def main(config_path: Path = CONFIG_PATH) -> None:
     with open(config_path) as f:
         config = yaml.safe_load(f)
@@ -373,6 +421,21 @@ def main(config_path: Path = CONFIG_PATH) -> None:
 
     print(f"Wrote {len(results_per_domain):,} per-domain rows → {per_domain_path}")
     print(f"Wrote {len(results_pooled):,} pooled rows → {pooled_path}")
+
+    # ── Metric-value CIs (Plot B) ─────────────────────────────────────────
+    metric_values_path = output_dir / "scenario_metricvalues.csv"
+    if metric_values_path.exists():
+        print(f"Loading metric values from {metric_values_path} ...")
+        mv_long = pd.read_csv(metric_values_path)
+        mv_pooled, mv_per_domain = metric_value_cis(mv_long, config)
+        mv_pooled_path = output_dir / "results_metricvalues_pooled.csv"
+        mv_per_domain_path = output_dir / "results_metricvalues_per_domain.csv"
+        mv_pooled.to_csv(mv_pooled_path, index=False)
+        mv_per_domain.to_csv(mv_per_domain_path, index=False)
+        print(f"Wrote {len(mv_pooled):,} metric-value pooled rows → {mv_pooled_path}")
+        print(f"Wrote {len(mv_per_domain):,} metric-value per-domain rows → {mv_per_domain_path}")
+    else:
+        print(f"  [metric-values] skipped: {metric_values_path} not found (run run_data.py)")
 
     # ── Pairwise analysis ─────────────────────────────────────────────────
     pairwise_path = output_dir / "scenario_pairwise_deltas.csv"

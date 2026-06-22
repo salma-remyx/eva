@@ -349,6 +349,56 @@ def build_scenario_deltas(
     return deltas
 
 
+def build_condition_scenario_values(
+    trial_scores: pd.DataFrame,
+    alias: str,
+    model_label: str,
+    condition_map: dict[str, str],
+    metrics: list[str],
+) -> pd.DataFrame:
+    """Per-scenario metric values for clean + each perturbation, on the paired set.
+
+    The paired set is defined exactly as `compute_deltas` pairs data: a (domain,
+    scenario, metric) cell is included for a perturbation condition iff it exists
+    in BOTH clean and that condition. The clean bar uses every scenario that has
+    at least one perturbation counterpart.
+
+    Returns columns: model_label, domain, condition, scenario_id, metric, value
+    (condition ∈ {clean, accent, background_noise, both}).
+    """
+    cols = ["model_label", "domain", "condition", "scenario_id", "metric", "value"]
+    pert_cats = list(condition_map.values())
+    filtered = trial_scores[
+        (trial_scores["system_alias"] == alias) & (trial_scores["metric"].isin(metrics))
+    ]
+    if filtered.empty:
+        return pd.DataFrame(columns=cols)
+
+    means = compute_scenario_means(filtered)  # ..., perturbation_category, scenario_id, metric, mean_value
+    join = ["domain", "scenario_id", "metric"]
+    clean = means[means["perturbation_category"] == "clean"]
+    pert = means[means["perturbation_category"].isin(pert_cats)]
+    if clean.empty or pert.empty:
+        return pd.DataFrame(columns=cols)
+
+    clean_keys = clean[join].drop_duplicates()
+    pert_keys = pert[join].drop_duplicates()
+
+    parts: list[pd.DataFrame] = []
+    # clean bar: clean scenarios that have any perturbation counterpart
+    clean_paired = clean.merge(pert_keys, on=join, how="inner").assign(condition="clean")
+    parts.append(clean_paired)
+    # each perturbation: scenarios that have a clean counterpart (mirrors compute_deltas inner-join)
+    for pert_cat in pert_cats:
+        pc = means[means["perturbation_category"] == pert_cat]
+        pc_paired = pc.merge(clean_keys, on=join, how="inner").assign(condition=pert_cat)
+        parts.append(pc_paired)
+
+    out = pd.concat(parts, ignore_index=True).rename(columns={"mean_value": "value"})
+    out.insert(0, "model_label", model_label)
+    return out[cols]
+
+
 def compute_pairwise_deltas(scenario_deltas: pd.DataFrame) -> pd.DataFrame:
     """Compute pairwise condition deltas and additivity residual per scenario.
 
@@ -427,6 +477,7 @@ def main(config_path: Path = CONFIG_PATH) -> None:
         print(f"  {len(derived):,} derived rows added ({', '.join(pass_derivations)})")
 
     all_deltas: list[pd.DataFrame] = []
+    all_metric_values: list[pd.DataFrame] = []
     completeness_rows: list[dict] = []
 
     for model_label, model_cfg in config["models"].items():
@@ -488,6 +539,14 @@ def main(config_path: Path = CONFIG_PATH) -> None:
             )
             print(f"    {len(deltas):,} delta rows")
             all_deltas.append(deltas)
+            metric_values = build_condition_scenario_values(
+                trial_scores=trial_scores,
+                alias=alias,
+                model_label=model_label,
+                condition_map=condition_map,
+                metrics=metrics,
+            )
+            all_metric_values.append(metric_values)
 
     combined = pd.concat(all_deltas, ignore_index=True) if all_deltas else pd.DataFrame()
     completeness_df = pd.DataFrame(completeness_rows)
@@ -497,6 +556,15 @@ def main(config_path: Path = CONFIG_PATH) -> None:
 
     combined.to_csv(deltas_path, index=False)
     completeness_df.to_csv(report_path, index=False)
+
+    metric_values_combined = (
+        pd.concat(all_metric_values, ignore_index=True) if all_metric_values else pd.DataFrame(
+            columns=["model_label", "domain", "condition", "scenario_id", "metric", "value"]
+        )
+    )
+    metric_values_path = output_dir / "scenario_metricvalues.csv"
+    metric_values_combined.to_csv(metric_values_path, index=False)
+    print(f"Wrote {len(metric_values_combined):,} metric-value rows → {metric_values_path}")
 
     pairwise_deltas = compute_pairwise_deltas(combined) if not combined.empty else pd.DataFrame(
         columns=["model_label", "domain", "scenario_id", "metric", "comparison", "delta"]
