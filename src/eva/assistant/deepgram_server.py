@@ -24,6 +24,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import json
+import os
 import time
 from typing import Any
 
@@ -247,8 +248,6 @@ class DeepgramAssistantServer(AbstractAssistantServer):
         Mirrors how the cascade pipeline reaches Bedrock, so the agent's think step can
         use the *same* model and credentials for an apples-to-apples comparison.
         """
-        import os
-
         access_key = os.environ.get("AWS_ACCESS_KEY_ID")
         secret_key = os.environ.get("AWS_SECRET_ACCESS_KEY")
         if not (access_key and secret_key):
@@ -280,9 +279,18 @@ class DeepgramAssistantServer(AbstractAssistantServer):
         }
         if self._functions:
             think["functions"] = self._functions
-        # BYO endpoint (anthropic/open_ai/google) and long-prompt context window.
+        # BYO endpoint. For aws_bedrock, the Bedrock runtime URL is required by Deepgram
+        # even when credentials are supplied — auto-build it from the region if not explicit.
         if self._think_endpoint:
             think["endpoint"] = self._think_endpoint
+        elif self._think_provider == "aws_bedrock":
+            region = (
+                self._think_region
+                or os.environ.get("AWS_REGION")
+                or os.environ.get("AWS_DEFAULT_REGION")
+                or "us-east-1"
+            )
+            think["endpoint"] = {"url": f"https://bedrock-runtime.{region}.amazonaws.com/"}
         if self._context_length is not None:
             think["context_length"] = self._context_length
 
@@ -331,6 +339,7 @@ class DeepgramAssistantServer(AbstractAssistantServer):
 
         _in_model_turn = False
         _user_speaking = False
+        _think_step_active = False  # True between ConversationText(user) and first agent audio
         _user_speech_start_ts: str | None = None  # From the simulator's VAD
         _user_speech_stop_ts: str | None = None  # From the simulator's VAD
         _assistant_turn_start_ts: str | None = None  # Wall-clock ms of first audio chunk
@@ -350,13 +359,10 @@ class DeepgramAssistantServer(AbstractAssistantServer):
         try:
             async with client.agent.v1.connect() as connection:
                 logger.info(f"Deepgram agent session connected (think_model={self._think_model})")
-                if self._omit_think_model():
-                    # Custom Google endpoint: the typed AgentV1Settings requires
-                    # provider.model, but Deepgram wants it only in the URL. Send the
-                    # raw (model-less) settings dict via the SDK's low-level _send.
-                    await connection._send(self._build_settings_dict())
-                else:
-                    await connection.send_settings(self._build_settings())
+                # Always send settings as raw dict — avoids the Pydantic round-trip
+                # in send_settings() → _send_model() → .dict(), which can silently
+                # drop fields (e.g. think.functions) not declared in AgentV1Settings.
+                await connection._send(self._build_settings_dict())
                 fw_log.turn_start()
 
                 # ----- Concurrent tasks -----
@@ -470,7 +476,7 @@ class DeepgramAssistantServer(AbstractAssistantServer):
                     and tool-call requests. Parsing the JSON ourselves is deterministic.
                     Binary frames (TTS audio) are delivered as ``bytes`` unchanged.
                     """
-                    nonlocal _assistant_turn_text, _in_model_turn, _user_speaking
+                    nonlocal _assistant_turn_text, _in_model_turn, _user_speaking, _think_step_active
                     nonlocal _user_speech_start_ts, _user_speech_stop_ts, _assistant_turn_start_ts
                     nonlocal _user_turn_count, _fatal_error
                     try:
@@ -484,6 +490,7 @@ class DeepgramAssistantServer(AbstractAssistantServer):
                                     continue
                                 if not _in_model_turn:
                                     _in_model_turn = True
+                                    _think_step_active = False
                                     _user_speaking = False
                                     _assistant_turn_start_ts = str(int(round(time.time() * 1000)))
                                     fw_log.turn_start()
@@ -526,6 +533,7 @@ class DeepgramAssistantServer(AbstractAssistantServer):
                                     continue
                                 if event.get("role") == "user":
                                     _user_speaking = False
+                                    _think_step_active = True
                                     _user_turn_count += 1
                                     logger.info(f"User transcription: {text}")
                                     self.audit_log.append_user_input(text, timestamp_ms=_user_speech_start_ts)
@@ -582,6 +590,7 @@ class DeepgramAssistantServer(AbstractAssistantServer):
                                 "PromptUpdated",
                                 "SpeakUpdated",
                                 "ThinkUpdated",
+                                "FunctionCallResponse",
                             ):
                                 logger.debug(f"Deepgram agent event: {event_type}")
 
@@ -614,6 +623,8 @@ class DeepgramAssistantServer(AbstractAssistantServer):
                     try:
                         while self._running and twilio_connected:
                             await asyncio.sleep(KEEPALIVE_INTERVAL_S)
+                            if _think_step_active:
+                                continue
                             try:
                                 await connection.send_keep_alive()
                             except Exception:
