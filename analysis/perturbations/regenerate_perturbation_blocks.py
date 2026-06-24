@@ -17,6 +17,7 @@ All deployment specifics (paths, which metrics, label→name overrides) live in 
 (gitignored) config so this script carries no data/host information. Default is
 DRY-RUN (writes <json>.regen + prints a verify diff); pass --write to apply.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -42,22 +43,27 @@ def _bool(x):
 
 
 def _delta_node(r):
-    return {"point": _f(r["observed_mean_delta"]), "ci_lower": _f(r["ci_lower"]),
-            "ci_upper": _f(r["ci_upper"]), "corrected_p": _f(r["corrected_p"]),
-            "raw_p": _f(r["raw_p"]), "reject": _bool(r["reject"])}
+    return {
+        "point": _f(r["observed_mean_delta"]),
+        "ci_lower": _f(r["ci_lower"]),
+        "ci_upper": _f(r["ci_upper"]),
+        "corrected_p": _f(r["corrected_p"]),
+        "raw_p": _f(r["raw_p"]),
+        "reject": _bool(r["reject"]),
+    }
 
 
 def _ci_node(r):
-    return {"point": _f(r["point"]), "ci_lower": _f(r["ci_lower"]),
-            "ci_upper": _f(r["ci_upper"]), "n": int(_f(r["n"]))}
+    return {"point": _f(r["point"]), "ci_lower": _f(r["ci_lower"]), "ci_upper": _f(r["ci_upper"]), "n": int(_f(r["n"]))}
 
 
 def _build(pooled_csv, perdom_csv, cond_col, node_fn):
     """-> {model_label: {metric: {condition: {pooled: node, per_domain: {domain: node}}}}}"""
     out: dict = {}
     for r in pd.read_csv(pooled_csv).to_dict("records"):
-        out.setdefault(r["model_label"], {}).setdefault(r["metric"], {}).setdefault(
-            r[cond_col], {})["pooled"] = node_fn(r)
+        out.setdefault(r["model_label"], {}).setdefault(r["metric"], {}).setdefault(r[cond_col], {})["pooled"] = (
+            node_fn(r)
+        )
     for r in pd.read_csv(perdom_csv).to_dict("records"):
         cell = out.setdefault(r["model_label"], {}).setdefault(r["metric"], {}).setdefault(r[cond_col], {})
         cell.setdefault("per_domain", {})[r["domain"]] = node_fn(r)
@@ -77,10 +83,15 @@ def main():
     value_metrics = cfg.get("value_metrics", [])
     overrides = cfg.get("label_overrides", {})
 
-    delta = _build(results / "results_pooled.csv", results / "results_per_domain.csv",
-                   "perturbation_condition", _delta_node)
-    values = _build(results / "results_metricvalues_pooled.csv", results / "results_metricvalues_per_domain.csv",
-                    "condition", _ci_node)
+    delta = _build(
+        results / "results_pooled.csv", results / "results_per_domain.csv", "perturbation_condition", _delta_node
+    )
+    values = _build(
+        results / "results_metricvalues_pooled.csv",
+        results / "results_metricvalues_per_domain.csv",
+        "condition",
+        _ci_node,
+    )
 
     doc = json.loads(json_path.read_text())
     before = copy.deepcopy(doc)
@@ -96,8 +107,11 @@ def main():
         if overrides.get(label, label) not in by_name
     )
     if unmatched:
-        print("ERROR — results systems missing from the leaderboard JSON (run the leaderboard "
-              "pipeline first so their rows exist):", file=sys.stderr)
+        print(
+            "ERROR — results systems missing from the leaderboard JSON (run the leaderboard "
+            "pipeline first so their rows exist):",
+            file=sys.stderr,
+        )
         for n in unmatched:
             print(f"   {n}", file=sys.stderr)
         sys.exit(1)
@@ -145,8 +159,10 @@ def main():
 
     out_path = json_path if args.write else json_path.with_suffix(json_path.suffix + ".regen")
     out_path.write_text(json.dumps(doc, indent=2) + "\n")
-    print(f"\n{'WROTE' if args.write else 'DRY-RUN wrote'} {out_path.relative_to(ROOT)}"
-          + ("" if args.write else "  (re-run with --write to apply)"))
+    print(
+        f"\n{'WROTE' if args.write else 'DRY-RUN wrote'} {out_path.relative_to(ROOT)}"
+        + ("" if args.write else "  (re-run with --write to apply)")
+    )
 
 
 def _maxdiff(old, new, key):
@@ -170,7 +186,8 @@ def _maxdiff(old, new, key):
 
 def _verify_scope(before, after, delta_metrics, value_metrics):
     """Confirm the write touched ONLY the configured metrics' blocks: same system set,
-    unchanged `clean`/metadata, and unchanged out-of-scope metrics."""
+    unchanged `clean`/metadata, and unchanged out-of-scope metrics.
+    """
     v = []
     a_by = {s["name"]: s for s in after["systems"]}
     b_by = {s["name"]: s for s in before["systems"]}

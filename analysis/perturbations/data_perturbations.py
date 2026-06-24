@@ -368,9 +368,7 @@ def build_condition_scenario_values(
     """
     cols = ["model_label", "domain", "condition", "scenario_id", "metric", "value"]
     pert_cats = list(condition_map.values())
-    filtered = trial_scores[
-        (trial_scores["system_alias"] == alias) & (trial_scores["metric"].isin(metrics))
-    ]
+    filtered = trial_scores[(trial_scores["system_alias"] == alias) & (trial_scores["metric"].isin(metrics))]
     if filtered.empty:
         return pd.DataFrame(columns=cols)
 
@@ -514,9 +512,9 @@ def main(config_path: Path = CONFIG_PATH) -> None:
     completeness_df.to_csv(report_path, index=False)
 
     metric_values_combined = (
-        pd.concat(all_metric_values, ignore_index=True) if all_metric_values else pd.DataFrame(
-            columns=["model_label", "domain", "condition", "scenario_id", "metric", "value"]
-        )
+        pd.concat(all_metric_values, ignore_index=True)
+        if all_metric_values
+        else pd.DataFrame(columns=["model_label", "domain", "condition", "scenario_id", "metric", "value"])
     )
     metric_values_path = output_dir / "scenario_metricvalues.csv"
     metric_values_combined.to_csv(metric_values_path, index=False)

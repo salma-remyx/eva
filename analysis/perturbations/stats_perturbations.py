@@ -41,8 +41,12 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import yaml
-from eva.utils.bootstrap import bootstrap_ci, run_seed  # noqa: F401 (bootstrap_ci re-exported for backward compatibility)
 from statsmodels.stats.multitest import multipletests
+
+from eva.utils.bootstrap import (  # noqa: F401 (bootstrap_ci re-exported for backward compatibility)
+    bootstrap_ci,
+    run_seed,
+)
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 CONFIG_PATH = PROJECT_ROOT / "local" / "perturbations" / "perturbations_config.yaml"
@@ -195,9 +199,7 @@ def metric_value_cis(values_long: pd.DataFrame, config: dict) -> tuple[pd.DataFr
     per_domain_rows: list[dict] = []
     pooled_rows: list[dict] = []
 
-    for (model, metric, condition), g in values_long.groupby(
-        ["model_label", "metric", "condition"], sort=False
-    ):
+    for (model, metric, condition), g in values_long.groupby(["model_label", "metric", "condition"], sort=False):
         for domain in expected_domains:
             cell = g[g["domain"] == domain]
             if cell.empty:
@@ -205,18 +207,34 @@ def metric_value_cis(values_long: pd.DataFrame, config: dict) -> tuple[pd.DataFr
             x = cell["value"].to_numpy()
             cs = run_seed(f"{seed}:mv:{model}:{metric}:{condition}:{domain}")
             lo, hi = bootstrap_ci(x, n_boot=n_boot, seed=cs, alpha=alpha)
-            per_domain_rows.append({
-                "model_label": model, "metric": metric, "domain": domain, "condition": condition,
-                "point": float(x.mean()), "ci_lower": lo, "ci_upper": hi, "n": len(x),
-            })
+            per_domain_rows.append(
+                {
+                    "model_label": model,
+                    "metric": metric,
+                    "domain": domain,
+                    "condition": condition,
+                    "point": float(x.mean()),
+                    "ci_lower": lo,
+                    "ci_upper": hi,
+                    "n": len(x),
+                }
+            )
         x_all = g["value"].to_numpy()  # concatenate across domains == delta-plot pooling
         if len(x_all):
             cs = run_seed(f"{seed}:mv:{model}:{metric}:{condition}:pooled")
             lo, hi = bootstrap_ci(x_all, n_boot=n_boot, seed=cs, alpha=alpha)
-            pooled_rows.append({
-                "model_label": model, "metric": metric, "domain": "pooled", "condition": condition,
-                "point": float(x_all.mean()), "ci_lower": lo, "ci_upper": hi, "n": len(x_all),
-            })
+            pooled_rows.append(
+                {
+                    "model_label": model,
+                    "metric": metric,
+                    "domain": "pooled",
+                    "condition": condition,
+                    "point": float(x_all.mean()),
+                    "ci_lower": lo,
+                    "ci_upper": hi,
+                    "n": len(x_all),
+                }
+            )
 
     return pd.DataFrame(pooled_rows, columns=cols), pd.DataFrame(per_domain_rows, columns=cols)
 
