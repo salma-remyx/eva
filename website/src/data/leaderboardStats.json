@@ -3244,7 +3244,7 @@
       "name": "GPT Realtime",
       "type": "s2s",
       "stt": "-",
-      "llm": "gpt-realtime",
+      "llm": "GPT-Realtime",
       "tts": "-",
       "clean": {
         "EVA-A_mean": {
@@ -3633,7 +3633,7 @@
       "name": "GPT Realtime 1.5",
       "type": "s2s",
       "stt": "-",
-      "llm": "gpt-realtime-1.5",
+      "llm": "GPT-Realtime-1.5",
       "tts": "-",
       "clean": {
         "EVA-A_mean": {
@@ -5013,7 +5013,7 @@
       "name": "GPT Realtime 2",
       "type": "s2s",
       "stt": "-",
-      "llm": "gpt-realtime-2",
+      "llm": "GPT-Realtime-2",
       "tts": "-",
       "clean": {
         "EVA-A_mean": {
@@ -6177,7 +6177,7 @@
       "name": "GPT Realtime Mini",
       "type": "s2s",
       "stt": "-",
-      "llm": "gpt-realtime-mini",
+      "llm": "GPT-Realtime-Mini",
       "tts": "-",
       "clean": {
         "EVA-A_mean": {
@@ -20753,6 +20753,649 @@
         }
       },
       "perturbation_delta": {}
+    },
+    {
+      "id": "universal-3-5-pro-gpt-5-4-sonic-3-5",
+      "name": "Universal 3.5 Pro + GPT-5.4 + Sonic 3.5",
+      "type": "cascade",
+      "stt": "Universal 3.5 Pro",
+      "llm": "GPT-5.4",
+      "tts": "Sonic 3.5",
+      "clean": {
+        "EVA-A_mean": {
+          "pooled": {
+            "point": 0.8068682730923694,
+            "ci_lower": 0.785967488425926,
+            "ci_upper": 0.8273318967536815
+          },
+          "per_domain": {
+            "airline": {
+              "point": 0.8211111111111111,
+              "ci_lower": 0.7744444444444444,
+              "ci_upper": 0.8633333333333334,
+              "n": 50
+            },
+            "itsm": {
+              "point": 0.8205111111111112,
+              "ci_lower": 0.7919207291666667,
+              "ci_upper": 0.8482911111111111,
+              "n": 80
+            },
+            "medical_hr": {
+              "point": 0.7789825970548862,
+              "ci_lower": 0.744578313253012,
+              "ci_upper": 0.8132530120481926,
+              "n": 83
+            }
+          }
+        },
+        "EVA-A_pass": {
+          "pooled": {
+            "point": 0.5988520749665328,
+            "ci_lower": 0.5492270749665328,
+            "ci_upper": 0.6478212851405623
+          },
+          "per_domain": {
+            "airline": {
+              "point": 0.6533333333333333,
+              "ci_lower": 0.56,
+              "ci_upper": 0.7466666666666666,
+              "n": 50
+            },
+            "itsm": {
+              "point": 0.6291666666666667,
+              "ci_lower": 0.5583333333333333,
+              "ci_upper": 0.6958333333333334,
+              "n": 80
+            },
+            "medical_hr": {
+              "point": 0.5140562248995982,
+              "ci_lower": 0.4257028112449799,
+              "ci_upper": 0.6024096385542169,
+              "n": 83
+            }
+          }
+        },
+        "EVA-X_mean": {
+          "pooled": {
+            "point": 0.6269978446006248,
+            "ci_lower": 0.6179423098365685,
+            "ci_upper": 0.6359868056224899
+          },
+          "per_domain": {
+            "airline": {
+              "point": 0.6615024444444445,
+              "ci_lower": 0.6437676444444445,
+              "ci_upper": 0.6785978333333333,
+              "n": 50
+            },
+            "itsm": {
+              "point": 0.593642361111111,
+              "ci_lower": 0.5774291805555555,
+              "ci_upper": 0.6091881736111111,
+              "n": 80
+            },
+            "medical_hr": {
+              "point": 0.6258487282463188,
+              "ci_lower": 0.6124441398929049,
+              "ci_upper": 0.639117670682731,
+              "n": 83
+            }
+          }
+        },
+        "EVA-X_pass": {
+          "pooled": {
+            "point": 0.009344042838018742,
+            "ci_lower": 0.0022222222222222222,
+            "ci_upper": 0.01868808567603748
+          },
+          "per_domain": {
+            "airline": {
+              "point": 0.02,
+              "ci_lower": 0.0,
+              "ci_upper": 0.04666666666666666,
+              "n": 50
+            },
+            "itsm": {
+              "point": 0.0,
+              "ci_lower": 0.0,
+              "ci_upper": 0.0,
+              "n": 80
+            },
+            "medical_hr": {
+              "point": 0.008032128514056224,
+              "ci_lower": 0.0,
+              "ci_upper": 0.020080321285140562,
+              "n": 83
+            }
+          }
+        },
+        "task_completion": {
+          "pooled": {
+            "point": 0.633172690763052,
+            "ci_lower": 0.5833225401606426,
+            "ci_upper": 0.6817610441767069
+          },
+          "per_domain": {
+            "airline": {
+              "point": 0.6866666666666665,
+              "ci_lower": 0.5866666666666667,
+              "ci_upper": 0.7799999999999998,
+              "n": 50
+            },
+            "itsm": {
+              "point": 0.6666666666666666,
+              "ci_lower": 0.5958333333333333,
+              "ci_upper": 0.7333333333333334,
+              "n": 80
+            },
+            "medical_hr": {
+              "point": 0.5461847389558232,
+              "ci_lower": 0.4617469879518073,
+              "ci_upper": 0.6345381526104417,
+              "n": 83
+            }
+          }
+        },
+        "agent_speech_fidelity": {
+          "pooled": {
+            "point": 0.9974856760374834,
+            "ci_lower": 0.994764483350067,
+            "ci_upper": 0.9994550200803213
+          },
+          "per_domain": {
+            "airline": {
+              "point": 1.0,
+              "ci_lower": 1.0,
+              "ci_upper": 1.0,
+              "n": 50
+            },
+            "itsm": {
+              "point": 0.9948666666666668,
+              "ci_lower": 0.9878416666666666,
+              "ci_upper": 0.9993833333333333,
+              "n": 80
+            },
+            "medical_hr": {
+              "point": 0.9975903614457833,
+              "ci_lower": 0.9931726907630523,
+              "ci_upper": 1.0,
+              "n": 83
+            }
+          }
+        },
+        "faithfulness": {
+          "pooled": {
+            "point": 0.7961964524765729,
+            "ci_lower": 0.7666486362115127,
+            "ci_upper": 0.82455718708166
+          },
+          "per_domain": {
+            "airline": {
+              "point": 0.7933333333333333,
+              "ci_lower": 0.7333333333333334,
+              "ci_upper": 0.8466666666666667,
+              "n": 50
+            },
+            "itsm": {
+              "point": 0.8020833333333334,
+              "ci_lower": 0.75625,
+              "ci_upper": 0.8458333333333332,
+              "n": 80
+            },
+            "medical_hr": {
+              "point": 0.7931726907630522,
+              "ci_lower": 0.7449799196787148,
+              "ci_upper": 0.8373493975903614,
+              "n": 83
+            }
+          }
+        },
+        "turn_taking": {
+          "pooled": {
+            "point": 0.32933407931726905,
+            "ci_lower": 0.309632390855087,
+            "ci_upper": 0.34860781515227574
+          },
+          "per_domain": {
+            "airline": {
+              "point": 0.39927399999999996,
+              "ci_lower": 0.3629579833333334,
+              "ci_upper": 0.4342445,
+              "n": 50
+            },
+            "itsm": {
+              "point": 0.27998124999999996,
+              "ci_lower": 0.25072675,
+              "ci_upper": 0.30904015625,
+              "n": 80
+            },
+            "medical_hr": {
+              "point": 0.3087469879518072,
+              "ci_lower": 0.27306123493975903,
+              "ci_upper": 0.3455355220883534,
+              "n": 83
+            }
+          }
+        },
+        "conciseness": {
+          "pooled": {
+            "point": 0.8445225736278448,
+            "ci_lower": 0.8370745018406961,
+            "ci_upper": 0.8519235871820615
+          },
+          "per_domain": {
+            "airline": {
+              "point": 0.8352333333333334,
+              "ci_lower": 0.8193196666666664,
+              "ci_upper": 0.8508666666666668,
+              "n": 50
+            },
+            "itsm": {
+              "point": 0.8363624999999999,
+              "ci_lower": 0.8237913541666667,
+              "ci_upper": 0.8487003125,
+              "n": 80
+            },
+            "medical_hr": {
+              "point": 0.8619718875502008,
+              "ci_lower": 0.852088253012048,
+              "ci_upper": 0.8717430722891566,
+              "n": 83
+            }
+          }
+        },
+        "conversation_progression": {
+          "pooled": {
+            "point": 0.7071368808567603,
+            "ci_lower": 0.6828913152610442,
+            "ci_upper": 0.730734981593039
+          },
+          "per_domain": {
+            "airline": {
+              "point": 0.75,
+              "ci_lower": 0.7066666666666666,
+              "ci_upper": 0.7933333333333334,
+              "n": 50
+            },
+            "itsm": {
+              "point": 0.6645833333333334,
+              "ci_lower": 0.6229166666666666,
+              "ci_upper": 0.70625,
+              "n": 80
+            },
+            "medical_hr": {
+              "point": 0.7068273092369478,
+              "ci_lower": 0.6686746987951807,
+              "ci_upper": 0.7449799196787149,
+              "n": 83
+            }
+          }
+        },
+        "response_speed": {
+          "pooled": {
+            "point": 4.281128002008032,
+            "ci_lower": 4.135888449799197,
+            "ci_upper": 4.443638534220215
+          },
+          "per_domain": {
+            "airline": {
+              "point": 4.27532,
+              "ci_lower": 4.075045166666667,
+              "ci_upper": 4.483413333333333,
+              "n": 50
+            },
+            "itsm": {
+              "point": 4.8224375,
+              "ci_lower": 4.456071666666666,
+              "ci_upper": 5.2595175,
+              "n": 80
+            },
+            "medical_hr": {
+              "point": 3.7456265060240956,
+              "ci_lower": 3.6152408634538142,
+              "ci_upper": 3.876765863453815,
+              "n": 83
+            }
+          }
+        },
+        "EVA-A_pass_at_k": {
+          "pooled": {
+            "point": 0.8344477911646586,
+            "ci_lower": 0.7843674698795181,
+            "ci_upper": 0.8814959839357429
+          },
+          "per_domain": {
+            "airline": {
+              "point": 0.88,
+              "ci_lower": 0.78,
+              "ci_upper": 0.96,
+              "n": 50
+            },
+            "itsm": {
+              "point": 0.9125,
+              "ci_lower": 0.85,
+              "ci_upper": 0.975,
+              "n": 80
+            },
+            "medical_hr": {
+              "point": 0.7108433734939759,
+              "ci_lower": 0.6144578313253012,
+              "ci_upper": 0.8072289156626506,
+              "n": 83
+            }
+          }
+        },
+        "EVA-A_pass_power_k": {
+          "pooled": {
+            "point": 0.3805674136876725,
+            "ci_lower": 0.3186247283372171,
+            "ci_upper": 0.44349587857603245
+          },
+          "per_domain": {
+            "airline": {
+              "point": 0.422880658436214,
+              "ci_lower": 0.29893004115226335,
+              "ci_upper": 0.5497942386831275,
+              "n": 50
+            },
+            "itsm": {
+              "point": 0.36887860082304524,
+              "ci_lower": 0.27556584362139913,
+              "ci_upper": 0.46512602880658427,
+              "n": 80
+            },
+            "medical_hr": {
+              "point": 0.3499429818037582,
+              "ci_lower": 0.2552927760424413,
+              "ci_upper": 0.4486117308741137,
+              "n": 83
+            }
+          }
+        },
+        "EVA-X_pass_at_k": {
+          "pooled": {
+            "point": 0.02803212851405622,
+            "ci_lower": 0.006666666666666667,
+            "ci_upper": 0.054698795180722896
+          },
+          "per_domain": {
+            "airline": {
+              "point": 0.06,
+              "ci_lower": 0.0,
+              "ci_upper": 0.14,
+              "n": 50
+            },
+            "itsm": {
+              "point": 0.0,
+              "ci_lower": 0.0,
+              "ci_upper": 0.0,
+              "n": 80
+            },
+            "medical_hr": {
+              "point": 0.024096385542168676,
+              "ci_lower": 0.0,
+              "ci_upper": 0.060240963855421686,
+              "n": 83
+            }
+          }
+        },
+        "EVA-X_pass_power_k": {
+          "pooled": {
+            "point": 0.00011535855355578689,
+            "ci_lower": 2.7434842249657054e-05,
+            "ci_upper": 0.00022556067892970862
+          },
+          "per_domain": {
+            "airline": {
+              "point": 0.0002469135802469135,
+              "ci_lower": 0.0,
+              "ci_upper": 0.0005761316872427982,
+              "n": 50
+            },
+            "itsm": {
+              "point": 0.0,
+              "ci_lower": 0.0,
+              "ci_upper": 0.0,
+              "n": 80
+            },
+            "medical_hr": {
+              "point": 9.916208042044718e-05,
+              "ci_lower": 0.0,
+              "ci_upper": 0.00024790520105111795,
+              "n": 83
+            }
+          }
+        }
+      },
+      "perturbation_delta": {
+        "transcription_accuracy_key_entities": {
+          "accent": {
+            "pooled": {
+              "point": -0.0632666666666666,
+              "ci_lower": -0.0980877777777777,
+              "ci_upper": -0.0276558333333333,
+              "corrected_p": 0.0007,
+              "raw_p": 0.0007,
+              "reject": true
+            },
+            "per_domain": {
+              "medical_hr": {
+                "point": -0.0464444444444444,
+                "ci_lower": -0.0903783333333333,
+                "ci_upper": -0.0025552777777777,
+                "corrected_p": 0.1,
+                "raw_p": 0.05,
+                "reject": false
+              },
+              "airline": {
+                "point": -0.0704888888888888,
+                "ci_lower": -0.1557599999999999,
+                "ci_upper": 0.0155308333333332,
+                "corrected_p": 0.1213,
+                "raw_p": 0.1213,
+                "reject": false
+              },
+              "itsm": {
+                "point": -0.0728666666666666,
+                "ci_lower": -0.1119072222222222,
+                "ci_upper": -0.0314872222222222,
+                "corrected_p": 0.0066,
+                "raw_p": 0.0022,
+                "reject": true
+              }
+            }
+          },
+          "background_noise": {
+            "pooled": {
+              "point": -0.1128185185185185,
+              "ci_lower": -0.1387009259259259,
+              "ci_upper": -0.0851175925925925,
+              "corrected_p": 0.0,
+              "raw_p": 0.0,
+              "reject": true
+            },
+            "per_domain": {
+              "medical_hr": {
+                "point": -0.1183666666666666,
+                "ci_lower": -0.1600108333333333,
+                "ci_upper": -0.0816422222222222,
+                "corrected_p": 0.0,
+                "raw_p": 0.0,
+                "reject": true
+              },
+              "airline": {
+                "point": -0.1362222222222221,
+                "ci_lower": -0.1928588888888888,
+                "ci_upper": -0.0810766666666666,
+                "corrected_p": 0.0006,
+                "raw_p": 0.0001,
+                "reject": true
+              },
+              "itsm": {
+                "point": -0.0838666666666666,
+                "ci_lower": -0.1211474999999999,
+                "ci_upper": -0.0424324999999999,
+                "corrected_p": 0.004,
+                "raw_p": 0.001,
+                "reject": true
+              }
+            }
+          },
+          "both": {
+            "pooled": {
+              "point": -0.1669518518518518,
+              "ci_lower": -0.2025606481481481,
+              "ci_upper": -0.1320757407407407,
+              "corrected_p": 0.0,
+              "raw_p": 0.0,
+              "reject": true
+            },
+            "per_domain": {
+              "medical_hr": {
+                "point": -0.1511888888888888,
+                "ci_lower": -0.2029155555555555,
+                "ci_upper": -0.0959080555555556,
+                "corrected_p": 0.0,
+                "raw_p": 0.0,
+                "reject": true
+              },
+              "airline": {
+                "point": -0.1911555555555555,
+                "ci_lower": -0.2659875,
+                "ci_upper": -0.1243091666666666,
+                "corrected_p": 0.0006,
+                "raw_p": 0.0001,
+                "reject": true
+              },
+              "itsm": {
+                "point": -0.1585111111111111,
+                "ci_lower": -0.2079083333333332,
+                "ci_upper": -0.1100172222222222,
+                "corrected_p": 0.0,
+                "raw_p": 0.0,
+                "reject": true
+              }
+            }
+          }
+        }
+      },
+      "metric_values": {
+        "transcription_accuracy_key_entities": {
+          "clean": {
+            "pooled": {
+              "point": 0.8039407407407408,
+              "ci_lower": 0.7705960185185184,
+              "ci_upper": 0.8356616666666665,
+              "n": 90
+            },
+            "per_domain": {
+              "itsm": {
+                "point": 0.8258222222222223,
+                "ci_lower": 0.7820180555555556,
+                "ci_upper": 0.8674694444444446,
+                "n": 30
+              },
+              "medical_hr": {
+                "point": 0.7616333333333334,
+                "ci_lower": 0.7025594444444443,
+                "ci_upper": 0.8193019444444445,
+                "n": 30
+              },
+              "airline": {
+                "point": 0.8243666666666667,
+                "ci_lower": 0.7583080555555556,
+                "ci_upper": 0.8833377777777778,
+                "n": 30
+              }
+            }
+          },
+          "accent": {
+            "pooled": {
+              "point": 0.7406740740740742,
+              "ci_lower": 0.7128467592592593,
+              "ci_upper": 0.766975462962963,
+              "n": 90
+            },
+            "per_domain": {
+              "itsm": {
+                "point": 0.7529555555555556,
+                "ci_lower": 0.7024727777777778,
+                "ci_upper": 0.7974908333333335,
+                "n": 30
+              },
+              "medical_hr": {
+                "point": 0.715188888888889,
+                "ci_lower": 0.6743319444444443,
+                "ci_upper": 0.7582944444444444,
+                "n": 30
+              },
+              "airline": {
+                "point": 0.7538777777777778,
+                "ci_lower": 0.6982622222222225,
+                "ci_upper": 0.8068449999999999,
+                "n": 30
+              }
+            }
+          },
+          "background_noise": {
+            "pooled": {
+              "point": 0.6911222222222222,
+              "ci_lower": 0.6482007407407407,
+              "ci_upper": 0.7306,
+              "n": 90
+            },
+            "per_domain": {
+              "itsm": {
+                "point": 0.7419555555555555,
+                "ci_lower": 0.6858638888888889,
+                "ci_upper": 0.7968811111111113,
+                "n": 30
+              },
+              "medical_hr": {
+                "point": 0.6432666666666665,
+                "ci_lower": 0.5721402777777777,
+                "ci_upper": 0.7102944444444441,
+                "n": 30
+              },
+              "airline": {
+                "point": 0.6881444444444446,
+                "ci_lower": 0.6103527777777777,
+                "ci_upper": 0.7658030555555557,
+                "n": 30
+              }
+            }
+          },
+          "both": {
+            "pooled": {
+              "point": 0.6369888888888889,
+              "ci_lower": 0.6068510185185184,
+              "ci_upper": 0.6648462037037037,
+              "n": 90
+            },
+            "per_domain": {
+              "itsm": {
+                "point": 0.6673111111111111,
+                "ci_lower": 0.6111099999999999,
+                "ci_upper": 0.7196644444444443,
+                "n": 30
+              },
+              "medical_hr": {
+                "point": 0.6104444444444445,
+                "ci_lower": 0.5644174999999999,
+                "ci_upper": 0.659781111111111,
+                "n": 30
+              },
+              "airline": {
+                "point": 0.6332111111111111,
+                "ci_lower": 0.5824022222222224,
+                "ci_upper": 0.6848008333333333,
+                "n": 30
+              }
+            }
+          }
+        }
+      }
     }
   ]
 }
