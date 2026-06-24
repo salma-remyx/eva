@@ -1,7 +1,7 @@
 # Config: local/perturbations/perturbations_config.yaml
 #
-# trial_scores_path: output/eva-bench-stats/trial_scores.csv
-# output_dir: output_processed/eva-bench-stats/perturbations
+# trial_scores_path: output/<subdir>/trial_scores.csv
+# output_dir: output_processed/<subdir>/perturbations
 # random_seed: 42
 # metrics:
 #   - EVA-A_mean

@@ -1,18 +1,14 @@
 # Config: local/perturbations/perturbations_config.yaml
 #
-# trial_scores_dir: output/eva-bench-stats        # picks most recent timestamped subfolder
-# trial_scores_path: output/eva-bench-stats/trial_scores.csv  # alternative: explicit path
-# output_dir: output_processed/eva-bench-stats/perturbations
+# trial_scores_dir: output/<subdir>        # picks most recent timestamped subfolder
+# trial_scores_path: output/<subdir>/trial_scores.csv  # alternative: explicit path
+# output_dir: output_processed/<subdir>/perturbations
 # random_seed: 42
 # metrics:
 #   - EVA-A_mean
 #   - EVA-A_pass
-#   - EVA-A_pass@3
-#   - EVA-A_pass^3
 #   - EVA-X_mean
 #   - EVA-X_pass
-#   - EVA-X_pass@3
-#   - EVA-X_pass^3
 #   - EVA-overall_mean
 #   - task_completion
 #   - faithfulness
@@ -24,14 +20,6 @@
 # n_permutations: 10000
 # n_bootstrap: 1000
 #
-# pass_derivations:   # optional; derive binary scenario-level pass metrics
-#   EVA-A_pass@3:     # new metric name
-#     source: EVA-A_pass   # per-trial binary column in trial_scores
-#     agg: max             # max → any trial passes (pass@k); min → all pass (pass^k)
-#   EVA-A_pass^3:
-#     source: EVA-A_pass
-#     agg: min
-#
 # models:
 #   <display_label>:
 #     alias: "<system_alias from trial_scores.csv>"
@@ -42,9 +30,8 @@
 
 """Process perturbation trial data into scenario-level delta tables.
 
-Reads trial_scores.csv produced by local/perturbations/pull_perturbation_data.py,
-computes scenario-level means and baseline-vs-perturbation deltas, and writes
-processed CSVs to output_processed/eva-bench-stats/perturbations/.
+Reads trial_scores.csv, computes scenario-level means and baseline-vs-perturbation deltas, and writes
+processed CSVs to the configured output_processed/ directory.
 
 Run from project root:
     uv run python analysis/perturbations/data_perturbations.py
@@ -248,49 +235,6 @@ def check_model_completeness(
     }
 
 
-def derive_pass_metrics(
-    df: pd.DataFrame,
-    derivations: dict[str, dict[str, str]],
-) -> pd.DataFrame:
-    """Derive binary pass@k / pass^k scenario metrics from per-trial binary values.
-
-    For each derivation, aggregates per-trial binary values (0/1) within each
-    (system_alias, system_type, domain, perturbation_category, scenario_id) group
-    using max ("any trial passes → pass@k = 1") or min ("all trials pass → pass^k = 1").
-    The result is a single row per scenario per (alias, domain, condition) with the
-    aggregated binary value, ready to be appended to trial_scores and processed by
-    compute_scenario_means (which will return the aggregated value unchanged since
-    there is exactly one row per scenario).
-
-    Args:
-        df: trial_scores DataFrame.
-        derivations: {new_metric_name: {"source": source_metric, "agg": "max"|"min"}}
-
-    Returns:
-        DataFrame in trial_scores format with one row per (alias, domain, condition,
-        scenario_id) per derived metric. Empty if any source metric is absent.
-    """
-    group_keys = ["system_alias", "system_type", "domain", "perturbation_category", "scenario_id"]
-    parts: list[pd.DataFrame] = []
-
-    for new_metric, spec in derivations.items():
-        source = spec["source"]
-        agg = spec["agg"]
-        source_rows = df[df["metric"] == source]
-        if source_rows.empty:
-            continue
-
-        agg_fn = source_rows.groupby(group_keys, sort=False)["value"].agg(agg).reset_index()
-        agg_fn["metric"] = new_metric
-        agg_fn["trial"] = 0
-        agg_fn["run_id"] = ""
-        parts.append(agg_fn[list(df.columns)])
-
-    if not parts:
-        return pd.DataFrame(columns=list(df.columns))
-    return pd.concat(parts, ignore_index=True)
-
-
 def build_scenario_deltas(
     trial_scores: pd.DataFrame,
     model_label: str,
@@ -420,16 +364,9 @@ def main(config_path: Path = CONFIG_PATH) -> None:
     expected_scenarios: int = config.get("expected_scenarios", 30)
     expected_pert_trials: int = config.get("expected_pert_trials", 3)
 
-    pass_derivations: dict[str, dict[str, str]] = config.get("pass_derivations", {})
-
     print(f"Loading trial scores from {trial_scores_path} ...")
     trial_scores = load_trial_scores(trial_scores_path)
     print(f"  {len(trial_scores):,} rows loaded")
-
-    if pass_derivations:
-        derived = derive_pass_metrics(trial_scores, pass_derivations)
-        trial_scores = pd.concat([trial_scores, derived], ignore_index=True)
-        print(f"  {len(derived):,} derived rows added ({', '.join(pass_derivations)})")
 
     all_deltas: list[pd.DataFrame] = []
     all_metric_values: list[pd.DataFrame] = []
