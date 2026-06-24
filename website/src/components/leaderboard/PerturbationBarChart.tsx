@@ -2,7 +2,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import type { SystemStats } from '../../data/leaderboardData';
 import { getPertValue, perturbations, perturbationLabels, groupedSystems } from '../../data/leaderboardData';
 import { useThemeColors } from '../../styles/theme';
-import { tierLabel, colorFor, SeparatorsLayer, StarMark } from './perturbationChartUtils';
+import { tierLabel, colorFor, CustomTick, type CustomTickProps, SeparatorsLayer, StarMark } from './perturbationChartUtils';
 
 interface PerturbationBarChartProps {
   metric: string;
@@ -120,15 +120,16 @@ export function PerturbationBarChart({ metric, metricLabel, systems }: Perturbat
               <XAxis
                 dataKey="name"
                 stroke={colors.text.muted}
-                tick={{ fill: colors.text.secondary, fontSize: 10 }}
-                tickFormatter={(v: string) =>
-                  v.startsWith('Scribe v2.2 Realtime')
-                    ? 'Scribe + Gemini 3 Flash + Conversational v3'
-                    : v
-                }
+                tick={(props: unknown) => (
+                  <CustomTick
+                    {...(props as CustomTickProps)}
+                    fill={colors.text.secondary}
+                    fontSize={10}
+                    angle={-30}
+                    textAnchor="end"
+                  />
+                )}
                 interval={0}
-                angle={-30}
-                textAnchor="end"
                 height={80}
               />
               <YAxis
