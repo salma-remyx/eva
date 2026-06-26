@@ -12,31 +12,17 @@ import {
   LabelList,
   useYAxisScale,
 } from 'recharts';
-import { useThemeColors } from '../../styles/theme';
+import { useThemeColors, type ThemeColors } from '../../styles/theme';
 
 // The four audio conditions shown side-by-side for each STT model. `clean` is the
 // baseline; the other three are perturbations tested for significance vs. clean.
+// `color` picks the bar/legend color from the active theme.
 const CONDITIONS = [
-  { key: 'clean', label: 'Clean' },
-  { key: 'accent', label: 'Accent' },
-  { key: 'background_noise', label: 'Background Noise' },
-  { key: 'both', label: 'Accent + Noise' },
+  { key: 'clean', label: 'Clean', color: (colors: ThemeColors) => colors.text.secondary },
+  { key: 'accent', label: 'Accent', color: (colors: ThemeColors) => colors.accent.amber },
+  { key: 'background_noise', label: 'Background Noise', color: (colors: ThemeColors) => colors.accent.cyan },
+  { key: 'both', label: 'Accent + Noise', color: (colors: ThemeColors) => colors.accent.purple },
 ] as const;
-
-type ConditionKey = (typeof CONDITIONS)[number]['key'];
-
-function colorFor(key: ConditionKey, colors: ReturnType<typeof useThemeColors>): string {
-  switch (key) {
-    case 'clean':
-      return colors.text.secondary;
-    case 'accent':
-      return colors.accent.amber;
-    case 'background_noise':
-      return colors.accent.cyan;
-    case 'both':
-      return colors.accent.purple;
-  }
-}
 
 /** Significance tier from a Holm–Bonferroni-corrected p-value. */
 function tierLabel(p: number | null | undefined): string {
@@ -130,7 +116,7 @@ function CustomTooltip({
 }: {
   active?: boolean;
   payload?: Array<{ payload: ChartRow }>;
-  colors: ReturnType<typeof useThemeColors>;
+  colors: ThemeColors;
 }) {
   if (!active || !payload || payload.length === 0) return null;
   const row = payload[0].payload;
@@ -138,7 +124,7 @@ function CustomTooltip({
     <div className="bg-bg-tertiary border border-border-default rounded-lg p-3 shadow-xl max-w-xs">
       <div className="text-sm font-semibold text-text-primary mb-2">{row.name}</div>
       <div className="flex flex-col gap-1 text-xs">
-        {CONDITIONS.map(({ key, label }) => {
+        {CONDITIONS.map(({ key, label, color }) => {
           const value = row[key] as number;
           const sig = row[`${key}_sig`] as string;
           const lower = value - CI_HALF_WIDTH;
@@ -147,7 +133,7 @@ function CustomTooltip({
             <div key={key} className="flex items-center gap-2">
               <span
                 className="w-2.5 h-2.5 rounded-sm flex-shrink-0"
-                style={{ backgroundColor: colorFor(key, colors) }}
+                style={{ backgroundColor: color(colors) }}
               />
               <span className="text-text-muted">{label}:</span>
               <span className="font-mono text-text-primary">
@@ -204,11 +190,11 @@ export function SttTranscriptionAccuracy() {
       {sectionOpen && (
         <div className="border-t border-border-default p-4 space-y-3">
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-2 py-3 rounded-lg bg-bg-primary border border-border-default">
-            {CONDITIONS.map(({ key, label }) => (
+            {CONDITIONS.map(({ key, label, color }) => (
               <div key={key} className="flex items-center gap-2 text-xs">
                 <span
                   className="w-3 h-3 rounded-sm flex-shrink-0"
-                  style={{ backgroundColor: colorFor(key, colors) }}
+                  style={{ backgroundColor: color(colors) }}
                 />
                 <span className="text-text-secondary">{label}</span>
               </div>
@@ -254,8 +240,8 @@ export function SttTranscriptionAccuracy() {
                     content={<CustomTooltip colors={colors} />}
                     cursor={{ fill: colors.bg.hover, opacity: 0.3 }}
                   />
-                  {CONDITIONS.map(({ key }) => (
-                    <Bar key={key} dataKey={key} fill={colorFor(key, colors)} radius={[2, 2, 0, 0]}>
+                  {CONDITIONS.map(({ key, color }) => (
+                    <Bar key={key} dataKey={key} fill={color(colors)} radius={[2, 2, 0, 0]}>
                       <ErrorBar
                         dataKey={`${key}_err`}
                         direction="y"
