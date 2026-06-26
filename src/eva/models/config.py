@@ -359,6 +359,8 @@ LANGUAGE_DISPLAY_NAMES: dict[Language, str] = {
     Language.EN: "English",
     Language.FR: "European French",
     Language.FR_CA: "Canadian French",
+    Language.ES: "European Spanish",
+    Language.DE: "German",
 }
 
 
@@ -714,7 +716,8 @@ class RunConfig(BaseSettings):
         if "run_id" not in self.model_fields_set:
             suffix = "_".join(v for v in self.model.pipeline_parts.values() if v)
             lang = self.language.value
-            self.run_id = f"{datetime.now(UTC):%Y-%m-%d_%H-%M-%S.%f}_{lang}_{suffix}"
+            domain = self.domain.replace("_", "-")
+            self.run_id = f"{datetime.now(UTC):%Y-%m-%d_%H-%M-%S.%f}_{domain}_{lang}_{suffix}"
 
         return self
 
