@@ -1,8 +1,8 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ErrorBar, Customized, LabelList } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ErrorBar, LabelList } from 'recharts';
 import type { SystemStats } from '../../data/leaderboardData';
 import { getPertValue, getPertMetricValue, perturbations, perturbationLabels, groupedSystems } from '../../data/leaderboardData';
 import { useThemeColors } from '../../styles/theme';
-import { tierLabel, colorFor, CustomTick, type CustomTickProps, SeparatorsLayer, StarMark } from './perturbationChartUtils';
+import { tierLabel, colorFor, CustomTick, type CustomTickProps, StarMark } from './perturbationChartUtils';
 
 interface PerturbationMetricValueBarChartProps {
   metric: string;
@@ -71,12 +71,9 @@ function CustomTooltip({ active, payload, label }: TooltipProps) {
 export function PerturbationMetricValueBarChart({ metric, metricLabel, systems }: PerturbationMetricValueBarChartProps) {
   const colors = useThemeColors();
 
-  // Order systems by architecture group: S2S → Hybrid (2-part) → Cascade.
-  const ordered = groupedSystems(systems);
-
   // Always shown pooled across domains; the domain pills scope only the scatter plot.
-  const data: ChartRow[] = ordered.flatMap((s) => {
-    const row: ChartRow = { name: s.name, type: s.type };
+  const data: ChartRow[] = groupedSystems(systems).flatMap((s) => {
+    const row: ChartRow = { name: s.stt, type: s.type };
     let any = false;
     for (const c of CONDITIONS) {
       const v = getPertMetricValue(s, metric, c, 'pooled'); // bar height + CI
@@ -96,21 +93,18 @@ export function PerturbationMetricValueBarChart({ metric, metricLabel, systems }
     return any ? [row] : [];
   });
 
+  data.sort((a, b) => {
+    const va = (a.clean_point as number | null) ?? -Infinity;
+    const vb = (b.clean_point as number | null) ?? -Infinity;
+    return vb - va;
+  });
+
   if (data.length === 0) {
     return (
       <div className="text-sm text-text-muted italic px-4 py-6">
         No metric-value data available for {metricLabel}.
       </div>
     );
-  }
-
-  // Group boundaries: each entry pairs the new-group's first row with the previous row,
-  // so SeparatorsLayer can place a dashed line at the midpoint of the gap between them.
-  const separators: { name: string; prevName: string }[] = [];
-  for (let i = 1; i < data.length; i++) {
-    if (data[i].type !== data[i - 1].type) {
-      separators.push({ name: data[i].name, prevName: data[i - 1].name });
-    }
   }
 
   const minWidth = Math.max(720, data.length * 80);
@@ -147,11 +141,6 @@ export function PerturbationMetricValueBarChart({ metric, metricLabel, systems }
                 allowDataOverflow
                 width={56}
                 label={{ value: 'metric value', angle: -90, position: 'insideLeft', offset: 0, fill: colors.text.secondary, style: { fontSize: 12 } }}
-              />
-              <Customized
-                component={() => (
-                  <SeparatorsLayer separators={separators} strokeColor={colors.text.secondary} yTop={1} yBottom={0} />
-                )}
               />
               <Tooltip content={<CustomTooltip />} cursor={{ fill: colors.bg.hover, opacity: 0.3 }} />
               {CONDITIONS.map((c) => (

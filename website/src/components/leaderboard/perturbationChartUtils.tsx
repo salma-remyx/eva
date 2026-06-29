@@ -37,10 +37,7 @@ export interface CustomTickProps {
 export function CustomTick({ x, y, payload, fill, fontSize = 10, angle = -30, textAnchor = 'end', amberFirst = false, dy = 8 }: CustomTickProps) {
   const colors = useThemeColors();
   if (!payload?.value || x == null || y == null) return null;
-  const name = payload.value.startsWith('Scribe v2.2 Realtime')
-    ? 'Scribe + Gemini 3 Flash + Conversational v3'
-    : payload.value;
-  const parts = name.split(' + ');
+  const parts = payload.value.split(' + ');
   const sttModel = parts[0];
   const rest = parts.slice(1).join(' + ');
   return (

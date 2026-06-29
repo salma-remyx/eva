@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import type { SystemStats } from '../../data/leaderboardData';
 import { perturbationLabels } from '../../data/leaderboardData';
-import { PerturbationBarChart } from './PerturbationBarChart';
 import { PerturbationMetricValueBarChart } from './PerturbationMetricValueBarChart';
 import { useThemeColors } from '../../styles/theme';
 
@@ -42,15 +41,14 @@ export function SttTranscription({ systems }: { systems: SystemStats[] }) {
         )}
         <div className="flex-1 min-w-0">
           <h3 className="text-lg font-bold text-text-primary">
-            STT Robustness - Transcription Accuracy (Key Entities)
+            STT Performance - Transcription Accuracy (Key Entities)
           </h3>
           <p className="text-sm text-text-muted mt-0.5">
             Cascade systems first transcribe the caller's audio into text using a STT (speech-to-text) model, so we can
-            directly measure their accuracy on key entities (names, IDs, numbers, dates). In contrast, S2S and hybrid
+            directly measure their accuracy on key entities (names, IDs, numbers, dates). In contrast, S2S (speech-to-speech) and hybrid
             systems process audio end-to-end and never produce an intermediate transcript.
-            <br /> <br /> For each model we report on clean audio and under the three perturbations presented above:
-            accent, background noise, and the two combined. The first plot shows accuracy (higher is better), and the
-            second plot shows the mean delta vs. the same scenario's clean runs (greater negative is more impacted).
+            <br /> <br /> For each model we report accuracy (higher is better) on clean audio and under the three perturbations presented above:
+            accent, background noise, and the two combined.
             Error bars show 95% bootstrap confidence intervals. Asterisks (<span className="text-amber-400">*</span>)
             indicate that the delta between the perturbation effect and clean baseline is statistically significant after
             Holm-Bonferroni correction across the family of perturbation{' '}
@@ -112,29 +110,6 @@ export function SttTranscription({ systems }: { systems: SystemStats[] }) {
             )}
           </div>
 
-          <div className="rounded-lg border border-border-default bg-bg-primary overflow-hidden">
-            <button
-              onClick={() => toggleMetric('delta')}
-              className="w-full flex items-center gap-2 px-4 py-3 hover:bg-bg-hover transition-colors text-left"
-            >
-              {expanded.has('delta') ? (
-                <ChevronDown className="w-4 h-4 text-text-muted flex-shrink-0" />
-              ) : (
-                <ChevronRight className="w-4 h-4 text-text-muted flex-shrink-0" />
-              )}
-              <span className="text-sm font-semibold text-text-primary">Delta vs. clean baseline</span>
-            </button>
-            {expanded.has('delta') && (
-              <div className="border-t border-border-default p-4">
-                <PerturbationBarChart
-                  metric="transcription_accuracy_key_entities"
-                  metricLabel="Mean Δ vs. clean (more negative = greater impact)"
-                  systems={cascadeSystems}
-                  amberFirst
-                />
-              </div>
-            )}
-          </div>
         </div>
       )}
     </div>
