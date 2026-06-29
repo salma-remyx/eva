@@ -143,9 +143,14 @@ def create_stt_service(
         assemblyai_settings_kwargs = {
             k: params[k] for f in dataclasses.fields(AssemblyAISTTService.Settings) if (k := f.name) in params
         }
+        # vad_force_turn_endpoint is a constructor arg, not a Settings field, so the dataclass
+        # forwarding above won't carry it — thread it explicitly. Default True = Pipecat-mode
+        # (force the endpoint on Silero VAD stop); set False to let AssemblyAI's own server-side
+        # turn detection (min_turn_silence/max_turn_silence) decide turn ends.
         return AssemblyAISTTService(
             api_key=api_key,
             sample_rate=SAMPLE_RATE,
+            vad_force_turn_endpoint=params.get("vad_force_turn_endpoint", True),
             settings=AssemblyAISTTService.Settings(
                 language=_to_language_enum(language_code),
                 **assemblyai_settings_kwargs,
@@ -283,6 +288,28 @@ def create_stt_service(
         raise ValueError(
             f"Unknown STT model: {model}. Available: assemblyai, cartesia, cohere, deepgram, deepgram-flux, elevenlabs, nvidia, nvidia-baseten, openai, xai"
         )
+
+
+async def update_stt_agent_context(stt: STTService | None, text: str) -> None:
+    """Feed the agent's latest spoken reply back to the STT service as conversation context.
+
+    AssemblyAI's Universal-3 Pro streaming models (e.g. ``u3-rt-pro``, ``universal-3-5-pro``)
+    support *context carryover*: seeding the agent's most recent reply improves transcription
+    of the user's next turn (short answers, spelled-out entities, disambiguation). Pipecat
+    exposes this via ``AssemblyAISTTService.update_agent_context()``.
+
+    In a standard pipecat bot this fires automatically (the assistant context aggregator emits
+    ``LLMContextAssistantTurnFrame`` and the upstream STT picks it up). EVA's cascade pipeline
+    drives the agent turn through a custom processor that pushes ``TTSSpeakFrame`` directly and
+    does not emit the standard LLM response frames, so we trigger the update explicitly from the
+    assistant-response hook instead.
+
+    No-op for STT services without the capability (Deepgram, Cartesia, …) and for non-U3-Pro
+    AssemblyAI models, where pipecat treats the call as a safe no-op.
+    """
+    update = getattr(stt, "update_agent_context", None)
+    if update is not None and text:
+        await update(text)
 
 
 def create_tts_service(
