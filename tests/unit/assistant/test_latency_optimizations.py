@@ -159,7 +159,9 @@ class TestSilentToolCallNoFabricatedSpeech:
 class TestLLMStreaming:
     @pytest.mark.asyncio
     async def test_streams_sentences_without_double_speak(self):
-        turns = [(["Sure, Mr. ", "Smith. The fee ", "is 3.5 dollars."], _msg("Sure, Mr. Smith. The fee is 3.5 dollars."))]
+        turns = [
+            (["Sure, Mr. ", "Smith. The fee ", "is 3.5 dollars."], _msg("Sure, Mr. Smith. The fee is 3.5 dollars."))
+        ]
         system = AgenticSystem("x", _agent(), MagicMock(), AuditLog(), _StreamLLM(turns), llm_streaming=True)
         assert await _collect(system, "hi") == ["Sure, Mr. Smith.", "The fee is 3.5 dollars."]
 
@@ -172,7 +174,13 @@ class TestLLMStreaming:
         tool_handler = MagicMock()
         tool_handler.execute = AsyncMock(return_value={"status": "success"})
         system = AgenticSystem(
-            "x", _agent([_tool()]), tool_handler, AuditLog(), _StreamLLM(turns), pre_tool_speech="auto", llm_streaming=True
+            "x",
+            _agent([_tool()]),
+            tool_handler,
+            AuditLog(),
+            _StreamLLM(turns),
+            pre_tool_speech="auto",
+            llm_streaming=True,
         )
         assert await _collect(system, "look up A") == ["All set."]
 
@@ -231,7 +239,9 @@ class TestCompleteStream:
         from eva.assistant.services import llm as llm_mod
 
         def _chunk(content):
-            return SimpleNamespace(choices=[SimpleNamespace(delta=SimpleNamespace(content=content), finish_reason=None)])
+            return SimpleNamespace(
+                choices=[SimpleNamespace(delta=SimpleNamespace(content=content), finish_reason=None)]
+            )
 
         async def _acompletion(**kwargs):
             async def gen():

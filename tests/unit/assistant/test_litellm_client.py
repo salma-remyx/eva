@@ -287,7 +287,12 @@ def _standard_chat_response():
     )
 
 
-_A_TOOL = [{"type": "function", "function": {"name": "f", "description": "d", "parameters": {"type": "object", "properties": {}}}}]
+_A_TOOL = [
+    {
+        "type": "function",
+        "function": {"name": "f", "description": "d", "parameters": {"type": "object", "properties": {}}},
+    }
+]
 
 
 async def _empty_stream():
