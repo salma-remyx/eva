@@ -73,6 +73,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 # Overlay only the eva package files that changed (tiny, ~seconds to copy)
 COPY --from=builder /opt/venv/lib/python3.11/site-packages/eva /opt/venv/lib/python3.11/site-packages/eva
+COPY --from=builder /opt/venv/lib/python3.11/site-packages/eva-*.dist-info /opt/venv/lib/python3.11/site-packages/
 COPY --from=builder /opt/venv/bin/eva /opt/venv/bin/eva
 
 # Copy application code
