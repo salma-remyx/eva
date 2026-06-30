@@ -106,7 +106,7 @@ class ModelConfig(BaseModel):
 
     Exactly one mode selector (``llm``, ``s2s``, or ``audio_llm``) should be set.
     Mode exclusivity is enforced by ``RunConfig``, not here, so that
-    ``max_rerun_attempts == 0`` can freely construct a config with mixed env vars.
+    ``max_rerun_attempts == 0 or self.aggregate_only`` can freely construct a config with mixed env vars.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -300,6 +300,8 @@ LANGUAGE_DISPLAY_NAMES: dict[Language, str] = {
     Language.EN: "English",
     Language.FR: "European French",
     Language.FR_CA: "Canadian French",
+    Language.ES: "European Spanish",
+    Language.DE: "German",
 }
 
 
@@ -611,20 +613,20 @@ class RunConfig(BaseSettings):
     def _check_companion_services(self) -> "RunConfig":
         """Validate pipeline mode mutual exclusivity and required companion services.
 
-        Skipped entirely when ``max_rerun_attempts == 0`` where the model
+        Skipped entirely when ``max_rerun_attempts == 0 or self.aggregate_only`` where the model
         config is unused and conflicting env vars are harmless.
         """
         if (
-            isinstance(self.user_simulator, OpenAIRealtimeSimulatorConfig)
+            not isinstance(self.user_simulator, ElevenLabsSimulatorConfig)
             and self.perturbation is not None
             and self.perturbation.accent is not None
         ):
             raise ValueError(
-                "Accent perturbations require the ElevenLabs user simulator; "
-                "OpenAI Realtime supports behavior, noise, and connection perturbations."
+                f"Accent perturbations require the ElevenLabs user simulator; "
+                f"{self.user_simulator.provider} supports behavior, noise, and connection perturbations."
             )
 
-        if self.max_rerun_attempts == 0:
+        if self.max_rerun_attempts == 0 or self.aggregate_only:
             return self
 
         # ── Validate pipeline mode mutual exclusivity ──
@@ -664,7 +666,8 @@ class RunConfig(BaseSettings):
         if "run_id" not in self.model_fields_set:
             suffix = "_".join(v for v in self.model.pipeline_parts.values() if v)
             lang = self.language.value
-            self.run_id = f"{datetime.now(UTC):%Y-%m-%d_%H-%M-%S.%f}_{lang}_{suffix}"
+            domain = self.domain.replace("_", "-")
+            self.run_id = f"{datetime.now(UTC):%Y-%m-%d_%H-%M-%S.%f}_{domain}_{lang}_{suffix}"
 
         return self
 
@@ -723,6 +726,8 @@ class RunConfig(BaseSettings):
     @model_validator(mode="after")
     def _check_openai_realtime_simulator(self) -> "RunConfig":
         """When openai_realtime user simulator is selected, OPENAI_API_KEY must be present."""
+        if self.max_rerun_attempts == 0 or self.aggregate_only:
+            return self
         if not isinstance(self.user_simulator, OpenAIRealtimeSimulatorConfig):
             return self
         if not os.environ.get("OPENAI_API_KEY"):
@@ -732,6 +737,8 @@ class RunConfig(BaseSettings):
     @model_validator(mode="after")
     def _check_gemini_live_simulator(self) -> "RunConfig":
         """When gemini_live user simulator is selected, Gemini credentials must be present."""
+        if self.max_rerun_attempts == 0 or self.aggregate_only:
+            return self
         if not isinstance(self.user_simulator, GeminiLiveSimulatorConfig):
             return self
         has_credentials = any(
