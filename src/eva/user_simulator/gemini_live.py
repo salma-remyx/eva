@@ -48,11 +48,36 @@ _PERSONA_GENDER = {1: "F", 2: "M"}
 # eight; native-audio models support the full set.
 _KNOWN_GEMINI_VOICES = frozenset(
     {
-        "Aoede", "Charon", "Fenrir", "Kore", "Leda", "Orus", "Puck", "Zephyr",
-        "Achernar", "Achird", "Algenib", "Algieba", "Alnilam", "Autonoe",
-        "Callirrhoe", "Despina", "Enceladus", "Erinome", "Gacrux", "Iapetus",
-        "Laomedeia", "Pulcherrima", "Rasalgethi", "Sadachbia", "Sadaltager",
-        "Schedar", "Sulafat", "Umbriel", "Vindemiatrix", "Zubenelgenubi",
+        "Aoede",
+        "Charon",
+        "Fenrir",
+        "Kore",
+        "Leda",
+        "Orus",
+        "Puck",
+        "Zephyr",
+        "Achernar",
+        "Achird",
+        "Algenib",
+        "Algieba",
+        "Alnilam",
+        "Autonoe",
+        "Callirrhoe",
+        "Despina",
+        "Enceladus",
+        "Erinome",
+        "Gacrux",
+        "Iapetus",
+        "Laomedeia",
+        "Pulcherrima",
+        "Rasalgethi",
+        "Sadachbia",
+        "Sadaltager",
+        "Schedar",
+        "Sulafat",
+        "Umbriel",
+        "Vindemiatrix",
+        "Zubenelgenubi",
     }
 )
 
@@ -119,9 +144,7 @@ class GeminiLiveUserSimulator(AbstractUserSimulator):
             response_modalities=[types.Modality.AUDIO],
             system_instruction=self._build_prompt(),
             speech_config=types.SpeechConfig(
-                voice_config=types.VoiceConfig(
-                    prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=voice)
-                ),
+                voice_config=types.VoiceConfig(prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=voice)),
             ),
             input_audio_transcription=types.AudioTranscriptionConfig(),
             output_audio_transcription=types.AudioTranscriptionConfig(),
@@ -169,8 +192,10 @@ class GeminiLiveUserSimulator(AbstractUserSimulator):
 
     async def run_conversation(self) -> str:
         api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
-        if not api_key and not os.environ.get("GOOGLE_CLOUD_PROJECT") and not os.environ.get(
-            "GOOGLE_APPLICATION_CREDENTIALS"
+        if (
+            not api_key
+            and not os.environ.get("GOOGLE_CLOUD_PROJECT")
+            and not os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
         ):
             raise ValueError(
                 "Gemini Live caller requires one of GEMINI_API_KEY, GOOGLE_API_KEY, GOOGLE_CLOUD_PROJECT, "
@@ -304,9 +329,7 @@ class GeminiLiveUserSimulator(AbstractUserSimulator):
                 self._input_resampler_state,
             )
             with suppress(Exception):
-                await session.send_realtime_input(
-                    audio=types.Blob(data=pcm16_16k, mime_type="audio/pcm;rate=16000")
-                )
+                await session.send_realtime_input(audio=types.Blob(data=pcm16_16k, mime_type="audio/pcm;rate=16000"))
 
     async def _listen_for_caller_events(self, session: Any) -> None:
         try:
