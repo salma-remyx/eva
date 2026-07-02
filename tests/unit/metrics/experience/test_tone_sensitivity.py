@@ -13,7 +13,7 @@ import pytest
 from eva.metrics.registry import get_global_registry
 from eva.models.config import PipelineType
 
-from .conftest import make_judge_metric, make_metric_context
+from ..conftest import make_judge_metric, make_metric_context
 
 # A trace where the words are calm but delivery (in audio) carries distress.
 DISTRESS_TRACE = [
