@@ -88,12 +88,17 @@ class LLMClient:
         # Ensure delay is positive
         return max(0, delay)
 
-    async def generate_text(self, messages: list[dict], response_format: dict | None = None) -> tuple[str, dict | None]:
+    async def generate_text(
+        self, messages: list[dict], response_format: dict | None = None, logprobs: int | None = None
+    ) -> tuple[str, dict | None]:
         """Generate text completion with automatic retries.
 
         Args:
             messages: List of message dicts with role and content
             response_format: Optional response format specification
+            logprobs: If set, request this many top log-probabilities per token
+                and attach the per-token logprob content to the returned usage
+                dict under the ``"logprobs"`` key (None when unavailable)
 
         Returns:
             Tuple of (generated text, usage dict with prompt_tokens/completion_tokens or None)
@@ -120,6 +125,11 @@ class LLMClient:
                 # Add response format if specified
                 if response_format:
                     kwargs["response_format"] = response_format
+
+                # Request token log-probabilities for continuous verifier scoring
+                if logprobs:
+                    kwargs["logprobs"] = True
+                    kwargs["top_logprobs"] = logprobs
 
                 # Log details about audio content if present (only on first attempt)
                 if attempt == 0:
@@ -154,6 +164,10 @@ class LLMClient:
                         "completion_tokens": response.usage.completion_tokens,
                         "model_name": getattr(response, "model", None),
                     }
+                if logprobs:
+                    choice_logprobs = getattr(response.choices[0], "logprobs", None)
+                    usage = usage or {}
+                    usage["logprobs"] = getattr(choice_logprobs, "content", None) if choice_logprobs else None
                 return text, usage
 
             except Exception as e:

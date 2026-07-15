@@ -23,6 +23,7 @@ from eva.metrics.utils import (
     resolve_turn_id,
     validate_rating,
 )
+from eva.metrics.verifier_score import expected_rating, normalize_expected_rating
 from eva.metrics.versioning import _CURRENT_PROMPT_HASH, hash_prompt_template
 from eva.models.config import LANGUAGE_DISPLAY_NAMES, PipelineType
 from eva.models.results import MetricScore
@@ -346,15 +347,40 @@ class TextJudgeMetric(BaseMetric):
 
         self.llm_client = LLMClient(model=model, params=params)
 
+        # Continuous verifier scoring (LLM-as-a-Verifier, arXiv:2607.05391):
+        # opt-in via config or the EVA_CONTINUOUS_JUDGE_SCORE env var. When on,
+        # normalized_score is the expectation over the judge's scoring-token
+        # logits rather than the quantized discrete rating.
+        self.continuous_scoring = bool(
+            self.config.get("continuous_scoring", os.environ.get("EVA_CONTINUOUS_JUDGE_SCORE"))
+        )
+        self.score_top_logprobs = int(self.config.get("score_top_logprobs", 20))
+
     async def call_judge(self, prompt: str, context: MetricContext) -> tuple[dict | None, str | None]:
         """Call LLM judge and parse response. Returns (parsed_dict, raw_response_text)."""
         messages = [{"role": "user", "content": prompt}]
-        response_text, usage = await self.llm_client.generate_text(messages)
+        logprobs = self.score_top_logprobs if self.continuous_scoring else None
+        response_text, usage = await self.llm_client.generate_text(messages, logprobs=logprobs)
         self._log_token_usage(context, self.llm_client.model, self.llm_client.params, prompt, usage, response_text)
-        return parse_judge_response(response_text, context.record_id, self.logger), response_text
+        parsed = parse_judge_response(response_text, context.record_id, self.logger)
+
+        # Recover the judge's continuous expected rating from the scoring-token
+        # distribution and stash it for validate_and_normalize_rating. Falls
+        # back silently to the discrete rating when logprobs are unavailable.
+        if parsed is not None and usage and usage.get("logprobs"):
+            expected = expected_rating(usage["logprobs"], self.rating_scale[0], self.rating_scale[1])
+            if expected is not None:
+                parsed["_expected_rating"] = expected
+
+        return parsed, response_text
 
     def validate_and_normalize_rating(self, response: dict, context: MetricContext) -> tuple[int, float]:
-        """Validate rating and compute normalized score."""
+        """Validate rating and compute normalized score.
+
+        The discrete ``rating`` (an int) is always returned for the raw score and
+        details. The normalized score uses the continuous expected rating when the
+        verifier recovered one (see ``call_judge``), otherwise the discrete rating.
+        """
         rating = validate_rating(
             response.get("rating"),
             list(range(self.rating_scale[0], self.rating_scale[1] + 1)),
@@ -363,7 +389,11 @@ class TextJudgeMetric(BaseMetric):
             metric_logger=self.logger,
         )
 
-        normalized = normalize_rating(rating, self.rating_scale[0], self.rating_scale[1])
+        expected = response.get("_expected_rating")
+        if expected is not None:
+            normalized = normalize_expected_rating(expected, self.rating_scale[0], self.rating_scale[1])
+        else:
+            normalized = normalize_rating(rating, self.rating_scale[0], self.rating_scale[1])
 
         return rating, normalized
 
