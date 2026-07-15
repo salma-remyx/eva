@@ -1,0 +1,12 @@
+schema_version: 1
+fork: salma-remyx/eva
+observed_landing_zones: []
+rejected_shapes:
+- shape_tag: null
+  reason_code: null
+  reason_summary: ''
+  observed:
+  - arxiv: 2607.05365v1
+    timestamp: '2026-07-15T08:05:27Z'
+coordination_signals: []
+last_updated: '2026-07-15T08:05:27Z'
