@@ -53,6 +53,23 @@ class TestExpectedRating:
         # Renormalized over {1: 0.1, 3: 0.4} -> {1: 0.2, 3: 0.8}; E = 1*0.2 + 3*0.8 = 2.6
         assert expected_rating(tokens, 1, 3) == pytest.approx(2.6)
 
+    def test_variant_surface_forms_take_max(self):
+        # Two surface forms of rating 2 ('2' and ' 2') collapse to their max
+        # probability (0.5), not their sum, before renormalization (reference).
+        tokens = [
+            {"token": '{"rating": ', "top_logprobs": []},
+            {
+                "token": "2",
+                "top_logprobs": [
+                    {"token": "2", "logprob": math.log(0.5)},
+                    {"token": " 2", "logprob": math.log(0.3)},  # same rating: max, not sum
+                    {"token": "1", "logprob": math.log(0.2)},
+                ],
+            },
+        ]
+        # max -> {2: 0.5, 1: 0.2}; renorm -> {2: 5/7, 1: 2/7}; E = 2*5/7 + 1*2/7 = 12/7
+        assert expected_rating(tokens, 1, 3) == pytest.approx(12 / 7)
+
     def test_point_mass_when_no_alternatives(self):
         tokens = [{"token": '{"rating": ', "top_logprobs": []}, {"token": "2", "top_logprobs": []}]
         assert expected_rating(tokens, 1, 3) == 2.0
