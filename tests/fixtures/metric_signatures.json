@@ -5,6 +5,12 @@
     "source_hash": "ecce31785d0d",
     "version": "v0.1"
   },
+  "CoherenceJudgeMetric": {
+    "name": "coherence",
+    "prompt_hash": "403f5a6fd844",
+    "source_hash": "c53ce2ae94a4",
+    "version": "v0.1"
+  },
   "ConcisenessJudgeMetric": {
     "name": "conciseness",
     "prompt_hash": "57caf9a18a3c",
