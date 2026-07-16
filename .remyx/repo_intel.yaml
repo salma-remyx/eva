@@ -14,6 +14,16 @@ observed_landing_zones:
     branch: llm-as-a-verifier-a-general-purpose-verification-framework-v2
     timestamp: '2026-07-15T20:01:28Z'
   last_observed: '2026-07-15T20:01:28Z'
+- path: src/eva/metrics/experience/
+  shape_tags:
+  - unclassified
+  confirmed_by:
+  - arxiv: 2407.11660v1
+    mode: ''
+    call_site_specifics: ''
+    branch: ecoh-turn-level-coherence-evaluation-for-multilingual-dialog
+    timestamp: '2026-07-16T16:18:10Z'
+  last_observed: '2026-07-16T16:18:10Z'
 rejected_shapes:
 - shape_tag: null
   reason_code: null
@@ -22,4 +32,4 @@ rejected_shapes:
   - arxiv: 2607.05365v1
     timestamp: '2026-07-15T08:05:27Z'
 coordination_signals: []
-last_updated: '2026-07-15T20:01:28Z'
+last_updated: '2026-07-16T16:18:10Z'
