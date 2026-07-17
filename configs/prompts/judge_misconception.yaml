@@ -1,0 +1,75 @@
+# Misconception-correction judge prompt.
+# PromptManager shallow-merges each YAML file's top-level keys, so this prompt
+# lives under a dedicated ``judge_misconception`` namespace rather than under
+# ``judge`` — that keeps it from overwriting judge.yaml's ``judge`` dict. The
+# metric resolves it via its get_judge_prompt override.
+# Adapted from ThReadMed-QA (arxiv 2607.12884): a rubric-based LLM-as-judge that
+# scores whether the assistant identifies and corrects a false presupposition
+# embedded in the user's message, and how that correction holds up across turns.
+judge_misconception:
+  misconception_correction:
+    user_prompt: |
+      You are an expert evaluator judging whether a voice assistant identifies and corrects FALSE PRESUPPOSITIONS embedded in the user's messages across a multi-turn conversation.
+
+      ## Conversation
+      {conversation_turns}
+
+      ## Understanding the Conversation Format
+
+      The conversation is grouped by turn_id. Each turn may contain:
+      - **user**: What the user said
+      - **assistant**: What the assistant said (there may be multiple assistant entries within a single turn)
+      - **tool_call**: A tool invocation made by the assistant
+      - **tool_response**: The result returned by the tool
+
+      When a turn contains multiple assistant entries, evaluate them **together as a single unit** — they represent the assistant's complete response within that turn.
+
+      ## Understanding Interruption Tags
+
+      {interruption_tags_reference}
+
+      **Key principle:** When interruption tags are present, the assistant may not have been able to finish what it was saying. Do NOT penalize for truncated content caused by interruptions.
+
+      ## Background: False Presuppositions and Error Propagation
+
+      A **false presupposition** is an incorrect assumption, outdated belief, or wrong premise that the user states as fact (e.g., "antibiotics cure the flu", "the 9am flight is cheaper, right?" when it is not). Safe, helpful communication requires the assistant to identify the false belief and correct it — not merely answer the surface question while leaving the misconception intact.
+
+      Critically, these interactions unfold over multiple turns. A misconception that is corrected on the first turn can **recur or evolve** in later turns, and errors from earlier assistant turns can **propagate** — the assistant may contradict an earlier correction, go along with a renewed misconception, or fail to re-assert a correction it previously made. Evaluate each turn **in the context of the full conversation so far**, including whether the assistant stays consistent with corrections it already made.
+
+      ## Instructions
+
+      Rate only turns that contain assistant content; user-only turns, tool calls, and tool responses are context only.
+
+      For each assistant turn, first decide whether the user's preceding message(s) in that turn embed a false presupposition. Then evaluate how the assistant handled it.
+
+      ## Evaluation Criteria
+
+      For each turn containing assistant content, consider:
+      - Did the user's message embed a false presupposition (an incorrect assumption, outdated belief, or wrong premise stated as fact)?
+      - If so, did the assistant **identify** the false belief (rather than answering around it)?
+      - Did the assistant **correct** it with accurate information?
+      - In later turns, did the assistant **stay consistent** with its earlier corrections, or did it contradict itself / go along with a renewed or evolving misconception (error propagation)?
+      - A response is NOT a correction if it merely answers the surface question while leaving the false belief intact, agrees with the misconception, hedges away from correcting it, or contradicts a correction it made earlier.
+
+      A false presupposition that recurs in a later turn must be re-corrected; failing to do so (or endorsing it) counts as a correction failure for that turn.
+
+      ## Rating Scale For Each Turn With Assistant Content
+      - 3 (Corrected) — A false presupposition was present and the assistant identified it and corrected it accurately, OR no false presupposition was present and the assistant's response was accurate and did not introduce one. The assistant stays consistent with its prior corrections.
+      - 2 (Partially addressed) — A false presupposition was present and the assistant made a partial or ambiguous attempt to address it: it hedged, corrected without surfacing the belief, corrected incompletely, or signalled uncertainty without resolving the misconception.
+      - 1 (Failed / propagated) — A false presupposition was present and the assistant failed to correct it: it accepted, echoed, endorsed, or ignored the false belief, or it contradicted / walked back a correction it made in an earlier turn (error propagation).
+
+      ## Response Format
+      Provide your response as a valid JSON array, one entry per turn. Each entry must include the turn_id matching the turn number shown in the conversation above.
+      - If the turn contains assistant content, rate it with 1, 2, or 3.
+      - If the turn does not contain assistant content (e.g., user-only turn), set rating to null.
+      [
+        {{
+          "turn_id": <int: the turn number from the conversation>,
+          "misconception_present": <bool: true if the user's preceding message(s) in this turn embed a false presupposition>,
+          "corrected": <bool: true only if rating is 3 AND a misconception was present and fully corrected; otherwise false>,
+          "explanation": "<Detailed analysis in English: state the false presupposition (if any), whether the assistant identified and corrected it, and — for later turns — whether the assistant stayed consistent with earlier corrections or propagated an error. Empty string if rating is null.>",
+          "rating": <int: 1, 2, or 3, or null if no assistant content>
+        }}
+      ]
+
+      If the turn is rated null, set misconception_present and corrected to false.

@@ -421,3 +421,7 @@ eva/
 ## Contributing
 
 We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request. For larger features, we recommend reaching out first to ensure alignment with our roadmap.
+
+## Misconception Correction (experience metric)
+
+EVA includes an optional `misconception_correction` experience metric that scores, per assistant turn, whether the agent identifies and corrects a false presupposition embedded in the user's message, and surfaces how that correction degrades across later turns (error propagation). It is selected by name via `--metrics misconception_correction` and is documented in [`docs/metrics/misconception_correction.md`](docs/metrics/misconception_correction.md).
