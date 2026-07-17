@@ -3,6 +3,7 @@
 from . import authentication_success  # noqa
 from . import conversation_correctly_finished  # noqa
 from . import conversation_time_limit  # noqa
+from . import judge_swap_audit  # noqa
 from . import response_speed  # noqa
 from . import speakability  # noqa
 from . import stt_wer  # noqa
@@ -14,6 +15,7 @@ __all__ = [
     "authentication_success",
     "conversation_correctly_finished",
     "conversation_time_limit",
+    "judge_swap_audit",
     "response_speed",
     "speakability",
     "stt_wer",
