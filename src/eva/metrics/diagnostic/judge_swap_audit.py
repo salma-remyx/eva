@@ -20,6 +20,7 @@ import os
 from typing import Any
 
 from eva.metrics.base import MetricContext, TextJudgeMetric
+from eva.metrics.diagnostic.measurement_stability import assess_stability
 from eva.metrics.registry import register_metric
 from eva.metrics.utils import make_rate_sub_metric, parse_judge_response
 from eva.metrics.versioning import hash_prompt_template
@@ -51,6 +52,10 @@ class JudgeSwapAuditMetric(TextJudgeMetric):
     3. Records a per-judge audit trail (model, raw response, parse ok / fallback)
        in ``details`` so any shift can be attributed.
 
+    When ``stability_samples > 1`` it additionally re-samples each judge and attaches
+    a ``measurement_stability`` block (per-judge variance + bootstrap CI on the shift)
+    so a reported shift can be told apart from each judge's own sampling noise.
+
     Judges are configured as:
 
       - Judge A: ``judge_model`` (inherited from TextJudgeMetric).
@@ -60,7 +65,7 @@ class JudgeSwapAuditMetric(TextJudgeMetric):
     """
 
     name = "judge_swap_audit"
-    version = "v0.1"
+    version = "v0.2"
     description = "Diagnostic metric: audit LLM-as-judge reliability across two judges (replacement ambiguity + position bias + audit trail)"
     category = "diagnostic"
     exclude_from_pass_at_k = True
@@ -71,6 +76,11 @@ class JudgeSwapAuditMetric(TextJudgeMetric):
 
     def __init__(self, config: dict[str, Any] | None = None):
         super().__init__(config)
+        # Repeated per-judge sampling (default 1 = single-shot, unchanged behavior).
+        # With >1 samples the metric attaches a measurement-stability block reporting
+        # per-judge variance and a bootstrap CI so the shift can be told apart from noise.
+        self.stability_samples = max(1, int(self.config.get("stability_samples", 1)))
+        self.bootstrap_iterations = max(1, int(self.config.get("bootstrap_iterations", 1000)))
         config_b = self.config.get("judge_model_b")
         model_b: str | None = config_b if isinstance(config_b, str) else os.environ.get("JUDGE_MODEL_B")
         self.judges_identical = model_b is None
@@ -107,6 +117,11 @@ class JudgeSwapAuditMetric(TextJudgeMetric):
                 "judge_b": self._audit_entry(b_parsed, b_raw, context),
             }
             shift = self._replacement_shift(audit["judge_a"]["normalized"], audit["judge_b"]["normalized"])
+            stability = None
+            if self.stability_samples > 1:
+                samples_a = await self._collect_samples(self.llm_client, rating_prompt, context, a_parsed, a_raw)
+                samples_b = await self._collect_samples(self.llm_client_b, rating_prompt, context, b_parsed, b_raw)
+                stability = assess_stability(samples_a, samples_b, iterations=self.bootstrap_iterations)
             probe = await self._run_position_bias_probe(context)
 
             sub_metrics: dict[str, MetricScore] = {}
@@ -130,6 +145,7 @@ class JudgeSwapAuditMetric(TextJudgeMetric):
                     "evaluator_replacement_shift": shift,
                     "audit_trail": audit,
                     "position_bias_probe": probe,
+                    "measurement_stability": stability,
                 },
                 sub_metrics=sub_metrics or None,
                 skipped=shift is None,
@@ -152,6 +168,30 @@ class JudgeSwapAuditMetric(TextJudgeMetric):
         response_text, usage = await client.generate_text(messages)
         self._log_token_usage(context, client.model, client.params, prompt, usage, response_text)
         return parse_judge_response(response_text, context.record_id, self.logger), response_text
+
+    async def _collect_samples(
+        self,
+        client: LLMClient,
+        prompt: str,
+        context: MetricContext,
+        first_parsed: dict[str, Any] | None,
+        first_raw: str | None,
+    ) -> list[float]:
+        """Gather ``stability_samples`` normalized ratings for one judge (reusing the first call).
+
+        The already-issued rating call is passed in as ``first_parsed`` so the
+        stability estimate costs only ``stability_samples - 1`` extra calls per judge.
+        Unparseable samples are dropped rather than defaulted, so variance reflects
+        real judge output, not fallback ratings.
+        """
+        samples: list[float] = []
+        for parsed, raw in [(first_parsed, first_raw)] + [
+            await self._call_judge_on(client, prompt, context) for _ in range(self.stability_samples - 1)
+        ]:
+            normalized = self._audit_entry(parsed, raw, context)["normalized"]
+            if normalized is not None:
+                samples.append(normalized)
+        return samples
 
     def _audit_entry(
         self,

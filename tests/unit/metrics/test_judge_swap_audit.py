@@ -47,7 +47,7 @@ class TestJudgeSwapAuditRegistration:
         metric = _make_metric()
         assert metric.name == "judge_swap_audit"
         assert metric.category == "diagnostic"
-        assert metric.version == "v0.1"
+        assert metric.version == "v0.2"
         assert metric.rating_scale == (1, 3)
         assert metric.higher_is_better is False
         assert metric.exclude_from_default_metrics is True

@@ -44,8 +44,8 @@
   "JudgeSwapAuditMetric": {
     "name": "judge_swap_audit",
     "prompt_hash": "da0665b8cfb0",
-    "source_hash": "741138902d58",
-    "version": "v0.1"
+    "source_hash": "169520eefb86",
+    "version": "v0.2"
   },
   "ResponseSpeedMetric": {
     "name": "response_speed",
