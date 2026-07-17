@@ -103,6 +103,19 @@ The table below lists the API-hosted models used as a judge.
 | us.anthropic.claude-opus-4-6-v1             | AWS Bedrock | LLM  | reasoning: default          |
 
 
+### Judge-swap audit (diagnostic metric)
+
+The opt-in `judge_swap_audit` diagnostic metric (selected via `EVA_METRICS`) re-scores a
+fixed transcript under two judges to quantify how much a score moves purely because the
+evaluator changed. It exposes the following knobs:
+
+| Flag | Values | Effect |
+|------|--------|--------|
+| `JUDGE_MODEL_B` (env) / `judge_model_b` (metric config) | model id | Second judge model. Unset falls back to Judge A, so the shift then measures a single judge's run-to-run sampling noise instead of an evaluator swap. |
+| `stability_samples` (metric config) | int, default `1` | `>1` re-samples each judge and attaches a `measurement_stability` block (per-judge variance + bootstrap CI on the shift). `1` keeps single-shot behavior. |
+| `bootstrap_iterations` (metric config) | int, default `1000` | Bootstrap resamples used for the shift confidence interval. |
+
+
 
 ## ElevenLabs User Simulator
 
