@@ -36,6 +36,16 @@ observed_landing_zones:
     branch: when-the-judge-changes-so-does-the-measurement-auditing-llm-
     timestamp: '2026-07-17T06:04:27Z'
   last_observed: '2026-07-17T06:04:27Z'
+- path: configs/prompts/
+  shape_tags:
+  - unclassified
+  confirmed_by:
+  - arxiv: 2607.12884v1
+    mode: ''
+    call_site_specifics: ''
+    branch: evaluating-large-language-models-on-misconceptions-in-multi-
+    timestamp: '2026-07-17T18:37:31Z'
+  last_observed: '2026-07-17T18:37:31Z'
 rejected_shapes:
 - shape_tag: null
   reason_code: null
@@ -44,4 +54,4 @@ rejected_shapes:
   - arxiv: 2607.05365v1
     timestamp: '2026-07-16T18:14:41Z'
 coordination_signals: []
-last_updated: '2026-07-17T06:04:27Z'
+last_updated: '2026-07-17T18:37:31Z'
