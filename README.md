@@ -342,6 +342,7 @@ output/<run_id>/
 |  **Task Completion** · Deterministic |  **Turn Taking** · LLM Judge `BETA` |
 |  **Agent Speech Fidelity** · Audio LLM Judge `BETA` |  **Conciseness** · LLM Judge |
 |  **Faithfulness** · LLM Judge |  **Conversation Progression** · LLM Judge |
+|  |  **Interactivity** · Deterministic |
 
 See the [Metrics documentation](docs/metrics/README.md) for detailed scoring rubrics and judge prompts. For the data structures that metrics operate on, see [MetricContext documentation](docs/metric_context.md).
 
