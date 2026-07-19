@@ -30,7 +30,14 @@ observed_landing_zones:
       -> `metric.compute(context)` p'
     branch: interaction-matters-an-evaluation-framework-for-interactive-
     timestamp: '2026-07-18T14:47:38Z'
-  last_observed: '2026-07-18T14:47:38Z'
+  - arxiv: 2607.05365v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: 'Select-by-name via the global metric registry: `MetricsRunner`
+      (src/eva/orchestrator/runner.py) and the CLI entry points (`main.py`, `src/eva/cli.py`,
+      `src/eva/run_benchmark.py`) with `--metrics natur'
+    branch: spearbench-a-benchmark-for-naturalness-evaluation-in-streami
+    timestamp: '2026-07-19T07:59:52Z'
+  last_observed: '2026-07-19T07:59:52Z'
 - path: src/eva/metrics/diagnostic/
   shape_tags:
   - registry-add
@@ -61,4 +68,4 @@ rejected_shapes:
   - arxiv: 2607.05365v1
     timestamp: '2026-07-16T18:14:41Z'
 coordination_signals: []
-last_updated: '2026-07-18T14:47:38Z'
+last_updated: '2026-07-19T07:59:52Z'
