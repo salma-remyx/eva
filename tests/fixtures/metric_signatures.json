@@ -41,6 +41,12 @@
     "source_hash": "93a559d0a028",
     "version": "v0.2"
   },
+  "NaturalnessJudgeMetric": {
+    "name": "naturalness",
+    "prompt_hash": "b7d5cf5a1dca",
+    "source_hash": "256584f0731c",
+    "version": "v0.1"
+  },
   "ResponseSpeedMetric": {
     "name": "response_speed",
     "prompt_hash": null,

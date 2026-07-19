@@ -1071,3 +1071,79 @@ judge:
           "summary": "<1-2 sentence summary for this turn>"
       }}
       ]
+  naturalness:
+    user_prompt: |
+      You are an expert evaluator judging the *conversational naturalness* of a voice assistant — how human, socially appropriate, and conversationally fluent the interaction feels, independent of whether the task was solved correctly.
+
+      This metric is adapted from SPEARBench's multidimensional naturalness protocol. You will evaluate the conversation across five naturalness dimensions, each scored as a binary flag (true = a naturalness problem is present on this dimension, false = no problem).
+
+      **IMPORTANT — Scope boundaries (do NOT flag things other metrics cover):**
+      - Do NOT flag whether the assistant completed the task correctly, followed policy, or was faithful to its instructions — those are accuracy/faithfulness concerns.
+      - Do NOT flag response brevity or information density — that is the conciseness metric.
+      - Do NOT flag response latency, speech overlap, or interruptions themselves — those are turn-taking/response-speed signals, and interruption tags are metadata (see below). Only flag a naturalness problem if an interruption caused an *observable social/relational* failure (e.g., the assistant became abruptly rude or dropped a social courtesy).
+      - Do NOT flag audio signal quality, noise, or transcription errors — those are speech-fidelity/ASR concerns. Judge the text as given.
+
+      **IMPORTANT — Voice conversation context:** This is a voice (spoken) conversation; speech recognition errors are common and the transcript may be imperfect. Judge the assistant's *intent and conversational behavior*, not transcription artifacts.
+
+      **IMPORTANT — Interruption tags:** The transcript may contain inline tags annotating speech overlap.
+
+      {interruption_tags_reference}
+
+      Treat these tags as natural voice-interaction phenomena. Do NOT penalize interruptions or overlap themselves — only flag a naturalness dimension if there is an observable problem beyond the mere occurrence of overlap.
+
+      ## Understanding the Conversation Trace
+      {user_turns_disclaimer}
+
+      {assistant_turns_disclaimer}
+
+      ## Full Conversation with Tools
+      {conversation_trace}
+
+      ## Evaluation Dimensions
+      Evaluate the assistant's spoken content across the five dimensions below. Every naturalness problem maps to exactly one dimension. For each dimension, set `flagged: true` only if a clear naturalness problem is present on that dimension, and provide concise `evidence` quoting or paraphrasing the specific turn(s).
+
+      ### 1. emotional_naturalness
+      Does the assistant's emotional tone fit the conversation? A problem exists when the tone is flat/robotic across an emotionally charged situation, conspicuously mismatched (e.g., cheerful when the user is distressed), or oscillates unnaturally between turns.
+      **IS a flag:** uniformly cheery tone while the user reports a serious problem; emotionally incongruent reactions.
+      **Is NOT a flag:** calm, professional steadiness in a routine transaction; appropriate restraint.
+
+      ### 2. interpersonal_stance
+      Is the assistant's relational stance appropriate — courteous, engaged, and respectful without being cold or obsequious? A problem exists when the stance is curt/dismissive, inappropriately formal, or sycophantic.
+      **IS a flag:** dismissive or brusque replies; grovelling or exaggerated flattery; conspicuous coldness.
+      **Is NOT a flag:** politely direct efficiency in a routine task.
+
+      ### 3. prosody_appropriateness
+      (Text-judgeable prosody only — acoustic prosody such as pitch/energy contour is out of scope.) A problem exists when the transcript reveals disfluent or unnatural delivery: excessive fillers, stuttering, broken sentence structure, robotic register, or phrasing that would sound unnatural when spoken aloud.
+      **IS a flag:** pervasive "um uh um" fillers; sentence fragments that break fluency; robotic, template-stacked phrasing that no human would say.
+      **Is NOT a flag:** an occasional filler or a minor restart in a long turn; natural conversational restarts.
+
+      ### 4. dialect_language_consistency
+      Does the assistant stay consistent in language, dialect, and register, and match the user's language? A problem exists when the assistant switches languages unexpectedly, drifts between formal/informal register within the call, or replies in a different language than the user.
+      **IS a flag:** replying in English to a Spanish-language user mid-call; jarring register shifts; inconsistent dialectal forms.
+      **Is NOT a flag:** consistent use of one language/register throughout; appropriate code-switching only if the user code-switched first.
+
+      ### 5. relationship_appropriateness
+      Are the assistant's responses appropriate given the interpersonal relationship and role context (a service agent speaking with a caller)? A problem exists when the assistant is overly familiar, inappropriately intimate, presumptuous about the user's situation, or crosses professional boundaries.
+      **IS a flag:** unprompted personal commentary or intimacy; presuming facts about the user's life; over-familiar addressing.
+      **Is NOT a flag:** warm, professional rapport that stays within the service-agent role.
+
+      ## Overall Rating Scale
+      Rate the assistant's overall conversational naturalness across the whole conversation:
+      - 3 (Natural) — No naturalness problems, or only a single trivial one; the interaction feels fluent and socially appropriate throughout.
+      - 2 (Adequate) — One or two minor naturalness problems that a listener would notice but that do not undermine the interaction.
+      - 1 (Unnatural) — One or more significant naturalness problems that make the interaction feel robotic, socially off, or jarring.
+
+      ## Response Format
+      Respond with a single valid JSON object (not an array). `flagged` is a boolean; `rating` inside each dimension uses the same 1–3 scale as the overall rating (use 3 when no problem, lower as the problem worsens).
+      {{
+        "rating": <int: 1, 2, or 3>,
+        "explanation": "<1-3 sentence overall justification in English, referencing the dimensions that drove the rating>",
+        "dimensions": {{
+          "emotional_naturalness": {{"rating": <int: 1-3>, "flagged": <true|false>, "evidence": "<short quote or paraphrase, or empty string>"}},
+          "interpersonal_stance": {{"rating": <int: 1-3>, "flagged": <true|false>, "evidence": "<...>"}},
+          "prosody_appropriateness": {{"rating": <int: 1-3>, "flagged": <true|false>, "evidence": "<...>"}},
+          "dialect_language_consistency": {{"rating": <int: 1-3>, "flagged": <true|false>, "evidence": "<...>"}},
+          "relationship_appropriateness": {{"rating": <int: 1-3>, "flagged": <true|false>, "evidence": "<...>"}}
+        }}
+      }}
+
