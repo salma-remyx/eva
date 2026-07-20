@@ -8,6 +8,8 @@ from typing import Any
 
 import numpy as np
 
+from eva.utils.betting_ci import betting_ci
+
 N_BOOT = 2000
 ALPHA = 0.05
 
@@ -75,10 +77,22 @@ def mean_ci_fields(
 ) -> dict[str, Any]:
     """Percentile bootstrap CI on the mean of ``scenario_values``, plus scenario count."""
     if len(scenario_values) == 0:
-        return {"mean_ci_lower": None, "mean_ci_upper": None, "mean_ci_n_scenarios": 0}
+        return {
+            "mean_ci_lower": None,
+            "mean_ci_upper": None,
+            "mean_betting_ci_lower": None,
+            "mean_betting_ci_upper": None,
+            "mean_ci_n_scenarios": 0,
+        }
     lower, upper = bootstrap_ci(scenario_values, seed=seed)
+    # Coverage-valid betting interval on the same bounded samples: tighter than
+    # Hoeffding and, unlike the percentile bootstrap, guaranteed (1 - alpha) coverage
+    # at EVA's small per-metric sample sizes. Reported alongside the bootstrap CI.
+    bet_lower, bet_upper = betting_ci(scenario_values, seed=seed)
     return {
         "mean_ci_lower": round(lower, decimals),
         "mean_ci_upper": round(upper, decimals),
+        "mean_betting_ci_lower": round(bet_lower, decimals) if bet_lower is not None else None,
+        "mean_betting_ci_upper": round(bet_upper, decimals) if bet_upper is not None else None,
         "mean_ci_n_scenarios": len(scenario_values),
     }
