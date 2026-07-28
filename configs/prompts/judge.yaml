@@ -283,6 +283,104 @@ judge:
           }},
           "rating": <int: 1, 2, or 3>
       }}
+  clarification_policy:
+    user_prompt: |
+      You are an expert evaluator judging a voice assistant's CLARIFICATION POLICY — the sequence of decisions about *whether to ask*, *what to ask*, and *when to stop asking and answer*. You evaluate clarification as strategic behavior, not the quality of any single question in isolation.
+
+      The insight guiding this evaluation: two assistants can reach the same final outcome yet differ greatly in efficiency. One asks the right question at the right time and stops the moment the user's intent is clear; the other over-clarifies, asks questions that do not advance resolution, or rushes to an answer before the intent is pinned down. You are measuring that difference — how much value the assistant's chosen policy lost relative to an optimal clarification path. This loss is the conversation's "regret".
+
+      ## The User's Intended Goal (reference)
+      The user's true intended goal is:
+      {user_goal}
+
+      Use it as the reference for intent resolution: a useful clarification moves the assistant toward THIS goal; a question that is irrelevant to it, or that targets something already resolved, does not.
+
+      ## Understanding the Conversation Trace
+      {user_turns_disclaimer}
+
+      {assistant_turns_disclaimer}
+
+      {interruption_tags_reference}
+
+      ## Full Conversation with Tools
+      {conversation_trace}
+
+      ## Evaluation Dimensions
+      Evaluate the assistant across three dimensions. Each is a binary flag (true = issue present) with a 1-3 severity rating, mapping the regret signals of clarification behavior.
+
+      ### 1. missed_clarification
+      **The assistant should have asked but did not.** The user's request (or a value the assistant acted on) was genuinely ambiguous — multiple distinct options fit, a critical detail was unknown, or an irreversible action was about to be taken on an unconfirmed value — and the assistant proceeded on an assumption instead of clarifying.
+
+      **IS a flag:**
+      - Proceeding with an action when several distinct options satisfied the request and the assistant had no basis to pick one
+      - Taking an irreversible action (cancellation, booking, payment, account change) on a value the user gave only ambiguously, without confirming
+      - Acting on a mishearing-prone value (alphanumeric code, name, amount) it could have confirmed but chose not to — only flag when the ambiguity was genuine, not for routine read-backs
+
+      **Is NOT a flag:**
+      - The request was clear and unambiguous; no clarification was needed
+      - The assistant asked appropriate authentication/identification required by its instructions
+      - The assistant DID ask a clarifying question (score the quality of that question under ineffective_clarification instead)
+
+      ### 2. ineffective_clarification
+      **The assistant asked, but the question did not advance intent resolution.** A clarification turn occurred that was vague, redundant, already answered, or irrelevant to resolving the ambiguity toward the user's goal.
+
+      **IS a flag:**
+      - A question so broad it cannot resolve the ambiguity (e.g., "What would you like?" when only one specific dimension of the request was unclear)
+      - Re-asking for information the user already provided earlier in the conversation
+      - Asking about something irrelevant to the user's stated goal
+      - Stacking multiple questions at once when one focused question would have sufficed
+
+      **Is NOT a flag:**
+      - A focused, on-point clarifying question that targeted the real ambiguity
+      - Confirming an error-prone value the user just provided (standard voice-agent practice)
+      - A follow-up made necessary by new information from a tool response
+
+      ### 3. poor_stopping_decision
+      **The assistant mis-timed when to stop clarifying and answer.** It either answered prematurely (before the intent was clear enough to act correctly) or kept clarifying after the intent was already resolved.
+
+      **IS a flag:**
+      - Answering or acting while the intent was still ambiguous, resulting in a guess (overlaps with missed_clarification when no question was asked at all)
+      - Continuing to ask clarifying questions after the user's intent was already unambiguous — the assistant failed to recognize it was time to stop and act
+      - Looping through repeated clarifications without converging on a decision
+
+      **Is NOT a flag:**
+      - Stopping and acting promptly once the intent was clear (this is the ideal)
+      - Asking one well-targeted question and then acting on the answer
+
+      ## Rating Scale
+      Rate each flagged dimension's severity, then give an OVERALL rating that reflects the conversation's *regret* — value lost relative to an optimal clarification policy. Two conversations with the same final outcome can earn very different overall ratings based on how efficiently and robustly the assistant navigated the ambiguity.
+
+      - **3** (Low regret — efficient policy): No clarification issue. The assistant asked exactly the right question(s) at the right time, or correctly recognized that no clarification was needed, and acted as soon as the intent was clear.
+      - **2** (Moderate regret — minor inefficiency): A single isolated clarification misstep that cost the user a little time or a minor extra turn but did not derail resolution.
+      - **1** (High regret — clear policy failure): The assistant's clarification decisions materially hurt the interaction — it missed a necessary clarification and acted on a wrong assumption, looped through ineffective questions, or failed to stop or act at the right time.
+
+      ## Overall Rating Guidance
+      - **3**: No dimension is flagged.
+      - **2**: One dimension flagged at minor severity, with no clear failure.
+      - **1**: Any dimension flagged as a clear failure, or two or more dimensions flagged.
+
+      ## Response Format
+      Respond in JSON. The "evidence" field must ALWAYS contain 1-2 sentences referencing specific parts of the transcript, even when flagged is false (briefly explain why no issue was found).
+      {{
+          "dimensions": {{
+              "missed_clarification": {{
+                  "evidence": "<string: REQUIRED — cite transcript examples if flagged, or explain why clean if not>",
+                  "flagged": <bool: true if issue is present, false otherwise>,
+                  "rating": <int: 1, 2, or 3>
+              }},
+              "ineffective_clarification": {{
+                  "evidence": "<string: REQUIRED>",
+                  "flagged": <bool: true if issue is present, false otherwise>,
+                  "rating": <int: 1, 2, or 3>
+              }},
+              "poor_stopping_decision": {{
+                  "evidence": "<string: REQUIRED>",
+                  "flagged": <bool: true if issue is present, false otherwise>,
+                  "rating": <int: 1, 2, or 3>
+              }}
+          }},
+          "rating": <int: 1, 2, or 3>
+      }}
   faithfulness:
     user_prompt: |
       You are an expert evaluator analyzing whether a voice assistant remains faithful to information, policies, and instructions throughout a conversation. You will evaluate the conversation across five dimensions, each scored as a binary flag (true = issue present, false = no issue) and, when flagged, a severity rating (1 = major user impact, 2 = minor or ambiguous; 3 = no issue). See the Rating Scale section below for detailed severity guidance.
