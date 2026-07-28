@@ -37,7 +37,14 @@ observed_landing_zones:
       `src/eva/run_benchmark.py`) with `--metrics natur'
     branch: spearbench-a-benchmark-for-naturalness-evaluation-in-streami
     timestamp: '2026-07-19T07:59:52Z'
-  last_observed: '2026-07-19T07:59:52Z'
+  - arxiv: 2607.21143v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: "registry-driven benchmark runner \u2014 `src/eva/orchestrator/runner.py`\
+      \ selects the metric by name via `self.config.metrics` / the `--metrics` flag\
+      \ (documented at `src/eva/models/config.py:559`) after `@r"
+    branch: one-more-turn-less-regret-a-regret-based-multi-turn-benchmar
+    timestamp: '2026-07-28T11:11:02Z'
+  last_observed: '2026-07-28T11:11:02Z'
 - path: src/eva/metrics/diagnostic/
   shape_tags:
   - registry-add
@@ -70,4 +77,4 @@ rejected_shapes:
   - arxiv: 2607.06127v1
     timestamp: '2026-07-20T19:12:46Z'
 coordination_signals: []
-last_updated: '2026-07-20T19:12:46Z'
+last_updated: '2026-07-28T11:11:02Z'
