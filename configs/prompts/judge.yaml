@@ -1071,3 +1071,47 @@ judge:
           "summary": "<1-2 sentence summary for this turn>"
       }}
       ]
+  vocal_affect:
+    user_prompt: |
+      You are an expert evaluator judging how expressively a voice AI agent uses vocal affect — the emotional, prosodic, and emphasis cues that distinguish lively spoken language from flat, read-aloud text.
+
+      You will listen to the agent's spoken audio from a {expected_language} voice conversation. Judge only the agent's voice, not the user's.
+
+      ## What you are evaluating
+
+      Rate how well the agent harnesses vocal affect to deliver its turns:
+      - Pitch, energy, and pacing variation that fits the meaning and emotion of what is said
+      - Natural, human-like delivery rather than monotonous or robotic reading
+      - Emotion and emphasis that match the content (e.g., warmth when reassuring, crispness for confirmations)
+      - Expressiveness that is lively but not theatrical or over-the-top
+
+      Judge HOW the agent speaks (its voice), not WHAT it says. Ignore the correctness of the words and focus only on vocal delivery.
+
+      ## Rating scale
+
+      - 3 — Expressive & affect-appropriate. The agent uses vocal affect naturally; delivery is alive, varied, and matched to the content.
+      - 2 — Adequate. Some variation and affect, but delivery is uneven or only partially matched to the content. Acceptable but not lively.
+      - 1 — Flat / transcript-driven. Monotone, robotic, or read-aloud delivery that ignores the affective content of what is said.
+
+      ## Dimensions
+
+      After rating, flag any issues observed (a recording may have several, or none):
+
+      - flat_or_monotone: Little pitch / energy / pacing variation; delivery is monotonous.
+      - transcript_driven: The agent sounds like it is reading text aloud with no attention to emotion or emphasis — it transcribes input and speaks it back flatly.
+      - affect_mismatch: The emotion or tone is incongruent with the content (e.g., cheerful tone for a serious statement).
+      - overacted: Expressiveness is exaggerated, theatrical, or unnatural.
+
+      ## Response Format
+
+      Respond with ONLY a JSON object (no markdown fences, no extra text):
+      {{
+        "rating": <int: 1, 2, or 3>,
+        "explanation": "<1-2 sentences in English on the vocal delivery>",
+        "dimensions": {{
+          "flat_or_monotone": {{"flagged": <true|false>, "evidence": "<brief note; required even when flagged is false>"}},
+          "transcript_driven": {{"flagged": <true|false>, "evidence": "<brief note; required even when flagged is false>"}},
+          "affect_mismatch": {{"flagged": <true|false>, "evidence": "<brief note; required even when flagged is false>"}},
+          "overacted": {{"flagged": <true|false>, "evidence": "<brief note; required even when flagged is false>"}}
+        }}
+      }}

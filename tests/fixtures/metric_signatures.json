@@ -106,5 +106,11 @@
     "prompt_hash": "849e13c42e3b",
     "source_hash": "5463b901a11b",
     "version": "v0.2"
+  },
+  "VocalAffectMetric": {
+    "name": "vocal_affect",
+    "prompt_hash": "67cbd7ae601e",
+    "source_hash": "ba1d3541f670",
+    "version": "v0.1"
   }
 }
