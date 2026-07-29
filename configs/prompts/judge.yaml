@@ -502,6 +502,69 @@ judge:
       }}
 
 
+  information_acquisition:
+    user_prompt: |
+      You are an expert evaluator measuring **information acquisition** — whether the assistant elicited the information it needed to address the user's goal. This is a *diagnosis-decoupled* evaluation: judge ONLY what was gathered in the conversation history, NOT how well the final answer was phrased or whether the task ultimately succeeded. A polished, confident, or correct-sounding final answer does NOT compensate for information that was never elicited, and a clumsy final answer does NOT detract from a richly gathered history. Output quality and task success are evaluated by other metrics — keep them out of this judgment.
+
+      ## What to Evaluate
+      First determine the set of **required information items**: the specific pieces of information the assistant needed to obtain from the user (or explicitly confirm with the user) to address the goal. Derive them from the user goal, the user persona, the agent instructions, and the inputs the available tools require.
+      - Include only information that must come FROM the user (facts they hold, preferences, identifiers, confirmations, constraints) or that the assistant must explicitly verify with them.
+      - Do NOT include information the assistant already has (agent instructions, system context, current date/time) or that tools return without user input.
+
+      ## Understanding User and Assistant Turns
+      {user_turns_disclaimer}
+
+      {assistant_turns_disclaimer}
+
+      ## User Goal
+      {user_goal}
+
+      ## User Persona
+      {user_persona}
+
+      ## Agent Role
+      {agent_role}
+
+      ## Agent Instructions
+      {agent_instructions}
+
+      ## Available Tools
+      {available_tools}
+
+      ## Current Date/Time
+      {current_date_time}
+
+      ## Full Conversation
+      {conversation_trace}
+
+      ## Coverage Rules
+      For each required information item, determine whether it appears in the **elicited history** — i.e., the user provided it, or the assistant asked for it and the user supplied or confirmed it. This is directional coverage: map each *required* item into the history, and credit an item **at most once** regardless of how many times it appears.
+      - Mark `covered: true` only when the information is genuinely present in what the user said (accounting for possible transcription errors in speech-to-text input — if the user clearly intended the value despite a minor transcription artifact, it is covered).
+      - Do NOT credit an item the assistant merely asserted, assumed, guessed, or fabricated — it must have been elicited from the user.
+      - An item the assistant never asked about and the user never volunteered is `covered: false`.
+      - If a required item is ambiguous or only partially provided, mark `covered: false` and note what is missing in the evidence.
+
+      ## Rating Scale (overall sufficiency of acquisition)
+      - **3** — Adequate: all or nearly all required information was elicited.
+      - **2** — Partial: some required information is missing, but a meaningful portion was gathered.
+      - **1** — Insufficient: little or none of the required information was elicited.
+
+      ## Response Format
+      Provide evidence in English.
+      Respond in JSON format:
+      {{
+          "required_information": [
+              {{
+                  "item": "<the specific information that was needed>",
+                  "covered": <bool: true if elicited from the user, false otherwise>,
+                  "evidence": "<string: quote the user turn(s) that provided it, or state what is missing>",
+                  "elicited_in_turn": <int or null: turn_id where it was provided, or null if not covered>
+              }}
+          ],
+          "rating": <int: 1, 2, or 3 - overall acquisition sufficiency>,
+          "explanation": "<string: 1-3 sentences summarizing what was and was not gathered>"
+      }}
+
   user_behavioral_fidelity:
     user_prompt: |
       You are an expert evaluator determining whether a simulated user's behavior has corrupted the voice agent evaluation. 
