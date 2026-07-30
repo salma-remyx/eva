@@ -1071,3 +1071,35 @@ judge:
           "summary": "<1-2 sentence summary for this turn>"
       }}
       ]
+  subgoal_progress:
+    user_prompt: |
+      You are an expert evaluator diagnosing how a voice-agent conversation progressed toward the task's subgoals.
+
+      ## User goal
+      {user_goal}
+
+      ## Subgoals
+      The conversation has {num_assistant_turns} assistant turn(s). The subgoals below are derived from the ground-truth scenario change the agent was expected to accomplish. For EACH subgoal, determine the **1-based index of the assistant turn** by which it was first accomplished — judging from the tool calls, tool responses, and assistant statements visible in the transcript up to and including that turn.
+
+      A subgoal is "accomplished" when the agent has clearly taken the action or conveyed the information needed to satisfy it (e.g., the relevant tool call succeeded with the right parameters, or the assistant stated the required fact). If a subgoal was never accomplished by the end of the conversation, set its completion_turn to null.
+
+      {subgoal_list}
+
+      ## Conversation trace
+      {conversation_trace}
+
+      ## Output format
+      Return ONLY a single JSON object (no surrounding prose, no markdown fences) with this exact shape:
+
+      {{
+        "subgoals": [
+          {{"id": "s1", "completion_turn": 3, "evidence": "brief reason grounded in the trace"}},
+          {{"id": "s2", "completion_turn": null, "evidence": "brief reason it was not accomplished"}}
+        ],
+        "overall_reasoning": "one or two sentences on overall progress"
+      }}
+
+      Rules:
+      - Echo every provided subgoal id, in the same order.
+      - completion_turn is a positive integer (1..{num_assistant_turns}) or null.
+      - Judge based only on evidence visible in the trace; do not assume actions that did not occur.

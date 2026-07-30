@@ -65,6 +65,12 @@
     "source_hash": "5e61505dc729",
     "version": "v0.4"
   },
+  "SubgoalProgressMetric": {
+    "name": "subgoal_progress",
+    "prompt_hash": "55b8c0dc9188",
+    "source_hash": "f93bd0cc9dba",
+    "version": "v0.1"
+  },
   "TTSFidelityMetric": {
     "name": "tts_fidelity",
     "prompt_hash": "c3a02ab03f06",
