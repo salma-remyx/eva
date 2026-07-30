@@ -1071,3 +1071,37 @@ judge:
           "summary": "<1-2 sentence summary for this turn>"
       }}
       ]
+
+  judge_swap_audit:
+    user_prompt: |
+      You are an expert evaluator judging an AI voice agent's conversation. The user's goal is stated below, followed by the agent's spoken turns (the candidate response under evaluation).
+
+      ## User goal
+      {user_goal}
+
+      ## Agent turns
+      {transcript}
+
+      ## Task
+      Rate how well the agent's turns address the user's goal on a 1-3 scale:
+      - 3 = Strong: the agent fully and correctly addresses the goal.
+      - 2 = Partial: the agent partially addresses the goal with minor issues.
+      - 1 = Weak: the agent fails to address the goal or makes major errors.
+
+      Respond with ONLY a JSON object:
+      {{"rating": <1, 2, or 3>, "explanation": "<one sentence>"}}
+    position_bias_probe: |
+      You are an expert evaluator comparing two candidate responses from an AI voice agent. Decide which candidate better addresses the user's goal.
+
+      ## User goal
+      {user_goal}
+
+      ## Candidate A
+      {candidate_a}
+
+      ## Candidate B
+      {candidate_b}
+
+      ## Task
+      Pick the better candidate. Respond with ONLY a JSON object:
+      {{"choice": "<A or B>", "explanation": "<one sentence>"}}
