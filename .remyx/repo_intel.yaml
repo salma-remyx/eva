@@ -21,7 +21,14 @@ observed_landing_zones:
       registry (`src/eva/metrics/runner.py:136`), and with no `--'
     branch: medddc-eval-diagnosis-decoupled-evaluation-of-multi-turn-med
     timestamp: '2026-07-29T03:30:26Z'
-  last_observed: '2026-07-29T03:30:26Z'
+  - arxiv: 2603.15483v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: "MetricsRunner (src/eva/metrics/runner.py) \u2014 selected\
+      \ via the registry.list_metrics() default path (metric_names=None) and run per-record\
+      \ through _run_record -> SubgoalProgressMetric.compute(); identic"
+    branch: talk-evaluate-diagnose-user-aware-agent-evaluation-with-auto
+    timestamp: '2026-07-30T10:02:43Z'
+  last_observed: '2026-07-30T10:02:43Z'
 - path: src/eva/metrics/experience/
   shape_tags:
   - library-shape-public-api
@@ -93,4 +100,4 @@ rejected_shapes:
   - arxiv: 2607.06127v1
     timestamp: '2026-07-20T19:12:46Z'
 coordination_signals: []
-last_updated: '2026-07-29T18:37:37Z'
+last_updated: '2026-07-30T10:02:43Z'
