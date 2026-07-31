@@ -74,7 +74,14 @@ observed_landing_zones:
       reached by importing eva.metrics.experience - already wir
     branch: rw-voice-eq-bench-a-real-world-benchmark-for-evaluating-voic
     timestamp: '2026-07-29T18:37:37Z'
-  last_observed: '2026-07-29T18:37:37Z'
+  - arxiv: 2607.19235v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: "MetricsRunner auto-discovery via registry.list_metrics()\
+      \ (src/eva/metrics/runner.py:131), reached from the pre-existing `eva` CLI entry\
+      \ point (eva.cli:main \u2192 run_benchmark \u2192 BenchmarkRunner \u2192 MetricsR"
+    branch: meetingtom-evaluating-multimodal-llms-on-theory-of-mind-reas
+    timestamp: '2026-07-31T16:46:40Z'
+  last_observed: '2026-07-31T16:46:40Z'
 - path: src/eva/metrics/diagnostic/
   shape_tags:
   - registry-add
@@ -107,4 +114,4 @@ rejected_shapes:
   - arxiv: 2607.06127v1
     timestamp: '2026-07-20T19:12:46Z'
 coordination_signals: []
-last_updated: '2026-07-31T00:50:22Z'
+last_updated: '2026-07-31T16:46:40Z'
