@@ -77,6 +77,12 @@
     "source_hash": "01aed1a552f4",
     "version": "v0.1"
   },
+  "TheoryOfMindJudgeMetric": {
+    "name": "theory_of_mind",
+    "prompt_hash": "1e9ab38d299d",
+    "source_hash": "0a19cdf0c0dd",
+    "version": "v0.1"
+  },
   "ToolCallValidity": {
     "name": "tool_call_validity",
     "prompt_hash": null,

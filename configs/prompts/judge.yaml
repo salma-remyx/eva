@@ -283,6 +283,106 @@ judge:
           }},
           "rating": <int: 1, 2, or 3>
       }}
+  theory_of_mind:
+    user_prompt: |
+      You are an expert evaluator judging a voice assistant's Theory of Mind (ToM) — its ability to infer the user's latent beliefs, intentions, and states of knowledge from dialogue cues, rather than acting on literal utterances alone. You will evaluate the conversation across three dimensions, each scored as a binary flag (true = ToM failure present, false = no failure).
+
+      Theory of Mind means looking past what the user literally said to infer what they actually want, believe, or know. A weak assistant takes utterances at face value; a strong assistant reads between the lines — recognizing hesitation, unstated needs, false assumptions, and agreement that is not really agreement.
+
+      ## Ground-Truth User State (the mind the assistant should have modeled)
+      The user's true goal and disposition are provided below. Use them as the oracle: judge whether the assistant's behavior reflects an accurate model of THIS user, not just the surface words.
+
+      User's true goal: {user_goal}
+      User's disposition / persona: {user_persona}
+
+      ## Understanding the Conversation Trace
+      {user_turns_disclaimer}
+
+      {assistant_turns_disclaimer}
+
+      **IMPORTANT — Voice conversation context:** This is a spoken conversation, so speech-recognition errors and hesitation or filler are normal. Do not treat mere disfluency or transcription noise as a social signal — only flag a ToM failure when the assistant clearly misread the user's underlying state.
+
+      **IMPORTANT — Interruption tags:** The transcript may contain inline tags marking speech overlap. These are metadata about the voice interaction, not social cues:
+      {interruption_tags_reference}
+      Treat these tags as natural voice phenomena; do not interpret them as signs of the user's beliefs or agreement.
+
+      ## Full Conversation with Tools
+      {conversation_trace}
+
+      ## Evaluation Dimensions
+      Each dimension captures a distinct way the assistant can fail to model the user's mind. Every failure maps to exactly one dimension — there is no overlap.
+
+      ### 1. missed_latent_intent
+      **Scope: Inferring the user's underlying goal or need.** Did the assistant act on the literal request while missing the user's actual intent — the goal given above, or an intent inferable from the dialogue?
+
+      **IS a flag:**
+      - Proceeding on the surface request when the user's true goal (per the oracle) was different or broader, and the assistant had enough cues to notice.
+      - Missing an unstated need the user was hinting at (e.g., reluctance, confusion, or a constraint implied but not spelled out) and barreling ahead.
+      - Treating a vague or hedged request as fully specified instead of inferring or confirming the real intent.
+
+      **Is NOT a flag:**
+      - The user's goal was genuinely ambiguous and the assistant reasonably confirmed or proceeded.
+      - The assistant correctly inferred the latent intent and acted on it.
+      - The user explicitly and unambiguously stated their goal and the assistant followed it (no inference required).
+
+      ### 2. pseudo_consensus_unrecognized
+      **Scope: Distinguishing genuine agreement from apparent agreement that masks dissent.** Did the user display superficial acceptance — "sure", "I guess that's fine", "whatever works", reluctant compliance, or agreement under visible social pressure — while actually hesitating, unconvinced, or privately dissenting, AND the assistant treated it as genuine buy-in instead of probing or confirming?
+
+      This is the signature Theory-of-Mind failure: mistaking compliance for consent.
+
+      **IS a flag:**
+      - The user agreed but the transcript shows hedging, hesitation, qualification, or reluctance signaling the agreement is not wholehearted, and the assistant moved on as if fully resolved.
+      - The user accepted an option the assistant pushed despite cues they preferred otherwise, and the assistant did not check that the user was genuinely satisfied.
+      - The user said "okay" or "fine" to close the interaction while the dialogue reveals an unaddressed underlying concern.
+
+      **Is NOT a flag:**
+      - The user's agreement was genuine and unforced (no hedging or reluctance cues).
+      - The assistant recognized the lukewarm agreement and appropriately confirmed, offered alternatives, or surfaced the concern.
+      - The user simply agreed and there were no cues of masked dissent to miss.
+
+      ### 3. knowledge_state_misread
+      **Scope: Modeling what the user knows and does not know.** Did the assistant act on a wrong model of the user's knowledge — assuming knowledge the user lacks, over-explaining what the user clearly already knows, or failing to register the user's uncertainty or confusion?
+
+      **IS a flag:**
+      - Using jargon, references, or steps the user clearly does not understand (visible confusion or unfamiliarity) without adapting.
+      - Over-explaining or re-clarifying concepts the user has already demonstrated they know.
+      - Missing clear signs the user was confused or uncertain about a key detail and proceeding as if they understood.
+
+      **Is NOT a flag:**
+      - The assistant appropriately matched its explanation depth to the user's evident knowledge.
+      - The user's knowledge state was unclear and the assistant reasonably confirmed.
+      - Standard verification of error-prone details (confirmation codes, amounts) that any user might mishear — this is not a knowledge-state misread.
+
+      ## Rating Scale
+      Rate each dimension, then give an overall rating summarizing the assistant's Theory of Mind across the whole conversation.
+
+      - **3** (Strong ToM): No dimension flagged. The assistant accurately inferred the user's latent intent, recognized any pseudo-consensus and appropriately confirmed, and maintained a correct model of the user's knowledge.
+      - **2** (Partial ToM): One dimension flagged, or minor cues missed without major consequence. The assistant tracked overt intent but slipped on at least one latent signal.
+      - **1** (Poor ToM): Two or more dimensions flagged, or a single severe misread (e.g., acting on a wrong goal, or mistaking clear reluctant compliance for consent). The assistant took utterances largely at face value and operated on an inaccurate model of the user.
+
+      ## Response Format
+      Respond in JSON. The "evidence" field must ALWAYS contain 1-2 sentences citing specific parts of the transcript, even when flagged is false (briefly explain why no failure was found). Evidence should be in English but keep transcript citations in the original language. "flags_count" is the number of dimensions with flagged = true.
+      {{
+          "dimensions": {{
+              "missed_latent_intent": {{
+                  "evidence": "<string: REQUIRED>",
+                  "flagged": <bool>,
+                  "rating": <int: 1, 2, or 3>
+              }},
+              "pseudo_consensus_unrecognized": {{
+                  "evidence": "<string: REQUIRED>",
+                  "flagged": <bool>,
+                  "rating": <int: 1, 2, or 3>
+              }},
+              "knowledge_state_misread": {{
+                  "evidence": "<string: REQUIRED>",
+                  "flagged": <bool>,
+                  "rating": <int: 1, 2, or 3>
+              }}
+          }},
+          "flags_count": <int: 0-3>,
+          "rating": <int: 1, 2, or 3>
+      }}
   faithfulness:
     user_prompt: |
       You are an expert evaluator analyzing whether a voice assistant remains faithful to information, policies, and instructions throughout a conversation. You will evaluate the conversation across five dimensions, each scored as a binary flag (true = issue present, false = no issue) and, when flagged, a severity rating (1 = major user impact, 2 = minor or ambiguous; 3 = no issue). See the Rating Scale section below for detailed severity guidance.
