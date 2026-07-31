@@ -1,4 +1,10 @@
 {
+  "AbstentionJudgeMetric": {
+    "name": "abstention",
+    "prompt_hash": "bd5e2ed65ff4",
+    "source_hash": "89b5760c69d3",
+    "version": "v0.1"
+  },
   "AuthenticationSuccessMetric": {
     "name": "authentication_success",
     "prompt_hash": null,
