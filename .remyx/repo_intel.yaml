@@ -81,7 +81,14 @@ observed_landing_zones:
       \ point (eva.cli:main \u2192 run_benchmark \u2192 BenchmarkRunner \u2192 MetricsR"
     branch: meetingtom-evaluating-multimodal-llms-on-theory-of-mind-reas
     timestamp: '2026-07-31T16:46:40Z'
-  last_observed: '2026-07-31T16:46:40Z'
+  - arxiv: 2607.28439v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: 'Resolvable from the pre-existing EVA CLI/metrics-runner
+      path: main.py -> eva.cli.main -> eva.metrics.runner resolves ''persona_panel''
+      by name from the global metric registry (registry.get, runner.py:48'
+    branch: beyond-a-single-judge-simulating-social-persona-panels-for-g
+    timestamp: '2026-08-01T21:50:01Z'
+  last_observed: '2026-08-01T21:50:01Z'
 - path: src/eva/metrics/diagnostic/
   shape_tags:
   - registry-add
@@ -114,4 +121,4 @@ rejected_shapes:
   - arxiv: 2607.06127v1
     timestamp: '2026-07-20T19:12:46Z'
 coordination_signals: []
-last_updated: '2026-07-31T16:46:40Z'
+last_updated: '2026-08-01T21:50:01Z'
