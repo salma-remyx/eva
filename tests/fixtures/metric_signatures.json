@@ -5,6 +5,12 @@
     "source_hash": "ecce31785d0d",
     "version": "v0.1"
   },
+  "CleanTranscriptionWERMetric": {
+    "name": "clean_transcription_wer",
+    "prompt_hash": null,
+    "source_hash": "d8158bf3bc1a",
+    "version": "v0.1"
+  },
   "ConcisenessJudgeMetric": {
     "name": "conciseness",
     "prompt_hash": "57caf9a18a3c",

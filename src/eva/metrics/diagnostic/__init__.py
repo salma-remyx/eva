@@ -1,6 +1,7 @@
 """Debug metrics - diagnostic metrics for debugging model performance issues, not used in final evaluation scores."""
 
 from . import authentication_success  # noqa
+from . import clean_transcription_wer  # noqa
 from . import conversation_correctly_finished  # noqa
 from . import conversation_time_limit  # noqa
 from . import response_speed  # noqa
@@ -12,6 +13,7 @@ from . import tts_fidelity  # noqa
 
 __all__ = [
     "authentication_success",
+    "clean_transcription_wer",
     "conversation_correctly_finished",
     "conversation_time_limit",
     "response_speed",
