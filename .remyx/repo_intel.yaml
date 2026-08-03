@@ -111,6 +111,16 @@ observed_landing_zones:
     branch: evaluating-large-language-models-on-misconceptions-in-multi-
     timestamp: '2026-07-17T18:37:31Z'
   last_observed: '2026-07-17T18:37:31Z'
+- path: docs/metrics/
+  shape_tags:
+  - unclassified
+  confirmed_by:
+  - arxiv: 2607.28175v1
+    mode: ''
+    call_site_specifics: ''
+    branch: agenticasr-refining-speech-recognition-in-real-world-scenari
+    timestamp: '2026-08-03T17:43:14Z'
+  last_observed: '2026-08-03T17:43:14Z'
 rejected_shapes:
 - shape_tag: null
   reason_code: null
@@ -123,4 +133,4 @@ rejected_shapes:
   - arxiv: 2607.28175v1
     timestamp: '2026-08-03T01:43:16Z'
 coordination_signals: []
-last_updated: '2026-08-03T01:43:16Z'
+last_updated: '2026-08-03T17:43:14Z'
