@@ -42,7 +42,14 @@ observed_landing_zones:
       not in the validation-only filter) a
     branch: hy-multiturn-a-six-dimensional-benchmark-for-deep-multi-turn
     timestamp: '2026-08-05T05:19:49Z'
-  last_observed: '2026-08-05T05:19:49Z'
+  - arxiv: 2607.21447v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: 'Reached via the @register_metric registry hook: imported
+      by src/eva/metrics/accuracy/__init__.py, auto-listed by MetricRegistry.list_metrics()
+      (the default for EvaConfig.metrics at config.py:558), and'
+    branch: rumba-russian-user-memory-benchmark
+    timestamp: '2026-08-05T20:20:18Z'
+  last_observed: '2026-08-05T20:20:18Z'
 - path: src/eva/metrics/experience/
   shape_tags:
   - library-shape-public-api
@@ -142,4 +149,4 @@ rejected_shapes:
   - arxiv: 2310.13650v1
     timestamp: '2026-08-04T10:15:20Z'
 coordination_signals: []
-last_updated: '2026-08-05T05:19:49Z'
+last_updated: '2026-08-05T20:20:18Z'
