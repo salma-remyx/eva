@@ -35,7 +35,14 @@ observed_landing_zones:
       \ via `get_global_registry().get(name)` at `src/eva/metrics/runner.py:48` a"
     branch: evaluating-medical-ai-under-missing-information-same-provide
     timestamp: '2026-07-31T00:50:22Z'
-  last_observed: '2026-07-31T00:50:22Z'
+  - arxiv: 2607.29196v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: Registered via @register_metric into the global MetricRegistry;
+      auto-included as a default metric by eva.models.config._get_all_metrics() (registry.list_metrics(),
+      not in the validation-only filter) a
+    branch: hy-multiturn-a-six-dimensional-benchmark-for-deep-multi-turn
+    timestamp: '2026-08-05T05:19:49Z'
+  last_observed: '2026-08-05T05:19:49Z'
 - path: src/eva/metrics/experience/
   shape_tags:
   - library-shape-public-api
@@ -135,4 +142,4 @@ rejected_shapes:
   - arxiv: 2310.13650v1
     timestamp: '2026-08-04T10:15:20Z'
 coordination_signals: []
-last_updated: '2026-08-04T10:15:20Z'
+last_updated: '2026-08-05T05:19:49Z'
