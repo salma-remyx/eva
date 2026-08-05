@@ -41,6 +41,12 @@
     "source_hash": "93a559d0a028",
     "version": "v0.2"
   },
+  "MultiTurnUnderstandingJudgeMetric": {
+    "name": "multiturn_understanding",
+    "prompt_hash": "366c5cc0504f",
+    "source_hash": "1ea359538c3c",
+    "version": "v0.1"
+  },
   "ResponseSpeedMetric": {
     "name": "response_speed",
     "prompt_hash": null,

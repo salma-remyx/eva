@@ -1071,3 +1071,160 @@ judge:
           "summary": "<1-2 sentence summary for this turn>"
       }}
       ]
+  multiturn_understanding:
+    user_prompt: |
+      You are an expert evaluator analyzing whether a voice assistant correctly understood and acted on information across a long, multi-turn conversation. You will evaluate the conversation across six dimensions of deep multi-turn understanding, each scored as a binary flag (true = failure present, false = no failure) plus a severity rating.
+
+      These six dimensions capture the recurring ways conversational agents fail in long interactions: forgetting earlier constraints, executing instructions imprecisely, mishandling several constraints at once, operating on the wrong object, taking actions that should have been withheld, and misresolving references. Every multi-turn understanding issue in the conversation maps to exactly one dimension — there is no overlap.
+
+      **IMPORTANT — Scope boundary:** This metric evaluates whether the assistant correctly *understood, tracked, and acted on* multi-turn information. It does NOT evaluate whether the conversation moved forward efficiently (that is `conversation_progression`) or whether the assistant violated a policy or acted against explicit instructions (that is `faithfulness`). Only flag a dimension here when the root cause is a failure to track, combine, localize, suppress, or resolve multi-turn information — not a policy choice or a stylistic inefficiency.
+
+      **IMPORTANT — Voice conversation context:** This is a voice (spoken) conversation, which means speech recognition errors are common. When the assistant mishears or misreads back a value because of a transcription or audio artifact, attribute that to the voice channel rather than to a multi-turn understanding failure, unless the assistant acted on the wrong understanding downstream.
+
+      **IMPORTANT — Interruption tags:** The transcript may contain inline tags indicating speech overlap. These are informational metadata about the voice interaction — they are NOT multi-turn understanding issues by themselves:
+
+      {interruption_tags_reference}
+
+      ## Agent Context
+      **Agent role:** {agent_role}
+
+      **Agent instructions:**
+      {agent_instructions}
+
+      ## Understanding the Conversation Trace
+      {user_turns_disclaimer}
+
+      {assistant_turns_disclaimer}
+
+      ## Full Conversation with Tools
+      {conversation_trace}
+
+      ## Evaluation Dimensions
+
+      ### 1. constraint_memory_failure
+      **Scope: Remembering and honoring established details.** Did the assistant forget, lose, or fail to act on a detail, preference, or constraint the user established earlier in the conversation — including a later revision or correction to that detail?
+
+      **IS a failure (flag = true):**
+      - Re-asking for information the user already provided earlier (e.g., a confirmation number, name, or destination already stated and used).
+      - Ignoring or contradicting a constraint or preference the user explicitly stated earlier (e.g., the user ruled out an option, but the assistant later assumes it is still available).
+      - Using a stale value after the user revised it (e.g., the user corrected a date or quantity and the assistant still acts on the old one).
+      - Failing to carry an earlier detail into a later decision where it was required.
+
+      **Is NOT a failure:**
+      - Asking for information the user has not yet provided.
+      - A legitimate read-back or re-confirmation of an error-prone value (alphanumeric code, amount, spelled name) the user just gave — standard voice-agent practice, not a memory failure.
+      - The assistant correctly remembered and applied the earlier detail.
+
+      ### 2. precise_execution_error
+      **Scope: Following explicit, precise instructions exactly.** The assistant attempted the right task but failed to follow a precise, explicit instruction — wrong quantity, format, ordering, or a specific requested option.
+
+      **IS a failure:**
+      - Executing with the wrong quantity or count (e.g., booking two when the user asked for one).
+      - Producing the wrong format or omitting a required sub-step the user explicitly requested.
+      - Choosing a different specific option than the one explicitly requested when that option was available.
+      - Performing steps in the wrong order when the user specified an order.
+
+      **Is NOT a failure:**
+      - Reasonably interpreting genuinely ambiguous instructions.
+      - Following a higher-priority policy or safety constraint that overrides the precise instruction (flag that under `faithfulness`, not here).
+      - Minor paraphrasing or rewording that preserves the requested meaning.
+
+      ### 3. constraint_synthesis_failure
+      **Scope: Combining multiple constraints simultaneously.** The assistant failed to correctly satisfy two or more constraints that must hold at the same time — meeting one while violating another, or picking an option that does not satisfy all stated requirements.
+
+      **IS a failure:**
+      - Selecting an option that violates one of several concurrently stated constraints (e.g., the user asked for "cheapest AND non-stop" and the assistant picks a cheap but connecting flight).
+      - Failing to cross-check a candidate action against the full set of stated requirements.
+      - Not surfacing an inconsistency between constraints that makes the request unsatisfiable as stated.
+
+      **Is NOT a failure:**
+      - Violating a single constraint in isolation (that belongs to the relevant single-constraint dimension — usually `constraint_memory_failure` or `precise_execution_error`).
+      - A trade-off the user explicitly authorized between constraints.
+
+      ### 4. object_localization_error
+      **Scope: Identifying the intended object among several.** The user's request points to a specific item (by description, attributes, or position among alternatives), but the assistant operated on the wrong object or entity.
+
+      **IS a failure:**
+      - Acting on item A when the user clearly described item B among alternatives (e.g., booking the second itinerary when the user described the first).
+      - Using the wrong record, identifier, or entity when the intended one was identifiable from the user's description.
+
+      **Is NOT a failure:**
+      - The description genuinely matches multiple items and the assistant correctly asks the user to disambiguate.
+      - The user did not provide enough information to localize the object, and the assistant appropriately asks for clarification.
+
+      ### 5. action_suppression_failure
+      **Scope: Withholding action when a condition is unmet.** The assistant took (or failed to withhold) an action — especially an irreversible one — when a required precondition was unmet, or proceeded with an action that should have been suppressed until a condition was satisfied.
+
+      **IS a failure:**
+      - Executing an action while required information, confirmation, or eligibility was still missing.
+      - Not gating an action on a stated condition (e.g., the user said "only if it's under $200" and the assistant proceeds above that threshold).
+      - Proceeding despite an unmet prerequisite the assistant knew or should have known about.
+
+      **Is NOT a failure:**
+      - Taking an action after all required conditions were met.
+      - Correctly refraining from an action when a condition was unmet — that is correct behavior, not a failure.
+
+      ### 6. reference_resolution_error
+      **Scope: Resolving pronouns and referents.** The assistant resolved a pronoun, demonstrative, or ellipsis ("it", "that one", "the other one", "same as before") to the wrong entity, or failed to resolve it when the referent was determinable from context.
+
+      **IS a failure:**
+      - Interpreting a referent as the wrong entity (e.g., "book that one" pointed to itinerary B, but the assistant books itinerary A).
+      - Operating on the wrong antecedent of a pronoun used across turns.
+
+      **Is NOT a failure:**
+      - A referent that is genuinely ambiguous and cannot be determined from context, where the assistant correctly asks the user to clarify.
+
+      ## Rating Scale
+      For each dimension, set `flagged` to true if the failure occurred, and assign a per-dimension severity rating:
+
+      - **3** (No failure): the dimension was handled correctly (flagged = false).
+      - **2** (Minor or ambiguous failure): a single isolated or borderline instance with little downstream impact.
+      - **1** (Clear failure): a clear instance of the failure, or multiple instances, that meaningfully affected the outcome.
+
+      ## Overall Rating
+      The overall rating reflects the worst dimension, because any single clear multi-turn understanding failure can derail a long conversation:
+
+      - **3**: No dimension is flagged.
+      - **2**: One or more dimensions flagged at rating 2 (minor), and no dimension rated 1.
+      - **1**: Any dimension rated 1 (clear failure), or three or more dimensions flagged.
+
+      Provide a `flags_count` equal to the number of dimensions with `flagged = true`.
+
+      ## Response Format
+      Respond in JSON format. The "evidence" field must ALWAYS contain 1-2 sentences referencing specific parts of the transcript, even when flagged is false (briefly explain why no failure was found). Keep evidence in English but cite the original-language wording where relevant.
+      {{
+          "dimensions": {{
+              "constraint_memory_failure": {{
+                  "evidence": "<string: REQUIRED>",
+                  "flagged": <bool>,
+                  "rating": <int: 1, 2, or 3>
+              }},
+              "precise_execution_error": {{
+                  "evidence": "<string: REQUIRED>",
+                  "flagged": <bool>,
+                  "rating": <int: 1, 2, or 3>
+              }},
+              "constraint_synthesis_failure": {{
+                  "evidence": "<string: REQUIRED>",
+                  "flagged": <bool>,
+                  "rating": <int: 1, 2, or 3>
+              }},
+              "object_localization_error": {{
+                  "evidence": "<string: REQUIRED>",
+                  "flagged": <bool>,
+                  "rating": <int: 1, 2, or 3>
+              }},
+              "action_suppression_failure": {{
+                  "evidence": "<string: REQUIRED>",
+                  "flagged": <bool>,
+                  "rating": <int: 1, 2, or 3>
+              }},
+              "reference_resolution_error": {{
+                  "evidence": "<string: REQUIRED>",
+                  "flagged": <bool>,
+                  "rating": <int: 1, 2, or 3>
+              }}
+          }},
+          "flags_count": <int: number of dimensions with flagged = true>,
+          "rating": <int: 1, 2, or 3>
+      }}
