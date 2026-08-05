@@ -41,6 +41,12 @@
     "source_hash": "93a559d0a028",
     "version": "v0.2"
   },
+  "MemoryRecallMetric": {
+    "name": "memory_recall",
+    "prompt_hash": "834c44a0c6d2",
+    "source_hash": "1a3c3b232cee",
+    "version": "v0.1"
+  },
   "ResponseSpeedMetric": {
     "name": "response_speed",
     "prompt_hash": null,
