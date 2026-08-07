@@ -134,7 +134,12 @@ observed_landing_zones:
     call_site_specifics: ''
     branch: agenticasr-refining-speech-recognition-in-real-world-scenari
     timestamp: '2026-08-03T17:43:14Z'
-  last_observed: '2026-08-03T17:43:14Z'
+  - arxiv: 2607.26928v1
+    mode: ''
+    call_site_specifics: ''
+    branch: latent-im-latent-interaction-management-for-speech-llms
+    timestamp: '2026-08-07T23:12:04Z'
+  last_observed: '2026-08-07T23:12:04Z'
 rejected_shapes:
 - shape_tag: null
   reason_code: null
@@ -153,4 +158,4 @@ rejected_shapes:
   - arxiv: 2510.11997v3
     timestamp: '2026-08-07T06:16:27Z'
 coordination_signals: []
-last_updated: '2026-08-07T06:16:27Z'
+last_updated: '2026-08-07T23:12:04Z'
