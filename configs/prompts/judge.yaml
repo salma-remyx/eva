@@ -20,6 +20,65 @@ _shared:
     **Scope of "text before this tag":** For all four cut-off tags (`[likely cut off by user]`, `[likely cut off by assistant]`, `[speaker likely cut itself off]`, `[likely interruption]`), "text before this tag" means **all text from the start of the turn (or from the previous resumption point) up to the tag** — not just the few adjacent words. This region can span multiple sentences and contain multiple entities (confirmation codes, dollar amounts, names, etc.). Any or all of it may have been silently dropped from the audio. The tag is just a signal that an interruption occurred; it might not be at the right place and do not assume the cut-off was small.
 
 judge:
+  conversational_moves:
+    user_prompt: |
+      You are an expert evaluator judging the conversational move selection of an assistant in a voice conversation.
+
+      Classical dialogue systems separate dialogue management from response realization: a policy first selects the next dialogue action (the "move"), then a generator expresses it. In LLM-driven voice agents this selection is hidden inside the model. This metric evaluates whether the move the assistant *actually realized* in each turn was the appropriate one for the dialogue context — the selection-appropriateness dimension, distinct from conciseness, progression, or timing.
+
+      ## Conversation
+      {conversation_turns}
+
+      ## Understanding the Conversation Format
+
+      The conversation is grouped by turn_id. Each turn may contain:
+      - **user**: What the user said
+      - **assistant**: What the assistant said (there may be multiple assistant entries within a single turn — e.g., the assistant speaks, calls a tool, then speaks again)
+      - **tool_call**: A tool invocation made by the assistant
+      - **tool_response**: The result returned by the tool
+
+      When a turn contains multiple assistant entries, evaluate them **together as a single unit** — they represent the assistant's complete response within that turn. Tool calls and responses between assistant entries explain why the assistant spoke in multiple parts (it was waiting for data). It could also be due to interruptions from the user.
+
+      ## Understanding Interruption Tags
+
+      {interruption_tags_reference}
+
+      **Key principle:** When interruption tags are present, the assistant may not have been able to finish what it was saying. Judge the move the assistant was clearly making from the content actually spoken; do not assume a missing move (e.g., an unfinished reply) was inappropriate merely because it was cut off.
+
+      ## Conversational Moves
+
+      Classify each assistant turn by the primary move it realizes. Use exactly one label per turn:
+      - **acknowledging** — Confirms receipt or understanding of prior information (e.g., "Got it, ABC123.", "Thanks, I've found your reservation.") without advancing new substance.
+      - **checking** — Verifies or clarifies information before acting (e.g., asking the user to repeat/confirm a detail, or the assistant checking a constraint), typically to avoid an error.
+      - **querying** — Asks the user for information needed to proceed (e.g., "What date would you like to fly?", "Could you give me your account number?").
+      - **explaining** — Provides information, rationale, policy, or instruction (e.g., explaining options, stating a rule, describing what will happen next).
+      - **replying** — Delivers the outcome, result, or direct answer the user was seeking (e.g., confirming a booking, giving a status, resolving the request).
+      - **other** — Use only when the turn does not fit any of the above (e.g., pure small talk, an off-topic utterance). Do not default to this for normal task dialogue.
+
+      A turn may blend intents; pick the label that best captures the assistant's *primary* communicative purpose in that turn.
+
+      ## Rating Move Appropriateness
+
+      For each turn that contains assistant content, rate whether the move the assistant selected was appropriate given the dialogue context — what the user needed, where the conversation was in the task, and what would naturally advance it.
+      - 3 (Appropriate) — The move was the right choice for the context and advanced the dialogue effectively (e.g., querying for a needed detail before acting, replying with the result once known, acknowledging before a complex explanation).
+      - 2 (Acceptable) — The move was reasonable but slightly suboptimal (e.g., explaining when a brief reply would have sufficed, acknowledging where a confirming action was expected, a mild over- or under-use of checking).
+      - 1 (Inappropriate) — The move was wrong for the context (e.g., querying for information already provided, explaining when the user needed a result, replying with an outcome before gathering the required details, acknowledging instead of answering).
+
+      Judge appropriateness relative to dialogue context, not style or conciseness (those are measured elsewhere). Do not penalize a move for being short or long; judge whether it was the right *kind* of move.
+
+      ## Response Format
+
+      Provide your response as a valid JSON array, one entry per turn_id in the conversation. Each entry must include the turn_id matching the turn number shown in the conversation above.
+      - If the turn contains assistant content, classify its move and rate appropriateness with 1, 2, or 3.
+      - If the turn does not contain assistant content (e.g., user-only turn), set rating to null and move to "other".
+      [
+        {{
+          "turn_id": <int: the turn number from the conversation>,
+          "move": "<one of: acknowledging, checking, querying, explaining, replying, other>",
+          "explanation": "<Brief English justification tying the chosen move and rating to the dialogue context. Empty string if rating is null.>",
+          "rating": <int: 1, 2, or 3, or null if no assistant content>
+        }}
+      ]
   conciseness:
     user_prompt: |
       You are an expert evaluator judging the conciseness and voice-appropriateness of assistant responses in a voice conversation.

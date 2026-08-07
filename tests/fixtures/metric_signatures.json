@@ -35,6 +35,12 @@
     "source_hash": "afa2afc284d9",
     "version": "v0.1"
   },
+  "ConversationalMovesJudgeMetric": {
+    "name": "conversational_moves",
+    "prompt_hash": "67e5b26ea0d3",
+    "source_hash": "bc4eeea0d159",
+    "version": "v0.1"
+  },
   "FaithfulnessJudgeMetric": {
     "name": "faithfulness",
     "prompt_hash": "060e3f1f9e7a",
