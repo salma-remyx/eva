@@ -102,7 +102,14 @@ observed_landing_zones:
       by name from the global metric registry (registry.get, runner.py:48'
     branch: beyond-a-single-judge-simulating-social-persona-panels-for-g
     timestamp: '2026-08-01T21:50:01Z'
-  last_observed: '2026-08-01T21:50:01Z'
+  - arxiv: 2508.20973v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: 'Existing default-metrics path: `eva` CLI -> `run_benchmark.run_benchmark`
+      -> `BenchmarkRunner`/`MetricsRunner`, which defaults `metric_names = registry.list_metrics()`
+      (runner.py:131) and `RunConfig.m'
+    branch: proactiveeval-a-unified-evaluation-framework-for-proactive-d
+    timestamp: '2026-08-08T17:04:17Z'
+  last_observed: '2026-08-08T17:04:17Z'
 - path: src/eva/metrics/diagnostic/
   shape_tags:
   - registry-add
@@ -158,4 +165,4 @@ rejected_shapes:
   - arxiv: 2510.11997v3
     timestamp: '2026-08-07T06:16:27Z'
 coordination_signals: []
-last_updated: '2026-08-07T23:12:04Z'
+last_updated: '2026-08-08T17:04:17Z'
