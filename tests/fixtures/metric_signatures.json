@@ -41,6 +41,12 @@
     "source_hash": "93a559d0a028",
     "version": "v0.2"
   },
+  "ProactiveDialogueJudgeMetric": {
+    "name": "proactive_dialogue",
+    "prompt_hash": "7536879e178c",
+    "source_hash": "8e236de39051",
+    "version": "v0.1"
+  },
   "ResponseSpeedMetric": {
     "name": "response_speed",
     "prompt_hash": null,

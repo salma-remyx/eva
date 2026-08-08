@@ -283,6 +283,68 @@ judge:
           }},
           "rating": <int: 1, 2, or 3>
       }}
+  proactive_dialogue:
+    user_prompt: |
+      You are an expert evaluator judging how **proactively** a voice assistant drove a conversation toward the user's goal. A *proactive* agent takes initiative — it works toward the objective and steers the exchange — rather than only reacting to the last thing the user said.
+
+      You are evaluating the assistant described below.
+
+      **Agent role:** {agent_role}
+      **User's goal for this conversation:** {user_goal}
+
+      You will evaluate the conversation across two dimensions, each rated 3 / 2 / 1. A dimension is **flagged** when the assistant fell short on it — i.e. it was passive or reactive where it should have taken initiative.
+
+      **Scope boundary — this metric measures INITIATIVE, not correctness or efficiency.** It does NOT judge whether the assistant followed policies, gave factually correct answers, avoided redundant statements, or made unnecessary tool calls; those are covered by the `faithfulness` and `conversation_progression` metrics. Only judge whether the assistant actively advanced and guided the conversation. An assistant that perfectly obeys policy and wastes no tool calls can still score low here if it never takes the initiative to move toward the goal.
+
+      **Voice context:** This is a spoken conversation; speech-recognition errors are common and the assistant can only act on the transcript it received — do not penalize proactiveness because of a transcription artifact.
+
+      ## Understanding the Conversation Trace
+      {user_turns_disclaimer}
+
+      {assistant_turns_disclaimer}
+
+      ## Full Conversation with Tools
+      {conversation_trace}
+
+      ## Evaluation Dimensions
+
+      ### 1. target_planning
+      **Did the assistant proactively work toward the user's goal?** A proactive agent keeps the objective in view, pursues the sub-steps needed to reach it, and makes concrete progress instead of waiting for the user to direct every step.
+
+      **Rating 3 (strongly proactive):** The assistant consistently moved toward the goal — it identified or pursued the needed steps, used tool results to advance, and did not stall or lose the thread of the objective.
+      **Rating 2 (adequate):** The assistant made some progress toward the goal but missed clear opportunities to advance (e.g., it already had the information needed for the next step but did not take it, or it let the conversation drift before re-engaging with the objective).
+      **Rating 1 (passive/reactive):** The assistant mostly waited for the user to direct every step, lost track of the stated goal, or failed to take obvious actions that would have moved the conversation forward.
+
+      ### 2. dialogue_guidance
+      **Did the assistant proactively guide the dialogue itself?** A proactive agent anticipates what the user needs next, offers relevant information or suggestions without being asked, and asks forward-looking clarifying questions that keep the exchange productive.
+
+      **Rating 3 (strongly proactive):** The assistant anticipated the user's needs, volunteered relevant information or next steps, and asked clarifying questions that advanced the conversation.
+      **Rating 2 (adequate):** The assistant responded competently but reactively — it answered what was asked and clarified when prompted, yet rarely volunteered information, suggestions, or forward-looking questions.
+      **Rating 1 (passive/reactive):** The assistant passively fielded requests, failed to clarify genuinely ambiguous intent, offered no guidance, or let the conversation stall.
+
+      ## Overall Rating
+      - **3**: No dimension is flagged — the assistant was at least adequate on both and strongly proactive on at least one.
+      - **2**: Exactly one dimension is flagged (the assistant was proactive on one axis but fell short on the other).
+      - **1**: Both dimensions are flagged, or either dimension is clearly passive/reactive (rating 1).
+
+      ## Response Format
+      Respond in JSON format. The "evidence" field must ALWAYS contain 1-2 sentences citing specific parts of the transcript, even when an issue is not flagged; when not flagged, briefly explain why the assistant was adequately or strongly proactive. Evidence should be in English but keep quoted transcript text in its original language.
+      {{
+          "dimensions": {{
+              "target_planning": {{
+                  "evidence": "<string: REQUIRED>",
+                  "flagged": <bool: true if a proactiveness deficit is present, false otherwise>,
+                  "rating": <int: 1, 2, or 3>
+              }},
+              "dialogue_guidance": {{
+                  "evidence": "<string: REQUIRED>",
+                  "flagged": <bool: true if a proactiveness deficit is present, false otherwise>,
+                  "rating": <int: 1, 2, or 3>
+              }}
+          }},
+          "rating": <int: 1, 2, or 3 — overall proactive-dialogue rating>,
+          "explanation": "<string: 1-2 sentence summary>"
+      }}
   faithfulness:
     user_prompt: |
       You are an expert evaluator analyzing whether a voice assistant remains faithful to information, policies, and instructions throughout a conversation. You will evaluate the conversation across five dimensions, each scored as a binary flag (true = issue present, false = no issue) and, when flagged, a severity rating (1 = major user impact, 2 = minor or ambiguous; 3 = no issue). See the Rating Scale section below for detailed severity guidance.
