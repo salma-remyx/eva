@@ -112,6 +112,7 @@ observed_landing_zones:
   last_observed: '2026-08-08T17:04:17Z'
 - path: src/eva/metrics/diagnostic/
   shape_tags:
+  - library-shape-public-api
   - registry-add
   confirmed_by:
   - arxiv: 2607.08535v1
@@ -121,7 +122,14 @@ observed_landing_zones:
       config)), made resolvable by the diagnostic/__init
     branch: when-the-judge-changes-so-does-the-measurement-auditing-llm-
     timestamp: '2026-07-17T06:04:27Z'
-  last_observed: '2026-07-17T06:04:27Z'
+  - arxiv: 2501.06728v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: 'Invoked via the pre-existing MetricsRunner (src/eva/metrics/runner.py:
+      compute_metric awaits metric.compute(context)), driven by the eva CLI (eva.cli:main
+      -> run_benchmark); it is opt-in (exclude_from'
+    branch: measuring-the-robustness-of-reference-free-dialogue-evaluati
+    timestamp: '2026-08-09T10:21:51Z'
+  last_observed: '2026-08-09T10:21:51Z'
 - path: configs/prompts/
   shape_tags:
   - unclassified
@@ -165,4 +173,4 @@ rejected_shapes:
   - arxiv: 2510.11997v3
     timestamp: '2026-08-07T06:16:27Z'
 coordination_signals: []
-last_updated: '2026-08-08T17:04:17Z'
+last_updated: '2026-08-09T10:21:51Z'
