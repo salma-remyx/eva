@@ -129,7 +129,14 @@ observed_landing_zones:
       -> run_benchmark); it is opt-in (exclude_from'
     branch: measuring-the-robustness-of-reference-free-dialogue-evaluati
     timestamp: '2026-08-09T10:21:51Z'
-  last_observed: '2026-08-09T10:21:51Z'
+  - arxiv: 2608.06329v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: Instantiated and run by the pre-existing MetricsRunner in
+      src/eva/orchestrator/runner.py (metric_names=self.config.metrics at lines ~226-229,
+      ~493-496, ~864-867), driven by the CLI --metrics flag -> c
+    branch: benchmarking-the-benchmarks-evaluating-benchmarks-for-conver
+    timestamp: '2026-08-11T16:14:54Z'
+  last_observed: '2026-08-11T16:14:54Z'
 - path: configs/prompts/
   shape_tags:
   - unclassified
@@ -175,4 +182,4 @@ rejected_shapes:
   - arxiv: 2410.12361v3
     timestamp: '2026-08-10T02:56:08Z'
 coordination_signals: []
-last_updated: '2026-08-10T02:56:08Z'
+last_updated: '2026-08-11T16:14:54Z'
