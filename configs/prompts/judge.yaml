@@ -1071,3 +1071,36 @@ judge:
           "summary": "<1-2 sentence summary for this turn>"
       }}
       ]
+
+  benchmark_audit:
+    user_prompt: |
+      You are auditing the quality of a single benchmark scenario for a task-oriented conversational voice agent. You are NOT evaluating any conversation — only the scenario's written definition. Rate the scenario on three axes, each on a 1-3 scale (1 = poor, 2 = acceptable, 3 = strong).
+
+      ## Scenario definition
+      ### Task description (what the user wants the agent to do)
+      {user_goal}
+
+      ### Agent instructions / policy (rules, constraints, allowed actions the agent must follow)
+      {agent_instructions}
+
+      ### Expected outcome (ground-truth state expected after a successful conversation)
+      {expected_scenario_db}
+
+      ## Rating rubric
+      - consistency (1-3): Is the expected outcome coherent with the task description? Are there internal contradictions, impossible requirements, or ambiguities that make the "correct" outcome ill-defined? 3 = fully coherent and unambiguous; 1 = contradictory or ill-defined.
+      - complexity (1-3): Is the scenario non-trivial — does it plausibly require more than a single shallow exchange (multi-turn reasoning, tool use, constraint satisfaction)? 3 = clearly multi-step and challenging; 1 = trivially solvable in one turn.
+      - policy_coverage (1-3): Does the scenario actually exercise the agent's stated instructions / policy (its rules, constraints, or allowed actions)? 3 = directly stresses the policy; 1 = the policy is irrelevant to this scenario.
+
+      ## Output
+      Return ONLY a JSON object with this exact shape:
+      {{
+        "rating": <overall 1-3 integer, your holistic judgment of scenario quality>,
+        "consistency": {{"rating": <1-3>, "explanation": "<one sentence>"}},
+        "complexity": {{"rating": <1-3>, "explanation": "<one sentence>"}},
+        "policy_coverage": {{"rating": <1-3>, "explanation": "<one sentence>"}},
+        "explanation": "<one or two sentences summarizing overall quality>",
+        "diagnostics": ["<concrete, actionable weakness 1>", "<weakness 2>"]
+      }}
+
+      If the scenario has no weaknesses, return an empty diagnostics list. Do not include any text outside the JSON object.
+
