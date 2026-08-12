@@ -161,7 +161,12 @@ observed_landing_zones:
     call_site_specifics: ''
     branch: latent-im-latent-interaction-management-for-speech-llms
     timestamp: '2026-08-07T23:12:04Z'
-  last_observed: '2026-08-07T23:12:04Z'
+  - arxiv: 2608.09930v1
+    mode: ''
+    call_site_specifics: ''
+    branch: beyond-naturalness-probing-automated-text-to-speech-evaluato
+    timestamp: '2026-08-12T10:38:45Z'
+  last_observed: '2026-08-12T10:38:45Z'
 rejected_shapes:
 - shape_tag: null
   reason_code: null
@@ -182,4 +187,4 @@ rejected_shapes:
   - arxiv: 2410.12361v3
     timestamp: '2026-08-10T02:56:08Z'
 coordination_signals: []
-last_updated: '2026-08-11T16:14:54Z'
+last_updated: '2026-08-12T10:38:45Z'
