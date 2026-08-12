@@ -48,13 +48,14 @@ Measures the quality of the user's conversational experience:
 | [`conciseness`](conciseness.md) | Judge | Language Model | Whether responses are appropriately concise for voice (1-3) |
 | [`conversation_progression`](conversation_progression.md) | Judge | Language Model | Whether assistant moves conversation forward without repetition (1-3) |
 
-### Diagnostic (7 metrics)
+### Diagnostic (8 metrics)
 
 Metrics that help isolate root causes of failures. These provide signals for understanding what went wrong, but are not directly used in final evaluation scores.
 
 | Metric | Type | Capabilities | Description |
 |--------|------|-------------|-------------|
 | [`tts_fidelity`](tts_fidelity.md) | Audio Judge (Gemini) | Speech Synthesis | Whether assistant speech audio matches intended text (0-1). **Opt-in** — excluded from the default run; enable via `--metrics tts_fidelity`. |
+| [`speech_naturalness`](speech_naturalness.md) | Audio Judge (Gemini) | Speech Synthesis | Perceptual naturalness of assistant speech probed across 10 linguistic dimensions (0-1, one rate sub-metric per dimension). **Opt-in** — enable via `--metrics speech_naturalness`. |
 | [`authentication_success`](authentication_success.md) | Deterministic | Speech Recognition, Language Model | Whether get_reservation was called successfully (0-1) |
 | [`response_speed`](response_speed.md) | Deterministic | VAD, Pipeline | Latency between user utterance end and assistant response start (seconds) |
 | [`speakability`](speakability.md) | Judge | Language Model | Whether text is voice-friendly and appropriate for TTS (0-1) |

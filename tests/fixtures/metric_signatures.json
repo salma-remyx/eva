@@ -65,6 +65,12 @@
     "source_hash": "5e61505dc729",
     "version": "v0.4"
   },
+  "SpeechNaturalnessMetric": {
+    "name": "speech_naturalness",
+    "prompt_hash": "97a2b5e332aa",
+    "source_hash": "bb6592af4446",
+    "version": "v0.1"
+  },
   "TTSFidelityMetric": {
     "name": "tts_fidelity",
     "prompt_hash": "c3a02ab03f06",

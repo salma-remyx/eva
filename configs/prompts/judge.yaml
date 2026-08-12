@@ -737,6 +737,72 @@ judge:
             }}
           ]
         }}
+  speech_naturalness:
+    user_prompt: |
+        You are an expert speech linguist evaluating the NATURALNESS of an AI voice agent's spoken audio.
+        You will listen to one audio clip containing only the agent's responses (not the user) and judge
+        how natural the speech sounds along distinct linguistic dimensions — probing, per turn, *where*
+        the speech breaks down rather than collapsing everything into a single naturalness score.
+
+        ## Intended Turns
+        {intended_turns_formatted}
+
+        The intended turns are provided only as context for what the agent meant to say. Judge the SPEECH
+        itself (how it sounds), not whether the words match the script. Word-level fidelity to the
+        intended text is scored separately by the `tts_fidelity` metric — do not duplicate it here. The
+        expected language of the conversation is {expected_language}; judge naturalness for speech in that
+        language, accounting for its phonology and prosodic norms.
+
+        ## Linguistic Dimensions (10)
+        For each agent turn, decide whether each of the following perceptual dimensions is defective. A
+        dimension is defective when the speech exhibits that specific kind of unnaturalness.
+
+        - **mispronunciation** — A word or phoneme is mispronounced, distorted, or replaced by the wrong
+        sound (a segmental error), excluding minor accent/dialect variation that does not impede a native listener.
+        - **unnatural_intonation** — The pitch contour / melody is flat, robotic, or does not match the
+        utterance type (e.g. rising contour on a declarative, missing sentence-final melody).
+        - **inappropriate_stress** — Lexical or sentential stress falls on the wrong syllable or word,
+        distorting meaning or natural emphasis.
+        - **unnatural_pacing** — Speech rate or rhythm is off: too fast or too slow, mechanical, or with
+        irregular timing between syllables/words.
+        - **pause_placement** — Pauses are missing, misplaced, or of unnatural length relative to the
+        syntactic and pragmatic structure (e.g. mid-clause where none is expected, no pause at a boundary).
+        - **disfluency** — Unscripted hesitations, repetitions, prolongations, false starts, or
+        stutter-like breaks that break the flow.
+        - **unnatural_voice_quality** — Timbre is harsh, breathy, creaky, metallic, cracked, or otherwise
+        non-human or fatigued for a sustained portion of the turn.
+        - **inexpressive_affect** — Emotion or affect is flat or mismatched to the conversational context;
+        lacks appropriate warmth, urgency, concern, or engagement.
+        - **phrasing_boundary_error** — Intonational phrasing / boundary tones break clauses unnaturally:
+        running words together across a phrase boundary or splitting a single phrase mid-group.
+        - **register_tone_mismatch** — Tone, formality, or register does not fit the dialogue (e.g. overly
+        casual in a professional setting, mismatched politeness level).
+
+        Tag a dimension only when it is clearly present. Do not invent dimensions beyond these ten.
+
+        ## Rating Scale (per turn)
+        - **1 (Natural)**: None of the ten dimensions are defective — the speech sounds human and appropriate.
+        - **0 (Unnatural)**: At least one dimension is defective.
+
+        For every low-rated turn, list each defective dimension's key in `failure_modes`. Leave
+        `failure_modes` empty when rating = 1.
+
+        ## Response Format
+        Respond with a JSON object. Each turn entry must include the turn_id matching the Intended Turns:
+        {{
+          "turns": [
+            {{
+              "turn_id": <int: the turn number from the Intended Turns>,
+              "language": "<string: the language spoken in this turn, e.g. English, French, Spanish>",
+              "transcript": "<string: your transcription of the audio for this turn>",
+              "explanation": "<string: 1-3 sentence analysis naming the defective dimensions and the acoustic evidence>",
+              "rating": <0 or 1>,
+              "failure_modes": <list of strings: zero or more of "mispronunciation", "unnatural_intonation",
+        "inappropriate_stress", "unnatural_pacing", "pause_placement", "disfluency", "unnatural_voice_quality",
+        "inexpressive_affect", "phrasing_boundary_error", "register_tone_mismatch". Must be [] when rating = 1.>
+            }}
+          ]
+        }}
   agent_speech_fidelity:
     user_prompt: |
         You are an expert evaluator checking the **speech clarity and articulation** of entities spoken by an AI voice agent.
