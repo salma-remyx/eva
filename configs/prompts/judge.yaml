@@ -1071,3 +1071,59 @@ judge:
           "summary": "<1-2 sentence summary for this turn>"
       }}
       ]
+  spoken_function_calling:
+    user_prompt: |
+      You are an expert evaluator for Spoken Function Calling (SFC). Given a user's spoken instruction and the structured function definitions available to the assistant, judge whether each tool call the assistant made selected the CORRECT function for the user's intent and used CORRECT argument values.
+
+      This measures SEMANTIC correctness of function calling — whether the chosen action and its argument values match what the user asked for and what is grounded in the conversation. It is NOT about call formatting: a call with valid syntax but the wrong function or wrong argument values scores as incorrect.
+
+      ## Agent Instructions
+      {agent_instructions}
+
+      ## Agent Role
+      {agent_role}
+
+      ## Available Functions (structured definitions)
+      {available_tools}
+
+      ## Current Date/Time
+      {current_date_time}
+
+      ## Understanding the Turns
+      {user_turns_disclaimer}
+
+      {assistant_turns_disclaimer}
+
+      {perception_note}
+
+      ## Conversation with Tools
+      {conversation_trace}
+
+      ## Your Task
+      For EVERY tool call in the conversation, judge:
+      1. correct_function — Did the assistant select the function that matches the user's spoken intent at that point? A wrong function means the action does not address what the user asked for (e.g. the user asked to cancel but the assistant called a search; the user asked about a refund but the assistant booked something).
+      2. correct_arguments — Are the argument values semantically correct, i.e. grounded in what the user said or in a prior tool result? Wrong values include: a confirmation number, ID, name, or amount that does not match what the user stated or a tool returned, a value swapped from a different context, or a fabricated/placeholder value. Evaluate a value against what the user actually said; a value that is merely a perception artifact of an otherwise-correct intent is still checked for whether it matches the spoken input.
+
+      Do NOT penalize: calls whose formatting is non-standard but whose function and values are semantically correct (that is a different metric), or necessary follow-up calls (e.g. a lookup before a write) that serve the user's intent.
+
+      ## Rating Scale (overall, across all calls)
+      - 3: Correct function calling — every call selected the right function with correct argument values for the spoken intent.
+      - 2: Right functions, wrong values — the correct functions were chosen, but at least one call used a semantically wrong argument value.
+      - 1: Wrong function — at least one call selected a function that does not match the user's spoken intent.
+
+      ## Response Format
+      Respond with a single JSON object:
+      {{
+        "rating": <1|2|3>,
+        "explanation": "<1-3 sentence summary of the function-calling correctness>",
+        "calls": [
+          {{
+            "turn_id": <int: the turn_id of the tool call>,
+            "tool_name": "<function name that was called>",
+            "correct_function": <true|false>,
+            "correct_arguments": <true|false>,
+            "issue": "<brief description of the problem, or empty string if none>"
+          }}
+        ]
+      }}
+      Include one entry in "calls" for every tool call in the conversation, in order.
