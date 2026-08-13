@@ -49,7 +49,14 @@ observed_landing_zones:
       (the default for EvaConfig.metrics at config.py:558), and'
     branch: rumba-russian-user-memory-benchmark
     timestamp: '2026-08-05T20:20:18Z'
-  last_observed: '2026-08-05T20:20:18Z'
+  - arxiv: 2608.05126v1
+    mode: Mode 2 (adapted port)
+    call_site_specifics: Auto-registered via @register_metric into the global metric
+      registry through the eva.metrics.accuracy package __init__ (the new import is
+      the wiring); discovered and run by eva.metrics.runner.MetricsR
+    branch: spoken-function-calling-a-new-perspective-on-spoken-language
+    timestamp: '2026-08-13T06:42:44Z'
+  last_observed: '2026-08-13T06:42:44Z'
 - path: src/eva/metrics/experience/
   shape_tags:
   - library-shape-public-api
@@ -187,4 +194,4 @@ rejected_shapes:
   - arxiv: 2410.12361v3
     timestamp: '2026-08-10T02:56:08Z'
 coordination_signals: []
-last_updated: '2026-08-12T10:38:45Z'
+last_updated: '2026-08-13T06:42:44Z'
