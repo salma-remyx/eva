@@ -1,0 +1,69 @@
+# TTS naturalness judge prompt.
+#
+# Lives in its own top-level namespace ("naturalness_rubric") rather than under
+# the shared "judge" key in judge.yaml, because PromptManager merges YAML files
+# with a shallow dict update — a sibling file reusing the "judge" key would
+# clobber judge.yaml. tts_naturalness.get_judge_prompt() resolves prompts from
+# this namespace instead of the default "judge.{name}.{key}" path.
+#
+# Rubric adapted from "Beyond Naturalness: Probing Automated Text-To-Speech
+# Evaluators on Linguistically Grounded Dimensions" (arXiv:2608.09930).
+naturalness_rubric:
+  tts_naturalness:
+    user_prompt: |
+        You are an expert speech scientist and linguist judging the NATURALNESS of synthesized speech.
+        You will listen to one audio clip: a recording of the agent's side of a conversation (agent responses only, no user audio).
+        Your job is NOT to check whether the agent said the correct words (that is a separate fidelity check). Your job is to judge how NATURAL and human-like the spoken delivery sounds, broken down by linguistic dimension.
+
+        ## Intended Turns (for context — do NOT penalize word-choice or content here, only how the delivery sounds)
+        {intended_turns_formatted}
+
+        We expect the speech to be in {expected_language}. Judge naturalness for delivery in that language; do not flag a dimension merely because of a legitimate accent or dialect, only flag genuine deficiencies.
+
+        ## Naturalness Dimensions
+        Deconstruct naturalness into the following 10 linguistically grounded perceptual dimensions. For each turn, tag every dimension that shows an AUDIBLE DEFICIENCY.
+
+        Word level:
+        - **phonetic_accuracy** — Sounds fall outside the acceptable range of realization for their lexical targets: mispronounced or distorted consonants/vowels, slurred or garbled phonemes that make words hard to recognize (distinct from fidelity to the intended text).
+        - **lexical_stress** — Primary stress lands on the wrong syllable, or unstressed syllables fail to reduce appropriately.
+
+        Prosodic level:
+        - **intonation** — The pitch contour is flat, robotic, or inappropriate for the utterance type (e.g., statement rising like a question, or question read flat), failing to encode utterance type or discourse structure.
+        - **prosodic_stress** — Prominence is misplaced: the wrong words/syllables are emphasized relative to the information structure of the utterance.
+        - **prosodic_boundary** — Phrasing/chunking is misaligned with syntactic structure: pauses break clauses awkwardly, boundary tones are missing or misplaced, or there is no appropriate grouping into prosodic phrases.
+        - **speech_rate** — The overall pace is inappropriate: noticeably too fast, too slow, or unevenly timed, in a way that sounds unnatural. This can fail independently of pitch.
+
+        Paralinguistic level:
+        - **emotional_appropriateness** — The emotional tone does not match the affective content of the utterance (e.g., cheerful delivery of bad news, flat affect for an excited prompt).
+        - **expressiveness** — Delivery is monotonous or lacks natural variation in style and vocal energy; sounds mechanical relative to what a human speaker would produce.
+        - **speaker_identity** — Perceived vocal characteristics (timbre, voice) shift or drift unnaturally within or across the agent's turns, breaking the illusion of a single consistent speaker.
+        - **human_plausibility** — Vocal qualities fall outside the range of physically realizable human production (e.g., metallic, buzzy, glitchy, or otherwise clearly synthetic artifacts).
+
+        ## What NOT to flag
+        - Do not flag a dimension for content/word-choice issues, factual errors, or whether the spoken words match the intended text — that is fidelity, not naturalness.
+        - Do not flag merely because of a legitimate regional accent, dialect, or natural variation in delivery that a human speaker could produce.
+        - Do not flag minor, subjective preferences; only flag a dimension when there is a clear, audible deficiency.
+
+        ## Rating Scale (per turn)
+        - **1 (Natural)**: The turn sounds human-like and natural overall. It may have at most very minor dimension-level notes that do not make it sound unnatural.
+        - **0 (Unnatural)**: One or more dimension deficiencies are clear enough that the turn sounds robotic, distorted, or otherwise not like natural human speech.
+
+        ## Tagging
+        Tag every dimension (from the list above) that has an audible deficiency in the turn. A turn may have multiple dimensions tagged. Dimensions may be tagged on a rating = 1 turn for minor weaknesses, but if any deficiency makes the turn sound unnatural the overall rating MUST be 0. Use the exact dimension keys below.
+
+        Valid dimension keys: "phonetic_accuracy", "lexical_stress", "intonation", "prosodic_stress", "prosodic_boundary", "speech_rate", "emotional_appropriateness", "expressiveness", "speaker_identity", "human_plausibility".
+
+        ## Response Format
+        Respond with a JSON object. Each turn entry must include the turn_id matching the turn number shown in the Intended Turns above:
+        {{
+          "turns": [
+            {{
+              "turn_id": <int: the turn number from the Intended Turns>,
+              "language": "<string: the language spoken in this turn, e.g. English, French, Spanish>",
+              "transcript": "<string: a brief phonetic/naturalness note on what you heard in this turn's audio (do not transcribe for content accuracy)>",
+              "explanation": "<string: 1-3 sentence analysis in English of which naturalness dimensions are deficient and why, or why the turn is natural>",
+              "rating": <0 or 1>,
+              "failure_modes": <list of strings: zero or more of the dimension keys above. Must be [] when the turn is natural with no audible deficiencies.>
+            }}
+          ]
+        }}
