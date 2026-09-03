@@ -559,6 +559,15 @@ class RunConfig(BaseSettings):
         description="Metrics to run. Skip all metrics with `EVA_METRICS=` or `--metrics=`.",
     )
 
+    # Embedding model for opt-in semantic-similarity metrics (stt_semantic_similarity)
+    embedding_model: str = Field(
+        "text-embedding-3-small",
+        description=(
+            "LiteLLM embedding model for the stt_semantic_similarity diagnostic metric. "
+            "Credentials come from standard provider environment variables. Set via EVA_EMBEDDING_MODEL."
+        ),
+    )
+
     # Aggregate-only mode
     aggregate_only: bool = Field(
         False,
