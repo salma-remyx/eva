@@ -1,0 +1,49 @@
+benchmarks:
+  - name: tone-sensitivity-verdict
+    suite: eval/eval_tone_gap_detection.py
+    scorer: tone_sensitivity_verdict_accuracy
+    baseline: main
+    metrics:
+      # TARGET: 15-conversation fixture = 6 tone-gap + 3 no-signal (skip) + 3 attended
+      # (pass) + 3 partial (rating 2 -> normalized 0.5). Judge responses are canned
+      # JSON (deterministic), audio/LLM mocked exactly as in
+      # tests/unit/metrics/experience/test_tone_sensitivity.py, so the PR head scores
+      # 15/15 = 1.0 exactly; baseline (metric absent from registry) scores 0/15 = 0.0.
+      # Threshold 1.0 is therefore reachable and non-vacuous.
+      - name: tone_sensitivity_verdict_accuracy
+        direction: max
+        threshold: 1.0
+        role: target
+      # GUARDRAIL (floor): the pre-existing experience metrics (conciseness,
+      # conversation_progression, turn_taking) must remain registered. Baseline
+      # `main` registers exactly 3; the PR adds tone_sensitivity as a 4th and must
+      # not drop any -> floor anchored at the baseline count 3.0, which `main`
+      # already satisfies (3 >= 3).
+      - name: experience_metric_registry_count
+        direction: max
+        threshold: 3.0
+        role: guardrail
+    policy:
+      guardrail_veto: true
+    held_constant:
+      - identical fixture conversation traces on both arms (plain dicts)
+      - scripted judge responses (canned JSON per conversation; no real LLM)
+      - audio loading patched via load_role_audio/encode_audio_segment and
+        llm_client.generate_text stubbed (protocol taken verbatim from
+        tests/unit/metrics/experience/test_tone_sensitivity.py and
+        eval/eval_wasted_turns.py)
+      - same registration path on both arms (import eva.metrics.experience ->
+        get_global_registry())
+    avoid:
+      - no network and no real LLM / audio-model / SDK calls
+      - no wall-clock timing (shared CPU; deterministic counts and rates only)
+      - no real audio decoding (audio path is a fake /fake/audio_user.wav, mocked
+        exactly as the repo's unit tests do)
+    compute:
+      tier: cpu
+    provenance:
+      tone_sensitivity_verdict_accuracy: "user_guidance (mirrors the scripted-judge detection-rate style of eval/eval_wasted_turns.py, extended with skip/pass controls from the PR docstring)"
+      experience_metric_registry_count: "user_guidance (same key already emitted by eval/eval_wasted_turns.py; floor derived from the baseline experience/__init__.py listing 3 metrics)"
+      held_constant: "repo tests: tests/unit/metrics/experience/test_tone_sensitivity.py (mocking protocol) and eval/eval_wasted_turns.py (eval protocol)"
+      suite: "user_guidance (mirrors eval/eval_wasted_turns.py output contract: repo root on sys.path, single JSON metrics line as last stdout line)"
+      compute: "inferred (deterministic CPU-only orchestration logic; claim is not about a device)"
