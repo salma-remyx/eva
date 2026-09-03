@@ -35,7 +35,9 @@ class StubEmbeddingClient:
         return EmbeddingResult(vectors=[self.vectors[text] for text in texts])
 
 
-def make_metric(vectors: dict[str, list[float]] | None = None) -> tuple[STTSemanticSimilarityMetric, StubEmbeddingClient]:
+def make_metric(
+    vectors: dict[str, list[float]] | None = None,
+) -> tuple[STTSemanticSimilarityMetric, StubEmbeddingClient]:
     """Build the metric with a stub embedding client wired in."""
     metric = STTSemanticSimilarityMetric(config={"embedding_model": "stub-embedding"})
     stub = StubEmbeddingClient(vectors if vectors is not None else dict(_STUB_VECTORS))
@@ -163,6 +165,17 @@ class TestSTTSemanticSimilarityCompute:
         metric = STTSemanticSimilarityMetric(config={"language": "fr", "embedding_model": "multilingual-embed"})
         assert metric.language == "fr"
         assert metric.embedding_model == "multilingual-embed"
+
+    def test_embedding_model_resolves_from_settings_variable(self, monkeypatch):
+        """Without metric config, the EVA_EMBEDDING_MODEL settings variable is the fallback tier."""
+        monkeypatch.setenv("EVA_EMBEDDING_MODEL", "text-embedding-3-large")
+        assert STTSemanticSimilarityMetric().embedding_model == "text-embedding-3-large"
+
+    def test_metric_config_overrides_settings_variable(self, monkeypatch):
+        """Explicit metric config wins over the settings variable."""
+        monkeypatch.setenv("EVA_EMBEDDING_MODEL", "text-embedding-3-large")
+        metric = STTSemanticSimilarityMetric(config={"embedding_model": "custom-embed"})
+        assert metric.embedding_model == "custom-embed"
 
 
 class TestSTTSemanticSimilarityRegistration:

@@ -43,7 +43,7 @@ def _embedding_vector(item: Any) -> list[float]:
     Entries are pydantic objects on current litellm versions but plain dicts
     on older ones, so both shapes are accepted.
     """
-    embedding = item.get("embedding") if isinstance(item, dict) else getattr(item, "embedding")
+    embedding = item.get("embedding") if isinstance(item, dict) else item.embedding
     return [float(component) for component in embedding]
 
 
@@ -118,13 +118,14 @@ class STTSemanticSimilarityMetric(CodeMetric):
     def __init__(self, config: dict | None = None):
         """Initialize the metric with language and embedding model configuration.
 
-        The embedding model resolves from config (`embedding_model`), then
-        the `EMBEDDING_MODEL` environment variable, then a small default.
+        The embedding model resolves from config (`embedding_model`, injected
+        from RunConfig.embedding_model by the orchestrator), then the
+        `EVA_EMBEDDING_MODEL` settings variable, then a small default.
         """
         super().__init__(config)
         self.language = self.config.get("language", "en")
         self.embedding_model = (
-            self.config.get("embedding_model") or os.environ.get("EMBEDDING_MODEL") or _DEFAULT_EMBEDDING_MODEL
+            self.config.get("embedding_model") or os.environ.get("EVA_EMBEDDING_MODEL") or _DEFAULT_EMBEDDING_MODEL
         )
         self.embedding_client = EmbeddingClient(self.embedding_model)
 

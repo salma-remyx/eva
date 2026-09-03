@@ -50,7 +50,7 @@
   "STTSemanticSimilarityMetric": {
     "name": "stt_semantic_similarity",
     "prompt_hash": null,
-    "source_hash": "69798c07e01d",
+    "source_hash": "403bb60cf0d6",
     "version": "v0.1"
   },
   "STTWERMetric": {

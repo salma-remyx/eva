@@ -54,7 +54,7 @@ The conversation score is the mean of per-turn `semdist` values.
 | Option | Default | Description |
 |--------|---------|-------------|
 | `language` | `"en"` | Language used for text normalization (same as `stt_wer`) |
-| `embedding_model` | `text-embedding-3-small` (or `EMBEDDING_MODEL` env var) | LiteLLM embedding model name; credentials come from standard provider environment variables |
+| `embedding_model` | `text-embedding-3-small` (or `EVA_EMBEDDING_MODEL` env var) | LiteLLM embedding model name; credentials come from standard provider environment variables |
 
 **Opt-in**: the metric costs one embedding API call per conversation, so it is excluded from default runs. Enable it explicitly:
 
@@ -96,4 +96,4 @@ Turn 2 above is the divergence case this metric exists to surface: WER of 0.25 w
 - **File**: `src/eva/metrics/diagnostic/stt_semantic_similarity.py`
 - **Class**: `STTSemanticSimilarityMetric`
 - **Base Class**: `CodeMetric`
-- **Configuration**: `language` (default: "en"), `embedding_model` (default: `text-embedding-3-small` or `EMBEDDING_MODEL`)
+- **Configuration**: `language` (default: "en"), `embedding_model` (default: `text-embedding-3-small` or `EVA_EMBEDDING_MODEL`)

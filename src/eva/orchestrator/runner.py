@@ -79,6 +79,7 @@ class BenchmarkRunner:
         # Per-metric configuration derived from run config (e.g. language for stt_wer).
         self._metric_configs: dict[str, dict] = {
             "stt_wer": {"language": config.language.value},
+            "stt_semantic_similarity": {"language": config.language.value, "embedding_model": config.embedding_model},
         }
 
         # Results tracking
