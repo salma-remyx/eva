@@ -47,6 +47,12 @@
     "source_hash": "7cd7e8baa3d2",
     "version": "v0.2"
   },
+  "STTSemanticSimilarityMetric": {
+    "name": "stt_semantic_similarity",
+    "prompt_hash": null,
+    "source_hash": "69798c07e01d",
+    "version": "v0.1"
+  },
   "STTWERMetric": {
     "name": "stt_wer",
     "prompt_hash": null,
