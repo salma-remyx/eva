@@ -421,3 +421,19 @@ eva/
 ## Contributing
 
 We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request. For larger features, we recommend reaching out first to ensure alignment with our roadmap.
+
+## Auditing perturbation significance against a measured null
+
+The perturbation pipeline's permutation test assumes a symmetric sign-flip null on scenario deltas. [`analysis/perturbations/measured_null.py`](analysis/perturbations/measured_null.py) audits that assumption using the repeat clean (frozen-control) trials that `trial_scores.csv` already contains — a null that is measured rather than assumed, at no extra experiment cost. It writes, next to the existing perturbation results:
+
+- `results_measured_null.csv` — how often pure clean-vs-clean replicate noise passes the pipeline's own permutation test, and the effect sizes it manufactures on its own
+- `results_null_audit_*.csv` — the existing `results_pooled.csv` / `results_per_domain.csv` annotated with that phantom-rejection rate, a significance threshold recalibrated to the measured null, and a `verified` flag for rejections that survive their own noise floor
+- `results_scenario_transitions.csv` — per-scenario exact binomial tests against the pooled clean baseline under Benjamini-Hochberg FDR control (binary metrics such as `task_completion`), instead of thresholded win/loss counting
+
+Run it after `stats_perturbations.py`, driven by the same `perturbations_config.yaml`:
+
+```bash
+uv run python analysis/perturbations/measured_null.py
+```
+
+Adapted from *Phantom Gains: Auditing Self-Improvement Against a Measured Null* (arXiv:2608.20290).
