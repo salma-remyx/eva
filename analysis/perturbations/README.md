@@ -11,7 +11,8 @@ metric-value confidence intervals from per-trial scores, then writes the
 |------|------|
 | `data_perturbations.py` | Computes per-scenario means, clean-vs-perturbation deltas, and per-condition metric values from raw trial scores. |
 | `stats_perturbations.py` | Runs bootstrap CIs and paired sign-flip permutation tests with Holm-Bonferroni correction. CIs use `eva.utils.bootstrap` so they match the leaderboard metrics; both CIs and permutation tests are deterministic via a derived `run_seed`. |
-| `run_perturbations.py` | End-to-end driver: calls `data_perturbations` then `stats_perturbations` in sequence. |
+| `transition_audits.py` | Audits the per-scenario gain/lose ledger against a measured null built from clean replicate trials (see "Transition audits" below). |
+| `run_perturbations.py` | End-to-end driver: calls `data_perturbations`, then `stats_perturbations`, then `transition_audits` in sequence. |
 | `regenerate_perturbation_blocks.py` | Reads the results CSVs and writes `perturbation_delta` + `metric_values` blocks into `leaderboardStats.json`. Additive and idempotent (only writes new or changed entries). Dry-run by default; pass `--write` to apply. |
 
 ## How to run
@@ -53,7 +54,8 @@ flagged `insufficient_null` rather than guessed at.
 
 It reads `trial_scores.csv` and the `scenario_deltas.csv` written by
 `data_perturbations.py`, and writes `transition_ledger.csv` and
-`null_floor.csv` to the configured `output_dir`:
+`null_floor.csv` to the configured `output_dir`. It runs as the final step of
+`run_perturbations.py` (data → stats → audit), and can also be run on its own:
 
 ```bash
 uv run python analysis/perturbations/transition_audits.py

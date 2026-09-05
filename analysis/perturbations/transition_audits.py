@@ -27,8 +27,9 @@ baseline replicates a multi-condition run already contains):
 
 Pure computation: takes DataFrames, returns DataFrames. No file I/O, no plotting.
 
-Run from project root after data_perturbations.py:
+Run standalone from project root after data_perturbations.py:
     uv run python analysis/perturbations/transition_audits.py
+or as the final step of run_perturbations.py (data -> stats -> audit).
 """
 
 from pathlib import Path
