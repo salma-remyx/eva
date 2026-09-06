@@ -1071,3 +1071,38 @@ judge:
           "summary": "<1-2 sentence summary for this turn>"
       }}
       ]
+
+
+  cultural_appropriateness:
+    user_prompt: |
+      You are an expert evaluator of cross-cultural conversational competence. Determine whether a voice agent inferred and respected the implicit cultural expectations of the simulated user it was assisting.
+
+      ## Conversation
+      The user and the agent communicated in {language_display_name}.
+      {conversation}
+
+      ## Cultural grounding brief
+      {cultural_brief}
+
+      ## Evaluation Criteria
+      For each aspect in the brief above, analyze whether the agent's own spoken behavior inferred and accommodated the user's implicit expectation.
+
+      Ground rules:
+      - Judge only the agent's spoken words. Tool calls and tool outputs are context, not behavior to penalize.
+      - A violation requires the agent to have materially disregarded an expectation (wrong formality register, repeatedly using a date/time/number format the user did not use, skipping the expected greeting politeness), not a one-off ambiguous rendering.
+      - If the conversation never touched an aspect (e.g. no dates were discussed), that aspect is NOT violated — set it to false and say so in the analysis.
+      - Do not penalize the agent for following the user's lead when the user themselves used a different form.
+      - Do not evaluate the user's behavior — only how the agent accommodated it.
+
+      ## Rating
+      - 3 (Culturally competent): every applicable aspect was respected; register and formats matched the user's own.
+      - 2 (Minor slips): expectations were mostly accommodated, with isolated slips that were corrected or did not confuse the user.
+      - 1 (Violation): one or more applicable aspects were clearly or repeatedly disregarded (e.g. informal register after formal cues, date formats the user had to re-interpret, no greeting politeness at all).
+
+      Respond in JSON format and provide reasoning in English:
+      {{
+        "aspect_analysis": {{
+          "<aspect_name from the brief>": {{"analysis": "<reasoning about whether the agent accommodated this expectation>", "violated": <bool>}}
+        }},
+        "rating": <int: 1, 2, or 3 - overall cultural appropriateness>
+      }}

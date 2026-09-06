@@ -1,0 +1,59 @@
+# Cultural grounding profiles for the multilingual evaluation path.
+#
+# Each profile describes the implicit cultural expectations a simulated user
+# carries when speaking that language: behaviors that are second nature to the
+# user, are never stated as rules, and that a competent assistant is expected
+# to infer from the user's speech and accommodate. Aspect keys are stable
+# slugs — they become the cultural_appropriateness sub-metric names.
+#
+# Methodology adapted (clean-room, no code or data copied) from
+# CultureConverse, arXiv:2608.28405.
+#
+# Adding a language here automatically:
+#   - grounds the user simulator persona (see eva.utils.culture), and
+#   - gives the cultural_appropriateness judge a rubric to score against.
+fr:
+  community: "a French speaker calling from France"
+  aspects:
+    formality_register:
+      user_behavior: "You address the agent formally as 'vous' and expect the same register back; an unfamiliar agent tutoying you or dropping to first-name basis feels presumptuous."
+      agent_expectation: "Keep the formal 'vous' register throughout; never switch to 'tu' or first names unless the user explicitly invites it."
+    date_time_format:
+      user_behavior: "You say and expect dates day-first ('le 14 juin', '14/06') and times on a 24-hour clock ('seize heures trente', '16h30')."
+      agent_expectation: "Render dates day-first and times on a 24-hour clock when confirming or proposing them; month-first dates or AM/PM times force the user to re-interpret."
+    number_format:
+      user_behavior: "You use a decimal comma for amounts ('douze virgule cinq euros', '12,5 €')."
+      agent_expectation: "Speak and confirm amounts with a decimal comma; using a decimal point for a non-integer amount is a slip."
+    greeting_politeness:
+      user_behavior: "You expect a brief polite greeting ('Bonjour') before business and a courtesy close ('Bonne journée') at the end; a bare transactional opener feels rude, but you do not want extended small talk."
+      agent_expectation: "Open with a brief polite greeting and close courteously without padding the call with small talk."
+de:
+  community: "a German speaker calling from Germany"
+  aspects:
+    formality_register:
+      user_behavior: "You address the agent formally with 'Sie' and expect to stay on last-name terms; an unfamiliar agent using 'du' feels disrespectful."
+      agent_expectation: "Use the formal 'Sie' address throughout; never switch to 'du' unless the user offers it first."
+    date_time_format:
+      user_behavior: "You say and expect dates day-first ('der vierzehnte Juni', '14.06.') and times on a 24-hour clock ('sechzehn Uhr dreißig')."
+      agent_expectation: "Render dates day-first and times on a 24-hour clock; month-first dates or AM/PM times are a slip."
+    number_format:
+      user_behavior: "You use a decimal comma for amounts ('dreizehn Komma fünf Euro', '13,50 €')."
+      agent_expectation: "Speak and confirm amounts with a decimal comma ('Komma'), not a decimal point."
+    directness_norm:
+      user_behavior: "You are direct and factual; you expect the agent to answer the actual question without effusive apologies, filler warmth, or hedging, and you value precise confirmations."
+      agent_expectation: "Be factual, concise, and precise; excessive apology loops, sales-style warmth, or vague answers read as evasive rather than polite."
+es:
+  community: "a Spanish speaker calling from Spain"
+  aspects:
+    formality_register:
+      user_behavior: "You open with 'usted' and expect the agent to keep formal address unless you relax it yourself; an unfamiliar agent tuteándote immediately feels overly familiar."
+      agent_expectation: "Address the user with 'usted' and follow the user's lead if they move to 'tú'; switching to informal address unprompted is a violation."
+    date_time_format:
+      user_behavior: "You say and expect dates day-first ('el catorce de junio', '14/06') and, when a clock time is spoken on a 12-hour basis, with its part of day ('las cinco y media de la tarde')."
+      agent_expectation: "Render dates day-first; when speaking times on a 12-hour basis, include the part of day ('de la mañana/tarde/noche') so the time is unambiguous."
+    number_format:
+      user_behavior: "You use a decimal comma for amounts ('doce coma cinco euros')."
+      agent_expectation: "Speak and confirm amounts with a decimal comma; a decimal point for a non-integer amount is a slip."
+    greeting_politeness:
+      user_behavior: "You expect a brief warm greeting ('Buenos días') at the start and a courteous close ('Gracias, hasta luego') at the end; you are happy with one or two friendly exchanges but not a scripted rapport script."
+      agent_expectation: "Open with a brief greeting and close courteously; keep warmth short and natural rather than scripted."

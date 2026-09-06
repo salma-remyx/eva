@@ -238,6 +238,10 @@ EVA_LANGUAGE=it EVA_DOMAIN=airline python main.py
 
 There are some automatically generated rules for WER calculation which will be generated with the `add_culture_data.py` script. To see the full implications of this auto generation, see [metrics/stt_wer.md](docs/metrics/stt_wer.md).
 
+#### Cultural grounding for new languages
+
+French, German, and Spanish also carry a cultural grounding profile in [`configs/cultural_grounding.yaml`](configs/cultural_grounding.yaml): implicit cultural expectations (formality register, date/time/number formats, greeting norms) that are added to the user-simulator persona without being announced to the agent. Adding a profile for a new language grounds the simulator and enables the opt-in [`cultural_appropriateness`](docs/metrics/cultural_appropriateness.md) judge in one step — see the metric docs for details.
+
 ### Exploring Results
 
 EVA includes a Streamlit analysis app for visualizing and comparing results:
