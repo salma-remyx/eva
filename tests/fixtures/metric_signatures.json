@@ -35,6 +35,12 @@
     "source_hash": "afa2afc284d9",
     "version": "v0.1"
   },
+  "CulturalAppropriatenessMetric": {
+    "name": "cultural_appropriateness",
+    "prompt_hash": "11f0c632240f",
+    "source_hash": "a3fd26f90a02",
+    "version": "v0.1"
+  },
   "FaithfulnessJudgeMetric": {
     "name": "faithfulness",
     "prompt_hash": "060e3f1f9e7a",

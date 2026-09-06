@@ -29,6 +29,7 @@ import yaml
 from pipecat.transcriptions.language import Language
 
 from eva.models.config import LANGUAGE_DISPLAY_NAMES
+from eva.utils.cultural_grounding import build_user_cultural_directive
 from eva.utils.logging import get_logger
 
 logger = get_logger(__name__)
@@ -272,6 +273,10 @@ def add_user_language_directive(language: str, language_display_name: str, user_
     Returns None for English (no directive needed). The same string is used both
     at runtime (injected into the simulator persona) and by the judge metric
     (so the judge sees the exact instruction the simulator received).
+
+    For languages with a cultural grounding profile, the implicit cultural
+    grounding block is appended too (see ``eva.utils.cultural_grounding``), so
+    the simulator carries unstated cultural expectations the agent must infer.
     """
     if not language or language.lower() in {"en", "english"}:
         return user_persona
@@ -282,7 +287,11 @@ def add_user_language_directive(language: str, language_display_name: str, user_
         "If you are talking about a date that you read as MM/DD/YYYY, you should say it in the culturally appropriate format. "
         "Distinct proper names (e.g. 'IntelliJ', 'Google') should be kept in their original form."
     )
-    return f"{user_persona}\n\n{directive}"
+    parts = [user_persona, directive]
+    cultural_directive = build_user_cultural_directive(language)
+    if cultural_directive:
+        parts.append(cultural_directive)
+    return "\n\n".join(parts)
 
 
 def get_language_addendum(language: str) -> str | None:
