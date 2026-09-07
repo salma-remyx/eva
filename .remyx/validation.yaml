@@ -1,0 +1,27 @@
+benchmarks:
+  - name: tone-sensitivity-notebook
+    suite:
+      notebook:
+        path: eval/eval_tone_gap_detection.ipynb
+    scorer: tone_sensitivity_verdict_accuracy
+    baseline: main
+    metrics:
+      # Same criteria as the .py suite this notebook renders, so the expected
+      # numbers are known: baseline 0.0 (metric absent from the registry),
+      # PR head 1.0 (all fixture conversations resolve correctly).
+      - name: tone_sensitivity_verdict_accuracy
+        direction: max
+        threshold: 1.0
+        role: target
+      # GUARDRAIL (floor): the three pre-existing experience metrics must stay
+      # registered. Also the tripwire on the notebook's degradation path — if
+      # the harness import fails this reads 0.0 and vetoes, so a broken run
+      # cannot report itself as "no change".
+      - name: experience_metric_registry_count
+        direction: max
+        threshold: 3.0
+        role: guardrail
+    policy:
+      guardrail_veto: true
+    compute:
+      tier: cpu
