@@ -1071,3 +1071,26 @@ judge:
           "summary": "<1-2 sentence summary for this turn>"
       }}
       ]
+
+
+  judge_stability:
+    user_prompt: |
+      You are an expert evaluator judging the overall quality of an assistant in a voice conversation.
+
+      ## Conversation
+      {conversation_turns}
+
+      ## Instructions
+      Rate the assistant's overall handling of this conversation: whether it understood the user's goal, responded appropriately at each step, and completed what the user asked.
+
+      ## Evaluation Criteria
+      - 3 (good): The assistant understood the request and handled the conversation well.
+      - 2 (mixed): The assistant partially handled the conversation, with some misunderstandings or incomplete handling.
+      - 1 (poor): The assistant failed to understand or handle the conversation.
+
+      ## Response Format
+      Respond with a JSON object:
+      {{
+          "rating": <int: 1, 2, or 3>,
+          "explanation": "<1-2 sentence justification>"
+      }}
