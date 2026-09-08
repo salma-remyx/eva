@@ -22,7 +22,7 @@ def _make_record(record_id: str):
 
 
 @patch.dict(os.environ, _BASE_ENV, clear=True)
-def _make_config(tmp_path: Path, max_concurrent: int = 3) -> RunConfig:
+def _make_config(tmp_path: Path, max_concurrent: int = 3, **kwargs) -> RunConfig:
     """Create a minimal RunConfig for testing."""
     return RunConfig(
         model=ModelConfig(
@@ -35,6 +35,7 @@ def _make_config(tmp_path: Path, max_concurrent: int = 3) -> RunConfig:
         max_concurrent_conversations=max_concurrent,
         output_dir=tmp_path / "output",
         run_id="test-run",
+        **kwargs,
     )
 
 
@@ -280,3 +281,18 @@ class TestFromExistingRun:
 
         with pytest.raises(FileNotFoundError, match="config.json not found"):
             BenchmarkRunner.from_existing_run(run_dir)
+
+
+class TestMetricConfigs:
+    def test_metrics_params_forwarded_per_metric(self, tmp_path):
+        """EVA_METRICS_PARAMS entries land in per-metric configs; derived defaults stay."""
+        config = _make_config(tmp_path, metrics_params={"judge_stability": {"repeats": 3}})
+        runner = _make_runner(config)
+        assert runner._metric_configs["judge_stability"] == {"repeats": 3}
+        assert runner._metric_configs["stt_wer"] == {"language": config.language.value}
+
+    def test_metrics_params_default_empty(self, tmp_path):
+        """Without EVA_METRICS_PARAMS only the derived per-metric defaults are present."""
+        config = _make_config(tmp_path)
+        runner = _make_runner(config)
+        assert runner._metric_configs == {"stt_wer": {"language": config.language.value}}

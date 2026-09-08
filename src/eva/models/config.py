@@ -559,6 +559,12 @@ class RunConfig(BaseSettings):
         description="Metrics to run. Skip all metrics with `EVA_METRICS=` or `--metrics=`.",
     )
 
+    metrics_params: dict[str, dict[str, Any]] = Field(
+        default_factory=dict,
+        description="Per-metric parameters (JSON), keyed by metric name, passed to each metric's "
+        'constructor. Example: EVA_METRICS_PARAMS=\'{"judge_stability": {"repeats": 5}}\'.',
+    )
+
     # Aggregate-only mode
     aggregate_only: bool = Field(
         False,

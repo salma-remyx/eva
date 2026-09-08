@@ -690,6 +690,11 @@ class TestExecutionSettings:
         c = _config(env_vars=_BASE_ENV | {"EVA_VALIDATION_THRESHOLDS": json.dumps(thresholds)})
         assert c.validation_thresholds == thresholds
 
+    def test_metrics_params(self):
+        params = {"judge_stability": {"repeats": 5}}
+        c = _config(env_vars=_BASE_ENV | {"EVA_METRICS_PARAMS": json.dumps(params)})
+        assert c.metrics_params == params
+
     def test_stt_params(self):
         params = {"api_key": "k", "model": "nova-2", "language": "en", "punctuate": True}
         c = _config(env_vars=_BASE_ENV | {"EVA_MODEL__STT_PARAMS": json.dumps(params)})

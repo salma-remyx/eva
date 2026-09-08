@@ -80,6 +80,9 @@ class BenchmarkRunner:
         self._metric_configs: dict[str, dict] = {
             "stt_wer": {"language": config.language.value},
         }
+        # User-supplied per-metric params (e.g. judge_stability repeats) merge on top.
+        for name, params in (config.metrics_params or {}).items():
+            self._metric_configs.setdefault(name, {}).update(params)
 
         # Results tracking
         self._results: list[ConversationResult] = []
