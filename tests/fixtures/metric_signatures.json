@@ -41,6 +41,12 @@
     "source_hash": "93a559d0a028",
     "version": "v0.2"
   },
+  "JudgeStabilityMetric": {
+    "name": "judge_stability",
+    "prompt_hash": "42db73ad95fa",
+    "source_hash": "26e7d53c225a",
+    "version": "v0.1"
+  },
   "ResponseSpeedMetric": {
     "name": "response_speed",
     "prompt_hash": null,
