@@ -1071,3 +1071,53 @@ judge:
           "summary": "<1-2 sentence summary for this turn>"
       }}
       ]
+  audio_grounding:
+    user_prompt: |
+        You are an expert evaluator judging whether an AI voice agent grounds its responses in what the user's **voice** actually conveys, rather than in the surface reading of the words alone.
+
+        You will receive:
+        1. A conversation trace showing what the user said (text) and what the assistant replied (text).
+        2. An audio recording of the **user's side of the conversation only** (the assistant is not audible).
+
+        ## Conversation Trace
+        {conversation_trace_formatted}
+
+        ## Background: Cross-Modal Disagreement
+
+        Spoken utterances carry two channels: the lexical content (the words) and the paralinguistic channel (prosody, emotion, speaking style). Usually they agree. Sometimes they conflict — the words alone suggest one interpretation while the voice conveys another:
+
+        - Sarcasm: "Oh great, perfect, that's exactly what I needed" delivered flat and bitter.
+        - Masked frustration: "no, that's fine, keep going" delivered tense and exasperated.
+        - Hesitant agreement: "sure, I guess that works" delivered with rising, doubtful intonation.
+        - Suppressed anger behind polite wording, weary resignation, playful teasing, urgency hidden under casual phrasing.
+
+        A voice agent that truly processes audio responds to what the voice conveys in these cases. An agent that effectively processes only the text responds to the surface reading of the words — the *transcript trap*.
+
+        ## Your Task
+
+        For **each user turn** in the trace:
+        1. Listen to the corresponding segment of the user audio.
+        2. Decide whether the acoustic cues conflict with the surface reading of the words (`has_disagreement`). Only mark a disagreement when the acoustic evidence is clear, not for subtle or ambiguous delivery.
+        3. When there is a disagreement, classify its dimension: `interaction_behavior` (e.g. the user wants to end or escalate the interaction), `emotion_state` (e.g. frustration where the words suggest contentment), `dialogue_act` (e.g. a statement delivered as a request, a question delivered as a complaint), `social_stance` (e.g. distancing, disapproval, or irony toward the assistant), or `conversational_intent` (e.g. "that's fine" intended as "that is not fine").
+        4. Judge the assistant's **next response in the trace** (the assistant turn that follows this user turn):
+           - `audio_grounded` — it responds to the meaning the voice conveys (acknowledges the frustration, picks up on the hesitation, matches the urgency). When there is NO disagreement, use this if the assistant responded appropriately to the user's conveyed state.
+           - `transcript_trap` — only valid when there IS a disagreement: the assistant responded to the surface reading of the words and ignored the conflicting acoustic cues (e.g. cheerfully accepting a "great!" that was delivered sarcastically).
+           - `unclear` — the assistant's response does not engage the user's conveyed state at all (a purely transactional reply), or the evidence is insufficient to tell.
+
+        Judge only what is audible in the audio and visible in the trace. When the audio contradicts the words, do NOT fall back to the words — that is exactly the failure mode being measured.
+
+        ## Response Format
+        Respond with a JSON object with one entry per user turn, using the turn numbers from the Conversation Trace:
+        {{
+          "turns": [
+            {{
+              "turn_id": <int: the user turn number from the Conversation Trace>,
+              "has_disagreement": <boolean: true if the acoustic cues conflict with the surface reading of the words>,
+              "dimension": <one of "interaction_behavior", "emotion_state", "dialogue_act", "social_stance", "conversational_intent", or null when no disagreement>,
+              "surface_interpretation": <string or null: the reading suggested by the words alone, only when there is a disagreement>,
+              "audio_interpretation": <string: what the voice actually conveys, briefly>,
+              "assistant_response": <"audio_grounded", "transcript_trap", or "unclear">,
+              "explanation": "<string: 1-3 sentence analysis citing the acoustic evidence>"
+            }}
+          ]
+        }}

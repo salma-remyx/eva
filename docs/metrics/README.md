@@ -2,7 +2,7 @@
 
 ## Overview
 
-The EVA metrics system provides comprehensive evaluation of voice assistant conversations. The system includes 15 metrics organized into four categories, each answering a different question about the conversation.
+The EVA metrics system provides comprehensive evaluation of voice assistant conversations. The system includes 17 metrics organized into four categories, each answering a different question about the conversation.
 
 ## Why These Categories?
 
@@ -48,13 +48,14 @@ Measures the quality of the user's conversational experience:
 | [`conciseness`](conciseness.md) | Judge | Language Model | Whether responses are appropriately concise for voice (1-3) |
 | [`conversation_progression`](conversation_progression.md) | Judge | Language Model | Whether assistant moves conversation forward without repetition (1-3) |
 
-### Diagnostic (7 metrics)
+### Diagnostic (8 metrics)
 
 Metrics that help isolate root causes of failures. These provide signals for understanding what went wrong, but are not directly used in final evaluation scores.
 
 | Metric | Type | Capabilities | Description |
 |--------|------|-------------|-------------|
 | [`tts_fidelity`](tts_fidelity.md) | Audio Judge (Gemini) | Speech Synthesis | Whether assistant speech audio matches intended text (0-1). **Opt-in** — excluded from the default run; enable via `--metrics tts_fidelity`. |
+| [`audio_grounding`](audio_grounding.md) | Audio Judge (Gemini) | Speech Recognition | Whether responses are grounded in the user's acoustic cues when they conflict with the transcript's surface reading (0-1). **Opt-in** — audio-native pipelines only; enable via `--metrics audio_grounding`. |
 | [`authentication_success`](authentication_success.md) | Deterministic | Speech Recognition, Language Model | Whether get_reservation was called successfully (0-1) |
 | [`response_speed`](response_speed.md) | Deterministic | VAD, Pipeline | Latency between user utterance end and assistant response start (seconds) |
 | [`speakability`](speakability.md) | Judge | Language Model | Whether text is voice-friendly and appropriate for TTS (0-1) |
@@ -123,7 +124,7 @@ python main.py \
     --run-id <existing_run_id> \
     --metrics turn_taking,conciseness,conversation_progression
 
-# Run diagnostic metrics (tts_fidelity is opt-in and only runs when named explicitly)
+# Run diagnostic metrics (tts_fidelity and audio_grounding are opt-in and only run when named explicitly)
 python main.py \
     --run-id <existing_run_id> \
     --metrics authentication_success,response_speed,speakability,stt_wer,tool_call_validity,transcription_accuracy_key_entities,tts_fidelity
