@@ -1,4 +1,10 @@
 {
+  "AudioGroundingMetric": {
+    "name": "audio_grounding",
+    "prompt_hash": "334d35150c9b",
+    "source_hash": "ea924d68dabd",
+    "version": "v0.1"
+  },
   "AuthenticationSuccessMetric": {
     "name": "authentication_success",
     "prompt_hash": null,
