@@ -124,7 +124,7 @@ python main.py \
     --run-id <existing_run_id> \
     --metrics turn_taking,conciseness,conversation_progression
 
-# Run diagnostic metrics (tts_fidelity is opt-in and only runs when named explicitly)
+# Run diagnostic metrics (tts_fidelity and audio_grounding are opt-in and only run when named explicitly)
 python main.py \
     --run-id <existing_run_id> \
     --metrics authentication_success,response_speed,speakability,stt_wer,tool_call_validity,transcription_accuracy_key_entities,tts_fidelity
