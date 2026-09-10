@@ -12,6 +12,7 @@ from pipecat.transcriptions.language import Language
 
 from eva.models.config import LANGUAGE_DISPLAY_NAMES, PerturbationConfig
 from eva.user_simulator.event_logger import UserSimulatorEventLogger
+from eva.user_simulator.persona_vector import persona_fragment_from_config
 from eva.user_simulator.perturbation import AudioPerturbator
 from eva.utils.culture import add_user_language_directive
 from eva.utils.logging import current_record_id, get_logger
@@ -87,6 +88,9 @@ class AbstractUserSimulator(ABC):
         behavior_prompts = load_behavior_prompts()
         if self._perturbation_config and self._perturbation_config.behavior:
             user_persona = behavior_prompts[self._perturbation_config.behavior.value]
+        elif (persona_fragment := persona_fragment_from_config(self.persona_config, self.goal)) is not None:
+            # Record opted into a three-tier persona vector via its user_config.
+            user_persona = persona_fragment
         else:
             user_persona = behavior_prompts["default"]
 
