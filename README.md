@@ -421,3 +421,31 @@ eva/
 ## Contributing
 
 We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request. For larger features, we recommend reaching out first to ensure alignment with our roadmap.
+
+## Persona Vectors for the User Simulator
+
+By default every record's simulated caller uses the flat `default` behavior prompt from `configs/user_behaviors.yaml`. A record can instead opt into a structured, three-tier persona vector — adapted from [A Three-Tier Persona Vector for Controllable User Simulation in Agentic Evaluation](https://arxiv.org/abs/2609.08592) — by adding a `persona_vector` entry to its `user_config`:
+
+```json
+{
+  "user_config": {
+    "name": "Robert White",
+    "gender": "man",
+    "user_persona_id": 2,
+    "persona_vector": {
+      "profile": "impatient_executive",
+      "seed": 42,
+      "query_complexity": "deliberately_vague"
+    }
+  }
+}
+```
+
+The vector combines:
+
+- **Tier 1 — demographics**: six categorical dimensions (jurisdiction, age, channel, device, language proficiency, time availability).
+- **Tier 2 — behavioral traits**: twelve continuous traits (patience, assertiveness, digital literacy, ...) sampled with seeded Gaussian noise around one of eight curated profile base vectors (`balanced_default`, `impatient_executive`, `elderly_cautious`, `anxious_first_timer`, `friendly_chatterbox`, `skeptical_negotiator`, `detail_auditor`, `distressed_urgent`), then adjusted by seven rule-described trait correlations so co-occurrence patterns stay auditable.
+- **Tier 3 — emotional states**: five continuous states (frustration, anxiety, trust, confidence, stress) that shift with scenario pressure derived from the record's goal, so the same profile behaves differently across easy and hard scenarios.
+- **Query-complexity overlay**: an orthogonal four-level control (`direct`, `contextual`, `indirect`, `deliberately_vague`) over how vaguely the caller phrases requests.
+
+The rendered fragment replaces the default persona for both caller providers (ElevenLabs Agents and OpenAI Realtime); behavior perturbations, when enabled, still take precedence. Individual dimensions can be pinned with optional `traits`, `emotional_states`, and `demographics` override maps. Omit `seed` to draw a caller that is stable for a given record name and profile (reproducible across runs); set it explicitly to share one caller across records.
