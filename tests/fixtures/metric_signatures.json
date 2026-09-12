@@ -71,6 +71,12 @@
     "source_hash": "10b97af355f7",
     "version": "v0.3"
   },
+  "TTSRobustnessMetric": {
+    "name": "tts_robustness",
+    "prompt_hash": null,
+    "source_hash": "69567f86721c",
+    "version": "v0.1"
+  },
   "TaskCompletion": {
     "name": "task_completion",
     "prompt_hash": null,
