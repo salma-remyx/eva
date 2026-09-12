@@ -2,7 +2,7 @@
 
 ## Overview
 
-The EVA metrics system provides comprehensive evaluation of voice assistant conversations. The system includes 15 metrics organized into four categories, each answering a different question about the conversation.
+The EVA metrics system provides comprehensive evaluation of voice assistant conversations. The system includes 16 metrics organized into four categories, each answering a different question about the conversation.
 
 ## Why These Categories?
 
@@ -48,7 +48,7 @@ Measures the quality of the user's conversational experience:
 | [`conciseness`](conciseness.md) | Judge | Language Model | Whether responses are appropriately concise for voice (1-3) |
 | [`conversation_progression`](conversation_progression.md) | Judge | Language Model | Whether assistant moves conversation forward without repetition (1-3) |
 
-### Diagnostic (7 metrics)
+### Diagnostic (8 metrics)
 
 Metrics that help isolate root causes of failures. These provide signals for understanding what went wrong, but are not directly used in final evaluation scores.
 
@@ -61,6 +61,7 @@ Metrics that help isolate root causes of failures. These provide signals for und
 | [`stt_wer`](stt_wer.md) | Deterministic | Speech Recognition | Speech-to-Text Word Error Rate using jiwer (0.0+) |
 | [`tool_call_validity`](tool_call_validity.md) | Deterministic | Language Model | Fraction of tool calls with correctly formatted parameters (0.0-1.0) |
 | [`transcription_accuracy_key_entities`](transcription_accuracy_key_entities.md) | Judge | Speech Recognition | STT accuracy for key entities (names, dates, numbers) (0.0-1.0) |
+| [`tts_robustness`](tts_robustness.md) | Deterministic | Speech Synthesis | TTS complex-text robustness: CER by text risk, language consistency, wrong-language rate (0.0+) |
 
 ### Validation Metrics (3 metrics)
 
