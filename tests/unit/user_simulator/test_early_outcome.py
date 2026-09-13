@@ -2,14 +2,9 @@
 
 import copy
 import json
-import os
 from pathlib import Path
-from unittest.mock import patch
 
-import pytest
-from pydantic import ValidationError
-
-from eva.models.config import EarlyOutcomeConfig, ElevenLabsSimulatorConfig, ModelConfig, RunConfig
+from eva.models.config import EarlyOutcomeConfig, ElevenLabsSimulatorConfig
 from eva.user_simulator.base import AbstractUserSimulator
 from eva.user_simulator.early_outcome import (
     EARLY_HALT_ARTIFACT_FILENAME,
@@ -180,39 +175,6 @@ class TestEarlyOutcomeMonitor:
 
         assert monitor.on_event({"type": "user_speech", "data": {"text": "more"}}) is None
         assert monitor.on_event({"type": "assistant_speech", "data": {"text": "more"}}) is None
-
-
-class TestEarlyOutcomeConfig:
-    def test_defaults(self):
-        config = EarlyOutcomeConfig()
-        assert config.confidence_threshold == 0.8
-        assert config.min_user_turns == 2
-        assert config.halt_on == "failure"
-
-    def test_rejects_threshold_out_of_range(self):
-        with pytest.raises(ValidationError):
-            EarlyOutcomeConfig(confidence_threshold=0.3)
-
-    def test_runconfig_reads_nested_env(self):
-        env = {
-            "EVA_EARLY_OUTCOME__CONFIDENCE_THRESHOLD": "0.9",
-            "EVA_EARLY_OUTCOME__HALT_ON": "any",
-        }
-        with patch.dict(os.environ, env):
-            config = RunConfig(
-                model_list=[{"model_name": "test", "litellm_params": {"model": "test"}}],
-                model=ModelConfig(
-                    llm="test-model",
-                    stt="deepgram",
-                    tts="cartesia",
-                    stt_params={"api_key": "k", "model": "nova-2"},
-                    tts_params={"api_key": "k", "model": "sonic"},
-                ),
-            )
-
-        assert config.early_outcome is not None
-        assert config.early_outcome.confidence_threshold == 0.9
-        assert config.early_outcome.halt_on == "any"
 
 
 class TestFactoryWiring:

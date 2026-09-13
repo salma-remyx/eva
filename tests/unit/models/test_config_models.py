@@ -11,6 +11,7 @@ from pydantic import ValidationError
 from pydantic_settings import SettingsError
 
 from eva.models.config import (
+    EarlyOutcomeConfig,
     ElevenLabsSimulatorConfig,
     ModelConfig,
     OpenAIRealtimeSimulatorConfig,
@@ -1213,3 +1214,40 @@ class TestUserSimulatorConfig:
                 user_simulator={"provider": "openai_realtime"},
                 perturbation={"accent": "french"},
             )
+
+
+class TestEarlyOutcomeConfig:
+    """Tests for the opt-in early outcome prediction settings."""
+
+    def test_defaults(self):
+        """EarlyOutcomeConfig defaults to failure-only halting at 0.8 confidence."""
+        config = EarlyOutcomeConfig()
+
+        assert config.confidence_threshold == 0.8
+        assert config.min_user_turns == 2
+        assert config.halt_on == "failure"
+
+    def test_rejects_threshold_out_of_range(self):
+        """Confidence threshold below 0.5 is rejected."""
+        with pytest.raises(ValidationError):
+            EarlyOutcomeConfig(confidence_threshold=0.3)
+
+    def test_runconfig_default_is_opt_in(self):
+        """Early outcome prediction stays disabled unless an EVA_EARLY_OUTCOME__ var is set."""
+        config = _config(env_vars=_BASE_ENV)
+
+        assert config.early_outcome is None
+
+    def test_runconfig_reads_nested_env(self):
+        """EVA_EARLY_OUTCOME__* variables populate the nested config."""
+        config = _config(
+            env_vars=_BASE_ENV
+            | {
+                "EVA_EARLY_OUTCOME__CONFIDENCE_THRESHOLD": "0.9",
+                "EVA_EARLY_OUTCOME__HALT_ON": "any",
+            }
+        )
+
+        assert config.early_outcome is not None
+        assert config.early_outcome.confidence_threshold == 0.9
+        assert config.early_outcome.halt_on == "any"

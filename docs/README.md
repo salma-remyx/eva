@@ -6,5 +6,6 @@
 | [Metrics](metrics/README.md) | Metric definitions, scoring rubrics, and judge prompts |
 | [MetricContext](metric_context.md) | Data structures passed to metrics during evaluation |
 | [LLM Configuration](llm_configuration.md) | LLM provider setup and LiteLLM routing |
+| [Early Outcome Halt](early_outcome_halt.md) | Opt-in early halting of conversations to cut simulation cost |
 | [Experiment Setup](experiment_setup.md) | Model configurations used in published results |
 | [Database & Tool Schema](airline_database_tool_schema.md) | Airline scenario database format and tool definitions |
