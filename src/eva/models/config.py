@@ -403,6 +403,38 @@ class PerturbationConfig(BaseModel):
         return self
 
 
+class EarlyOutcomeConfig(BaseModel):
+    """Opt-in early outcome prediction for cheaper simulation runs.
+
+    When enabled, the user simulator halts a conversation as soon as the
+    predicted outcome — scored from partial conversation events — crosses the
+    confidence threshold. Halted conversations fail the standard goodbye
+    validation, so leave this unset for EVA-X runs where full-conversation
+    metrics matter.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    confidence_threshold: float = Field(
+        0.8,
+        ge=0.5,
+        le=1.0,
+        description="Predicted-outcome confidence required before halting a conversation",
+    )
+    min_user_turns: int = Field(
+        2,
+        ge=1,
+        description="Only evaluate the predictor after this many completed user turns",
+    )
+    halt_on: Literal["failure", "any"] = Field(
+        "failure",
+        description=(
+            "Which predictions may halt the run: 'failure' (default, saves cost on doomed runs) "
+            "or 'any' (also halts predicted successes, for cost/accuracy experiments)"
+        ),
+    )
+
+
 class ElevenLabsSimulatorConfig(BaseModel):
     """ElevenLabs Conversational AI settings for the user simulator."""
 
@@ -571,6 +603,15 @@ class RunConfig(BaseSettings):
             "Perturbations applied to the simulated user. "
             "Example: EVA_PERTURBATION__BACKGROUND_NOISE=coffee_shop EVA_PERTURBATION__ACCENT=french. "
             "See PerturbationConfig for all options."
+        ),
+    )
+
+    early_outcome: EarlyOutcomeConfig | None = Field(
+        None,
+        description=(
+            "Opt-in early outcome prediction: halt conversations whose predicted outcome is "
+            "already evident, cutting simulation cost on doomed runs. "
+            "Example: EVA_EARLY_OUTCOME__CONFIDENCE_THRESHOLD=0.85. See EarlyOutcomeConfig."
         ),
     )
 

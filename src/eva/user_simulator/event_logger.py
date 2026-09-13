@@ -2,6 +2,7 @@
 
 import json
 import time
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -16,15 +17,23 @@ class UserSimulatorEventLogger:
     Events are stored in JSONL format for easy processing by the metrics system.
     """
 
-    def __init__(self, output_path: Path, *, provider: str):
+    def __init__(
+        self,
+        output_path: Path,
+        *,
+        provider: str,
+        on_event: Callable[[dict[str, Any]], None] | None = None,
+    ):
         """Initialize the event logger.
 
         Args:
             output_path: Path to the output JSONL file
             provider: Provider identifier stored with each event.
+            on_event: Optional hook invoked synchronously after each event is recorded.
         """
         self.output_path = output_path
         self.provider = provider
+        self.on_event = on_event
         self._events: list[dict[str, Any]] = []
         self._sequence = 0
 
@@ -45,6 +54,8 @@ class UserSimulatorEventLogger:
         event["provider"] = self.provider
         self._events.append(event)
         logger.debug(f"User simulator event: {event_type}")
+        if self.on_event is not None:
+            self.on_event(event)
 
     def log_user_speech(self, text: str, is_final: bool = True) -> None:
         """Log user speech transcription."""

@@ -20,6 +20,7 @@ from eva.models.results import ConversationResult, RunResult
 from eva.orchestrator.port_pool import PortPool
 from eva.orchestrator.validation_runner import ValidationResult, ValidationRunner
 from eva.orchestrator.worker import ConversationWorker
+from eva.user_simulator.early_outcome import is_early_halted
 from eva.utils.conversation_checks import check_conversation_finished, find_records_with_llm_generic_error
 from eva.utils.culture import get_language_addendum
 from eva.utils.logging import get_logger
@@ -456,12 +457,15 @@ class BenchmarkRunner:
         # Categorize failures
         not_finished_count = 0
         validation_failed_count = 0
+        early_halted_ids: list[str] = []
         for oid in final_failed_ids:
             record_dir = self.output_dir / "records" / oid
             if not check_conversation_finished(record_dir):
                 not_finished_count += 1
             else:
                 validation_failed_count += 1
+            if is_early_halted(record_dir):
+                early_halted_ids.append(oid)
 
         # Archive the final failing attempts so the directory layout reflects the
         # failure (downstream tools key off the `_failed_attempt_` suffix).
@@ -538,6 +542,8 @@ class BenchmarkRunner:
                         "validation_failed_count": validation_failed_count,
                         "records_with_llm_generic_error": len(llm_generic_error_record_ids),
                         "llm_generic_error_record_ids": llm_generic_error_record_ids,
+                        "early_halted_count": len(early_halted_ids),
+                        "early_halted_record_ids": early_halted_ids,
                         "success_rate": successful_count / total_tasks if total_tasks > 0 else 0.0,
                         "failure_rate": failed_count / total_tasks if total_tasks > 0 else 0.0,
                         "total_attempts": attempt_number,
@@ -572,6 +578,8 @@ class BenchmarkRunner:
                 logger.info(f"    Not finished: {not_finished_count}")
             if validation_failed_count > 0:
                 logger.info(f"    Validation failed: {validation_failed_count}")
+            if early_halted_ids:
+                logger.info(f"    Early outcome halt: {len(early_halted_ids)}")
         else:
             logger.info("  No records processed")
         logger.info(f"  Total attempts used: {attempt_number}")

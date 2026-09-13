@@ -152,3 +152,25 @@ class TestEventLogger:
         # New events start at sequence 1 again
         logger.log_event("c", {})
         assert logger._events[0]["sequence"] == 1
+
+
+class TestOnEventHook:
+    def test_hook_receives_every_logged_event(self, tmp_path):
+        logger = UserSimulatorEventLogger(output_path=tmp_path / "events.jsonl", provider="test")
+        seen = []
+        logger.on_event = seen.append
+
+        logger.log_user_speech("hello")
+        logger.log_assistant_speech("hi")
+
+        assert [event["type"] for event in seen] == ["user_speech", "assistant_speech"]
+        assert seen[0]["data"]["text"] == "hello"
+
+    def test_hook_can_be_set_at_construction(self, tmp_path):
+        seen = []
+        logger = UserSimulatorEventLogger(output_path=tmp_path / "events.jsonl", provider="test", on_event=seen.append)
+
+        logger.log_event("test_type", {"key": "value"})
+
+        assert len(seen) == 1
+        assert seen[0]["type"] == "test_type"
