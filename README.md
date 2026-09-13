@@ -421,3 +421,20 @@ eva/
 ## Contributing
 
 We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request. For larger features, we recommend reaching out first to ensure alignment with our roadmap.
+
+## Early Outcome Halt (optional)
+
+Adapted from "EarlyEval: Cheaper Agent Evaluation via Early Outcome Prediction" — cheaper dev-iteration runs by cutting conversations short once their outcome is already evident.
+
+Full-length conversations are the dominant cost of a benchmark pass. When enabled, EVA scores each conversation's likely outcome after every user turn — from behavioral signals (repeated assistant turns, generic error apologies, user frustration markers) and textual overlap with the record's goal criteria — and halts the run once the prediction crosses a confidence threshold. By default only confident **failure** predictions halt (a doomed conversation is cut short instead of running to its natural end); `halt_on: any` also halts predicted successes for cost/accuracy experiments.
+
+Halted conversations intentionally fail the goodbye validation and are counted as `not_finished`, with a per-record `early_halt.json` artifact and `early_halted_*` counts in `evaluation_summary.json`. Leave the flag unset for EVA-X runs where full-conversation metrics matter.
+
+```bash
+# Opt in via environment variables (or the equivalent YAML fields)
+EVA_EARLY_OUTCOME__CONFIDENCE_THRESHOLD=0.85
+EVA_EARLY_OUTCOME__MIN_USER_TURNS=2
+EVA_EARLY_OUTCOME__HALT_ON=failure
+```
+
+Scores are heuristic evidence strengths, not calibrated probabilities — pick the threshold empirically for your workload (e.g. by comparing early-halted runs against full runs on a record subset).

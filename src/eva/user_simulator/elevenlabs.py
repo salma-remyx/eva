@@ -16,7 +16,7 @@ from elevenlabs.conversational_ai.conversation import (
     ConversationInitiationData,
 )
 
-from eva.models.config import PerturbationConfig
+from eva.models.config import EarlyOutcomeConfig, PerturbationConfig
 from eva.user_simulator.audio_bridge import ELEVENLABS_OUTPUT_RATE, ElevenLabsAudioInterface
 from eva.user_simulator.base import AbstractUserSimulator
 from eva.utils.audio_utils import save_pcm_as_wav
@@ -46,6 +46,7 @@ class ElevenLabsUserSimulator(AbstractUserSimulator):
         agent_id: str,
         timeout: int = 600,
         perturbation_config: PerturbationConfig | None = None,
+        early_outcome_config: EarlyOutcomeConfig | None = None,
         language: str = "en",
     ):
         """Initialize the user simulator.
@@ -59,6 +60,7 @@ class ElevenLabsUserSimulator(AbstractUserSimulator):
             timeout: Conversation timeout in seconds
             agent_id: Agent identifier used to select the domain-specific simulator prompt
             perturbation_config: Optional perturbation to apply to user audio
+            early_outcome_config: Optional early outcome prediction settings
             language: ISO 639-1 code (e.g. 'en', 'fr'); when not 'en', uses EVA_{LANG}_USER_{gender}
         """
         super().__init__(
@@ -70,6 +72,7 @@ class ElevenLabsUserSimulator(AbstractUserSimulator):
             agent_id=agent_id,
             timeout=timeout,
             perturbation_config=perturbation_config,
+            early_outcome_config=early_outcome_config,
             language=language,
             provider="elevenlabs",
         )

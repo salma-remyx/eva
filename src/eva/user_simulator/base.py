@@ -6,11 +6,13 @@ import asyncio
 from abc import ABC, abstractmethod
 from functools import lru_cache
 from pathlib import Path
+from typing import Any
 
 import yaml
 from pipecat.transcriptions.language import Language
 
-from eva.models.config import LANGUAGE_DISPLAY_NAMES, PerturbationConfig
+from eva.models.config import LANGUAGE_DISPLAY_NAMES, EarlyOutcomeConfig, PerturbationConfig
+from eva.user_simulator.early_outcome import EARLY_HALT_REASON, EarlyOutcomeMonitor
 from eva.user_simulator.event_logger import UserSimulatorEventLogger
 from eva.user_simulator.perturbation import AudioPerturbator
 from eva.utils.culture import add_user_language_directive
@@ -44,6 +46,7 @@ class AbstractUserSimulator(ABC):
         agent_id: str,
         timeout: int = 600,
         perturbation_config: PerturbationConfig | None = None,
+        early_outcome_config: EarlyOutcomeConfig | None = None,
         language: str = "en",
         *,
         provider: str,
@@ -73,6 +76,16 @@ class AbstractUserSimulator(ABC):
             self.output_dir / "user_simulator_events.jsonl",
             provider=provider,
         )
+
+        # Opt-in early outcome prediction: every provider's speech events flow
+        # through the same per-turn halt check via the event logger hook.
+        self._early_outcome_monitor = (
+            EarlyOutcomeMonitor(early_outcome_config, goal=goal, output_dir=self.output_dir)
+            if early_outcome_config is not None
+            else None
+        )
+        if self._early_outcome_monitor is not None:
+            self.event_logger.on_event = self._check_early_outcome
 
         self._user_audio_chunks: list[bytes] = []
         self._assistant_audio_chunks: list[bytes] = []
@@ -118,6 +131,24 @@ class AbstractUserSimulator(ABC):
             self._end_reason = reason
             self._conversation_done.set()
             logger.info(f"Conversation end signaled: {reason}")
+
+    def _check_early_outcome(self, event: dict[str, Any]) -> None:
+        """Halt the conversation when early outcome prediction is confident (opt-in).
+
+        Wired as the event logger's ``on_event`` hook so both simulator
+        providers share one per-turn outcome check.
+        """
+        if self._early_outcome_monitor is None:
+            return
+        decision = self._early_outcome_monitor.on_event(event)
+        if decision is None:
+            return
+        self.event_logger.log_event("early_halt", decision.to_dict())
+        logger.info(
+            f"Early outcome halt: predicted {decision.outcome} at user turn {decision.user_turns} "
+            f"(confidence {decision.confidence:.2f})"
+        )
+        self._on_conversation_end(EARLY_HALT_REASON)
 
     def _on_user_speaks(self, response: str) -> None:
         current_record_id.set(self._record_id)

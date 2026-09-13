@@ -369,6 +369,7 @@ class ConversationWorker:
             agent_id=self.agent.id,
             timeout=self._conversation_guard_timeout_seconds(),
             perturbation_config=self.config.perturbation,
+            early_outcome_config=self.config.early_outcome,
             language=language,
         )
 
