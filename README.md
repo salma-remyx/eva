@@ -421,3 +421,10 @@ eva/
 ## Contributing
 
 We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request. For larger features, we recommend reaching out first to ensure alignment with our roadmap.
+
+## Reliability and Route Verification
+
+Two safeguards distinguish route failures from missing capability, adapted from the IB2 measurement protocol ([IBIB: A Protocol for Measuring Enterprise AI Systems by Serving Route, Not Model Identifier](https://arxiv.org/abs/2609.10494)):
+
+- **Route preflight** — before any conversation runs, the serving route is checked against the requested metrics contract using each metric's declared pipeline support. The verdict is written to `route_preflight.json` next to `config.json`. If no requested metric can execute on the configured route (e.g. `--metrics stt_wer` on an end-to-end model), the run aborts immediately instead of burning conversations; metrics that are merely unsupported on the route are listed and skipped per record, as before. Cascade latency levers (`llm_streaming`, `pre_tool_speech`, `parallel_tool_calls`) set on a non-cascade route are reported as warnings, since the measured route then differs from the advertised configuration.
+- **Reliability-inclusive scoring** — `metrics_summary.json` gains a `reliability` block per composite. By default, a record whose component metric errored is dropped from the EVA-A/EVA-X denominators, which can silently inflate scores and flip model orderings. The `reliability` block reports the inclusive mean (errored components count as failures and stay in the denominator) next to the exclusive mean, the delta, how many failures the exclusive mode dropped, per-component failure/unsupported counts, and a bootstrap CI on the inclusive mean. Skipped metrics remain excluded: unsupported capability stays out, failure stays in.

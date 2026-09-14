@@ -19,6 +19,7 @@ from eva.metrics.base import BaseMetric, MetricContext
 from eva.metrics.legacy_aliases import rename_metric_keys
 from eva.metrics.processor import MetricsContextProcessor
 from eva.metrics.registry import MetricRegistry, get_global_registry
+from eva.metrics.reliability import compute_reliability_report
 from eva.metrics.utils import direction_for_sub_metric
 from eva.metrics.versioning import _CURRENT_METRIC_VERSION
 from eva.models.config import PipelineType, get_pipeline_type
@@ -985,6 +986,11 @@ class MetricsRunner:
         # Compute EVA composite run-level aggregates
         overall_scores = compute_run_level_aggregates(all_metrics, self.num_draws, seed=seed)
 
+        # Reliability-inclusive scoring: report composite means with metric
+        # failures kept in the denominator next to the exclusive aggregates,
+        # so route failures cannot silently shrink the EVA-A/EVA-X denominators.
+        reliability_report = compute_reliability_report(all_metrics, seed=seed)
+
         # Load existing summary to preserve fields for metrics not being re-run
         summary_path = self.run_dir / "metrics_summary.json"
         existing_summary: dict[str, Any] = {}
@@ -1013,6 +1019,7 @@ class MetricsRunner:
             "total_records": len(all_metrics),
             "data_quality": data_quality,
             "overall_scores": overall_scores,
+            "reliability": reliability_report,
             "per_metric": metric_aggregates,
         }
 
