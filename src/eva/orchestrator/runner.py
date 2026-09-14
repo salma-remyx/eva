@@ -18,6 +18,7 @@ from eva.models.config import PipelineType, RunConfig
 from eva.models.record import EvaluationRecord
 from eva.models.results import ConversationResult, RunResult
 from eva.orchestrator.port_pool import PortPool
+from eva.orchestrator.route_preflight import RouteContractError, check_route_contract
 from eva.orchestrator.validation_runner import ValidationResult, ValidationRunner
 from eva.orchestrator.worker import ConversationWorker
 from eva.utils.conversation_checks import check_conversation_finished, find_records_with_llm_generic_error
@@ -176,6 +177,19 @@ class BenchmarkRunner:
         pipeline_parts = self.config.model.pipeline_parts
         config_data["pipeline_parts"] = pipeline_parts
         config_path.write_text(json.dumps(config_data, indent=2, ensure_ascii=False))
+
+        # Capability-binding preflight: verify the serving route can execute the
+        # requested metrics contract before any conversation burns budget.
+        route_preflight = check_route_contract(self.config)
+        (self.output_dir / "route_preflight.json").write_text(
+            json.dumps(route_preflight.to_dict(), indent=2, ensure_ascii=False)
+        )
+        for warning in route_preflight.lever_warnings:
+            logger.warning(f"Route preflight: {warning}")
+        if not route_preflight.passed:
+            raise RouteContractError(
+                f"Serving route cannot execute the evaluation contract: {'; '.join(route_preflight.failures)}"
+            )
 
         # Build output_id list for tracking (supports pass@k)
         num_trials = self.config.num_trials
