@@ -62,8 +62,12 @@ class TestBackchannelHandlingMetric:
         assert sub["num_backchannels"].score == 1.0
 
     @pytest.mark.asyncio
-    async def test_resumed_backchannel_scored_by_restart_delay(self):
-        """Assistant stops during the backchannel, restarts 900ms later → 1.0 (within sweet spot)."""
+    async def test_paused_and_resumed_backchannel_scores_zero(self):
+        """Assistant stops during the backchannel, restarts 900ms later → 0.0.
+
+        The reference ground truth is "continues without pausing", so a 900ms pause
+        is a failure regardless of how promptly the restart happens.
+        """
         metric = BackchannelHandlingMetric()
         ctx = _ctx(
             user_turns={2: [(11.0, 11.5)]},
@@ -77,24 +81,27 @@ class TestBackchannelHandlingMetric:
         ev = result.details["per_turn_evidence"][2]
         assert ev["reason"] == "resumed"
         assert ev["resume_ms"] == pytest.approx(900.0)
-        assert result.score == pytest.approx(1.0)
+        assert result.score == 0.0
+        sub = result.sub_metrics or {}
+        assert sub["mean_resume_ms"].score == pytest.approx(900.0)
 
     @pytest.mark.asyncio
-    async def test_slow_resume_lands_mid_ramp(self):
-        """A 2250ms restart scores (4000-2250)/3000 ≈ 0.5833 on the linear ramp."""
+    async def test_even_a_quick_resume_scores_zero(self):
+        """A near-immediate restart still paused → 0.0; there is no resume tolerance band."""
         metric = BackchannelHandlingMetric()
         ctx = _ctx(
             user_turns={2: [(11.0, 11.5)]},
-            assistant_turns={1: [(10.0, 11.4)], 2: [(13.75, 16.0)]},
+            assistant_turns={1: [(10.0, 11.4)], 2: [(11.6, 15.0)]},
             transcripts={2: "yeah"},
             interrupted={2},
         )
 
         result = await metric.compute(ctx)
 
-        assert result.score == pytest.approx(0.5833, abs=1e-3)
-        sub = result.sub_metrics or {}
-        assert sub["mean_resume_ms"].score == pytest.approx(2250.0)
+        ev = result.details["per_turn_evidence"][2]
+        assert ev["reason"] == "resumed"
+        assert ev["resume_ms"] == pytest.approx(100.0)
+        assert result.score == 0.0
 
     @pytest.mark.asyncio
     async def test_abandoned_backchannel_scores_zero(self):
@@ -134,8 +141,12 @@ class TestBackchannelHandlingMetric:
         assert sub["barge_in_backchannel_rate"].score == 1.0
 
     @pytest.mark.asyncio
-    async def test_backchannel_on_finishing_response_is_neutral(self):
-        """Backchannel landing as the response was already ending → skipped, not punished."""
+    async def test_backchannel_on_stopping_response_scores_zero(self):
+        """Assistant speech ends just after the barge-in and nothing follows → 0.0.
+
+        The paper defines no natural-end grace window: the acceptance rule only
+        requires embedding in the ongoing utterance, and stopping is stopping.
+        """
         metric = BackchannelHandlingMetric()
         ctx = _ctx(
             user_turns={2: [(11.0, 11.6)]},
@@ -146,11 +157,11 @@ class TestBackchannelHandlingMetric:
 
         result = await metric.compute(ctx)
 
-        assert result.score is None
-        assert result.skipped is True
-        assert result.details["num_backchannels"] == 1
-        assert result.details["num_response_ending"] == 1
-        assert result.details["num_scored"] == 0
+        ev = result.details["per_turn_evidence"][2]
+        assert ev["reason"] == "abandoned"
+        assert result.score == 0.0
+        sub = result.sub_metrics or {}
+        assert sub["abandoned_rate"].score == 1.0
 
     @pytest.mark.asyncio
     async def test_real_interruption_is_not_a_backchannel(self):
@@ -170,13 +181,13 @@ class TestBackchannelHandlingMetric:
         assert result.details["num_backchannels"] == 0
 
     @pytest.mark.asyncio
-    async def test_long_utterance_of_continuers_is_not_backchannel(self):
-        """Voiced duration over BACKCHANNEL_MAX_SECONDS disqualifies, even with pure lexicon."""
+    async def test_utterance_over_word_threshold_is_not_backchannel(self):
+        """Seven continuer words exceed the paper's six-word threshold → not a backchannel."""
         metric = BackchannelHandlingMetric()
         ctx = _ctx(
             user_turns={2: [(11.0, 14.0)]},
             assistant_turns={1: [(10.0, 15.0)]},
-            transcripts={2: "yeah yeah yeah yeah"},
+            transcripts={2: "yeah yeah yeah yeah yeah yeah yeah"},
             interrupted={2},
         )
 
@@ -184,6 +195,23 @@ class TestBackchannelHandlingMetric:
 
         assert result.score is None
         assert result.skipped is True
+
+    @pytest.mark.asyncio
+    async def test_six_word_backchannel_is_detected(self):
+        """A six-word continuer utterance is inside the paper's acceptance threshold."""
+        metric = BackchannelHandlingMetric()
+        ctx = _ctx(
+            user_turns={2: [(11.0, 13.0)]},
+            assistant_turns={1: [(10.0, 15.0)]},
+            transcripts={2: "mm hmm yeah right okay sure"},
+            interrupted={2},
+        )
+
+        result = await metric.compute(ctx)
+
+        assert result.score == 1.0
+        ev = result.details["per_turn_evidence"][2]
+        assert ev["reason"] == "talked_through"
 
     @pytest.mark.asyncio
     async def test_no_barge_ins_skips(self):
@@ -205,11 +233,18 @@ class TestBackchannelHandlingMetric:
 
 class TestBackchannelLexicon:
     def test_pure_continuers_match(self):
-        assert _is_backchannel_transcript("Mm-hmm!", 4) is True
-        assert _is_backchannel_transcript("yeah, right", 4) is True
-        assert _is_backchannel_transcript("Got it", 4) is True
+        max_words = BackchannelHandlingMetric.BACKCHANNEL_MAX_WORDS
+        assert max_words == 6  # the paper's English short-length threshold
+        assert _is_backchannel_transcript("Mm-hmm!", max_words) is True
+        assert _is_backchannel_transcript("yeah, right", max_words) is True
+        assert _is_backchannel_transcript("Got it", max_words) is True
+
+    def test_word_threshold_boundary(self):
+        max_words = BackchannelHandlingMetric.BACKCHANNEL_MAX_WORDS
+        assert _is_backchannel_transcript("mm hmm yeah right okay sure", max_words) is True
+        assert _is_backchannel_transcript("mm hmm yeah right okay sure too", max_words) is False
 
     def test_content_fails(self):
-        assert _is_backchannel_transcript("change it to Friday", 4) is False
-        assert _is_backchannel_transcript("", 4) is False
-        assert _is_backchannel_transcript(None, 4) is False
+        assert _is_backchannel_transcript("change it to Friday", 6) is False
+        assert _is_backchannel_transcript("", 6) is False
+        assert _is_backchannel_transcript(None, 6) is False

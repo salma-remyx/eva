@@ -8,8 +8,8 @@
   "BackchannelHandlingMetric": {
     "name": "backchannel_handling",
     "prompt_hash": null,
-    "source_hash": "8f02e81ab014",
-    "version": "v0.1"
+    "source_hash": "237a13edc564",
+    "version": "v0.2"
   },
   "ConcisenessJudgeMetric": {
     "name": "conciseness",
