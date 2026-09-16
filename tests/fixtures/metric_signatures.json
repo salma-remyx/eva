@@ -5,6 +5,12 @@
     "source_hash": "ecce31785d0d",
     "version": "v0.1"
   },
+  "BackchannelHandlingMetric": {
+    "name": "backchannel_handling",
+    "prompt_hash": null,
+    "source_hash": "237a13edc564",
+    "version": "v0.2"
+  },
   "ConcisenessJudgeMetric": {
     "name": "conciseness",
     "prompt_hash": "57caf9a18a3c",
