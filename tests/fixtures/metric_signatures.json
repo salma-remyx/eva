@@ -89,6 +89,12 @@
     "source_hash": "70e92b2f7221",
     "version": "v0.3"
   },
+  "TurnDecisionSensitivityMetric": {
+    "name": "turn_decision_sensitivity",
+    "prompt_hash": null,
+    "source_hash": "8e65e2e90727",
+    "version": "v0.1"
+  },
   "TurnTakingMetric": {
     "name": "turn_taking",
     "prompt_hash": null,

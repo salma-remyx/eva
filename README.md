@@ -421,3 +421,7 @@ eva/
 ## Contributing
 
 We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request. For larger features, we recommend reaching out first to ensure alignment with our roadmap.
+
+## Context-Sensitive Turn-Taking Decisions
+
+Beyond grading *how well* the agent yields on interruptions, EVA can grade *whether* yielding was contextually right. The [`turn_decision_sensitivity`](docs/metrics/turn_decision_sensitivity.md) experience metric classifies each user barge-in as a backchannel ("yeah", "go ahead" — the agent should keep the floor) or a substantive interruption (the agent should yield), infers the agent's actual decision from the audio timestamps, and reports pair accuracy over the two event classes — a policy that always yields scores 0. It runs by default on English evaluations and is skipped for other languages in v0.1. Turn Decision Sensitivity — adapted from *ECHO: A Matched-Contrast Benchmark for Context-Sensitive Turn-Taking in Full-Duplex Dialogue*.
