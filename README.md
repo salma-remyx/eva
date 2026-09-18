@@ -421,3 +421,28 @@ eva/
 ## Contributing
 
 We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request. For larger features, we recommend reaching out first to ensure alignment with our roadmap.
+
+## Simulated Noise Environments
+
+The checked-in `assets/noise/*.wav` recordings are hand-picked. The
+[`analysis/perturbations/simulate_noise_environments.py`](analysis/perturbations/simulate_noise_environments.py)
+script offers a structured alternative adapted from
+[NOPE-HYPE](https://arxiv.org/abs/2609.10058): it synthesizes background-noise
+assets from parametric PSD templates (spectral tilt, band gains, envelope
+modulation), selects a coverage-optimal prototype set in PSD space, and matches
+each prototype to the existing `background_noise` slot whose asset it most
+resembles. The generated WAVs follow the exact 16 kHz mono 16-bit PCM contract
+`AudioPerturbator` loads, so benchmark runs pick them up with no code or config
+changes.
+
+```bash
+# Preview a 7-prototype environment set (written to local/noise_environments/)
+uv run python analysis/perturbations/simulate_noise_environments.py
+
+# Replace assets/noise/*.wav with the simulated set
+uv run python analysis/perturbations/simulate_noise_environments.py --install
+```
+
+Both modes write a `manifest.json` recording the simulator knobs behind each
+slot and the coverage radius of the selected set, so an environment set can be
+reproduced exactly.
