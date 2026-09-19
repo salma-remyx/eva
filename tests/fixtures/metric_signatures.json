@@ -41,6 +41,12 @@
     "source_hash": "93a559d0a028",
     "version": "v0.2"
   },
+  "PolicyComplianceJudgeMetric": {
+    "name": "policy_compliance",
+    "prompt_hash": "4d3ba28fe181",
+    "source_hash": "0794ab07c0c8",
+    "version": "v0.1"
+  },
   "ResponseSpeedMetric": {
     "name": "response_speed",
     "prompt_hash": null,
