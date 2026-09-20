@@ -17,8 +17,7 @@ _TTS_PROCESSOR = "OpenAITTSService#0(Kokoro)"
 def _write_metrics_jsonl(path, entries):
     """Write a synthetic pipecat_metrics.jsonl from plain dict entries."""
     with open(path, "w") as f:
-        for entry in entries:
-            f.write(json.dumps(entry) + "\n")
+        f.writelines(json.dumps(entry) + "\n" for entry in entries)
 
 
 def _write_wav(path, seconds, sample_rate=24000):
