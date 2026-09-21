@@ -2,7 +2,7 @@
 
 ## Overview
 
-The EVA metrics system provides comprehensive evaluation of voice assistant conversations. The system includes 15 metrics organized into four categories, each answering a different question about the conversation.
+The EVA metrics system provides comprehensive evaluation of voice assistant conversations. The system includes 17 metrics organized into four categories, each answering a different question about the conversation.
 
 ## Why These Categories?
 
@@ -28,7 +28,7 @@ Each metric measures one or more voice agent capabilities:
 - **Speech Synthesis** — The ability to produce accurate spoken output: text-to-speech in cascade, or direct audio generation in audio-native (S2S) models.
 - **Pipeline** — End-to-end system performance (latency) across all components, not attributable to a single model.
 
-### Accuracy (3 metrics)
+### Accuracy (4 metrics)
 
 Measures whether the agent accomplished the user's goal correctly:
 
@@ -37,8 +37,9 @@ Measures whether the agent accomplished the user's goal correctly:
 | [`task_completion`](task_completion.md) | Deterministic | Speech Recognition, Language Model | Binary pass/fail via scenario DB state hash comparison (0-1) |
 | [`faithfulness`](faithfulness.md) | Judge (Claude Opus) | Speech Recognition (audio-native only), Language Model | Faithfulness to information, policies, and instructions (1-3) |
 | [`agent_speech_fidelity`](agent_speech_fidelity.md) | Audio Judge (Gemini) | Speech Synthesis | Whether key entities in the assistant's speech audio matches intended text (0-1) |
+| [`scenario_rule_compliance`](scenario_rule_compliance.md) | Judge (citation-grounded) | Language Model | Compliance with the scenario's ground-truth rules, with citation-validated evidence (1-3). **Opt-in** — excluded from the default run; enable via `--metrics scenario_rule_compliance`. |
 
-### Experience (3 metrics)
+### Experience (4 metrics)
 
 Measures the quality of the user's conversational experience:
 
@@ -47,6 +48,7 @@ Measures the quality of the user's conversational experience:
 | [`turn_taking`](turn_taking.md) | Judge (text + timestamps) | VAD, Pipeline | Timing accuracy of turn transitions (-1 to +1) |
 | [`conciseness`](conciseness.md) | Judge | Language Model | Whether responses are appropriately concise for voice (1-3) |
 | [`conversation_progression`](conversation_progression.md) | Judge | Language Model | Whether assistant moves conversation forward without repetition (1-3) |
+| [`conversation_quality`](conversation_quality.md) | Judge (task-blind, citation-grounded) | Language Model | Conversation quality judged without any task information, with citation-validated evidence (1-3). **Opt-in** — excluded from the default run; enable via `--metrics conversation_quality`. |
 
 ### Diagnostic (7 metrics)
 
@@ -132,6 +134,11 @@ python main.py \
 python main.py \
     --run-id <existing_run_id> \
     --metrics user_behavioral_fidelity,conversation_valid_end,user_speech_fidelity
+
+# Run the citation-grounded dual judges (opt-in; include both for equal-weighted aggregation)
+python main.py \
+    --run-id <existing_run_id> \
+    --metrics scenario_rule_compliance,conversation_quality
 ```
 
 ## Prompts and Customization
