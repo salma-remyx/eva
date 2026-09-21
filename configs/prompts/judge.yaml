@@ -1071,3 +1071,119 @@ judge:
           "summary": "<1-2 sentence summary for this turn>"
       }}
       ]
+  scenario_rule_compliance:
+    user_prompt: |
+      You are an expert evaluator judging whether a voice assistant complied with the rules of its scenario. You see the scenario's ground-truth rules (what the caller wanted and how the assistant was expected to behave) plus the full conversation, and you must decide — rule by rule — whether the assistant honored them.
+
+      **Citation requirement:** every rule verdict MUST cite the specific transcript message(s) that justify it. Each citation carries the turn number, the speaker's role, and a short verbatim quote — a contiguous span copied exactly from that message, no paraphrasing, no ellipses. A verdict without a verifiable citation is invalid, including for rules that were followed.
+
+      ## Agent
+      Role: {agent_role}
+
+      Instructions:
+      {agent_instructions}
+
+      ## Scenario Rules (ground truth)
+      The caller's goal and its decision tree below define what the assistant was supposed to do. `must_have_criteria` are hard requirements; the other fields describe expected behavior (negotiation, escalation, resolution and failure conditions, edge cases).
+
+      {scenario_rules}
+
+      ## Full Conversation with Tools
+      {conversation_trace}
+
+      ## How to Judge
+      - Judge the assistant's compliance with the rules above — not whether the call felt pleasant. A separate task-blind judge covers conversation quality; do not double-count it here.
+      - Use tool calls and their parameters as evidence of what the assistant actually did, and the surrounding messages as evidence of what it said around them (confirmations, disclosures, misstatements).
+      - A rule counts as followed only when the conversation shows it was honored end to end. A rule the conversation never exercised counts as followed as long as nothing in the transcript violates it.
+      - Do not invent rules that are not in the scenario rules above, and do not hold the assistant to standards that appear nowhere in the rules or agent instructions.
+
+      ## Rating Scale (overall)
+      - **3**: All must-have requirements honored; no rule violations.
+      - **2**: A minor deviation — a violated nice-to-have, edge-case, or negotiation expectation that did not defeat the caller's core requirement.
+      - **1**: A clear violation — a must-have requirement broken, an action taken against the caller's stated constraints, or escalation/failure conditions mishandled.
+
+      ## Response Format
+      Respond with a JSON object. Emit one entry per must-have criterion, plus one entry per behavioral field the conversation actually exercised.
+      {{
+          "rules": [
+              {{
+                  "rule": "<short restatement of the rule>",
+                  "followed": <true|false>,
+                  "explanation": "<1-2 sentences>",
+                  "citations": [
+                      {{"turn": <int>, "role": "<user|assistant>", "quote": "<verbatim span from that message>"}}
+                  ]
+              }}
+          ],
+          "rating": <int: 1, 2, or 3>
+      }}
+  conversation_quality:
+    user_prompt: |
+      You are an expert evaluator grading the quality of a conversation between a caller and a voice assistant. You are deliberately given NO information about the task: no caller goal, no agent instructions, no scenario rules. Judge only what any listener would hear — how the assistant handled the conversation itself. A call may have completed its task perfectly and still have been a bad call for the caller; your job is to catch that.
+
+      **Citation requirement:** every dimension verdict MUST cite the specific transcript message(s) that justify it. Each citation carries the turn number, the speaker's role, and a short verbatim quote — a contiguous span copied exactly from that message, no paraphrasing, no ellipses. A verdict without a verifiable citation is invalid, including for dimensions with no issue found.
+
+      ## Full Conversation with Tools
+      Lines tagged `[assistant interrupts]`-style markers and `tool_call:` / `tool_response:` lines are non-spoken metadata and backend traffic — treat them as context about what happened, never as words the caller heard. Speech-recognition noise may appear in the text; judge the assistant's handling of it, not the noise itself.
+
+      {conversation_trace}
+
+      ## Evaluation Dimensions
+      Each dimension is scored as a binary flag (true = quality issue present) and a rating (3 = no issue, 2 = minor isolated issue, 1 = clear or repeated issue).
+
+      ### 1. responsiveness
+      Did the assistant address what the caller actually said? Flag ignoring or talking past questions, answering a different question, or leaving explicit requests unhandled.
+
+      ### 2. clarity
+      Were responses understandable and appropriately concise for speech? Flag rambling turns, unexplained jargon, key information buried or delivered too fast to absorb, and confusing structure.
+
+      ### 3. coherence
+      Was the assistant consistent with itself across the conversation? Flag contradicting earlier statements, re-deciding settled points, and losing track of what it already said or did (visible in the transcript alone).
+
+      ### 4. caller_experience
+      Did the caller get a decent experience? Flag dismissive or brusque tone, steamrolling the caller, missing acknowledgment of frustration or mistakes, and fumbled openings or closings.
+
+      ## Overall Rating
+      - **3**: No dimension flagged.
+      - **2**: One or two minor (rating-2) flags and nothing worse.
+      - **1**: Any dimension rated 1, or three or more dimensions flagged.
+
+      ## Response Format
+      Respond with a JSON object covering all four dimensions.
+      {{
+          "dimensions": {{
+              "responsiveness": {{
+                  "quality_issue": <true|false>,
+                  "rating": <int: 1, 2, or 3>,
+                  "explanation": "<1-2 sentences>",
+                  "citations": [
+                      {{"turn": <int>, "role": "<user|assistant>", "quote": "<verbatim span from that message>"}}
+                  ]
+              }},
+              "clarity": {{
+                  "quality_issue": <true|false>,
+                  "rating": <int: 1, 2, or 3>,
+                  "explanation": "<1-2 sentences>",
+                  "citations": [
+                      {{"turn": <int>, "role": "<user|assistant>", "quote": "<verbatim span from that message>"}}
+                  ]
+              }},
+              "coherence": {{
+                  "quality_issue": <true|false>,
+                  "rating": <int: 1, 2, or 3>,
+                  "explanation": "<1-2 sentences>",
+                  "citations": [
+                      {{"turn": <int>, "role": "<user|assistant>", "quote": "<verbatim span from that message>"}}
+                  ]
+              }},
+              "caller_experience": {{
+                  "quality_issue": <true|false>,
+                  "rating": <int: 1, 2, or 3>,
+                  "explanation": "<1-2 sentences>",
+                  "citations": [
+                      {{"turn": <int>, "role": "<user|assistant>", "quote": "<verbatim span from that message>"}}
+                  ]
+              }}
+          }},
+          "rating": <int: 1, 2, or 3>
+      }}

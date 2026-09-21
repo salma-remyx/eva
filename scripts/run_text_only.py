@@ -74,6 +74,10 @@ TEXT_COMPATIBLE_METRICS = [
     "conciseness",
     "speakability",
     "user_behavioral_fidelity",
+    # Citation-grounded dual judges (task rules + task-blind quality), equal-weighted
+    # when included in the same composite: add both to EVA-A/EVA-X component lists.
+    "scenario_rule_compliance",
+    "conversation_quality",
 ]
 
 # Default text-only EVA composite definitions (no audio metrics).

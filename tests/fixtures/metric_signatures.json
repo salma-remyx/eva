@@ -23,6 +23,12 @@
     "source_hash": "4e5f59c32946",
     "version": "v0.1"
   },
+  "ConversationQualityMetric": {
+    "name": "conversation_quality",
+    "prompt_hash": "a9aa36444384",
+    "source_hash": "a1b1fffa6c23",
+    "version": "v0.1"
+  },
   "ConversationTimeLimitExceededMetric": {
     "name": "conversation_completed_on_time",
     "prompt_hash": null,
@@ -51,6 +57,12 @@
     "name": "stt_wer",
     "prompt_hash": null,
     "source_hash": "e7b839b89d75",
+    "version": "v0.1"
+  },
+  "ScenarioRuleComplianceMetric": {
+    "name": "scenario_rule_compliance",
+    "prompt_hash": "a2128ca968a3",
+    "source_hash": "cfb935b8f2a7",
     "version": "v0.1"
   },
   "SpeakabilityJudgeMetric": {
