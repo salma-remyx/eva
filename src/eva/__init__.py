@@ -11,4 +11,4 @@ simulation_version = "2.0.1"
 
 # Bump metrics_version when changes affect metric computation (metrics code,
 # judge prompts, pricing tables, postprocessor).
-metrics_version = "2.2.0"
+metrics_version = "2.3.0"  # from 2.2.0: added scenario_rule_compliance + conversation_quality dual judges
