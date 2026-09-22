@@ -64,13 +64,14 @@ def _source_hash(cls: type) -> str:
 def _prompt_hash_for_metric(cls: type[BaseMetric]) -> str | None:
     """Return the prompt template hash for judge metrics, or None.
 
-    All judge metrics in this codebase use `judge.{name}.user_prompt`.
+    Judge metrics resolve their prompt as `{prompt_namespace}.{name}.user_prompt`
+    (`judge` namespace by default; see BaseMetric.prompt_namespace).
     A judge metric without a corresponding template raises KeyError —
     that's a configuration bug we want surfaced.
     """
     if not issubclass(cls, TextJudgeMetric | AudioJudgeMetric):
         return None
-    template = get_prompt_manager().get_template(f"judge.{cls.name}.user_prompt")
+    template = get_prompt_manager().get_template(f"{cls.prompt_namespace}.{cls.name}.user_prompt")
     return hash_prompt_template(template)
 
 

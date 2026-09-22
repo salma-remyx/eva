@@ -29,11 +29,12 @@ judgments land well below it.
 
 This metric is opt-in (``exclude_from_default_metrics``): run it on an
 existing benchmark run via ``scripts/run_prosody_expressiveness.py``, which
-registers it in the global metric registry and drives the standard
-``MetricsRunner``. To fold it into every run, import this module from
-``eva/metrics/diagnostic/__init__.py`` and set a ``version`` on the class
-(then regenerate ``tests/fixtures/metric_signatures.json`` via
-``scripts/regen_metric_signatures.py``).
+drives the standard ``MetricsRunner``. Like every metric module it is imported
+by ``eva/metrics/diagnostic/__init__.py`` (registering it in the global metric
+registry) and tracked by the signature drift test — its prompt lives outside
+``judge.yaml`` under the ``prosody`` namespace (``prompt_namespace``), so
+``tests/fixtures/metric_signatures.json`` hashes it from there. To fold it
+into every run, drop ``exclude_from_default_metrics``.
 """
 
 from typing import Any
@@ -42,7 +43,6 @@ from eva.metrics.base import MetricContext
 from eva.metrics.registry import register_metric
 from eva.metrics.speech_fidelity_base import SpeechFidelityBaseMetric
 from eva.metrics.utils import aggregate_per_turn_scores, normalize_rating, resolve_turn_id
-from eva.metrics.versioning import _CURRENT_PROMPT_HASH, hash_prompt_template
 from eva.models.results import MetricScore
 
 
@@ -57,6 +57,7 @@ class ProsodyExpressivenessMetric(SpeechFidelityBaseMetric):
     """
 
     name = "prosody_expressiveness"
+    version = "v0.1"
     description = "Diagnostic metric: decoupled per-dimension prosody judgment (emotion, intonation, energy)"
     category = "diagnostic"
     role = "assistant"
@@ -66,27 +67,12 @@ class ProsodyExpressivenessMetric(SpeechFidelityBaseMetric):
     dimensions: tuple[str, ...] = ("emotion", "intonation", "energy")
     exclude_from_pass_at_k = True
     exclude_from_default_metrics = True
-
-    def get_judge_prompt(self, prompt_key: str = "user_prompt", **variables) -> str:
-        """Load this metric's prompt from the ``prosody.`` namespace in configs/prompts/.
-
-        The prompt lives in ``prosody.yaml`` under a top-level ``prosody:`` key
-        rather than in ``judge.yaml`` because PromptManager merges yaml files at
-        the top level — a second file redefining ``judge:`` would clobber
-        judge.yaml's entire judge section. Apart from the namespace this mirrors
-        ``BaseMetric.get_judge_prompt``, including the prompt-hash stamping that
-        MetricsRunner records on every MetricScore.
-
-        Args:
-            prompt_key: Prompt suffix within the metric's section (default ``user_prompt``).
-            **variables: Template variables to substitute into the prompt.
-
-        Returns:
-            The rendered judge prompt.
-        """
-        prompt_path = f"prosody.{self.name}.{prompt_key}"
-        _CURRENT_PROMPT_HASH.set(hash_prompt_template(self.prompt_manager.get_template(prompt_path)))
-        return self.prompt_manager.get_prompt(prompt_path, **variables)
+    # The judge prompt lives in ``prosody.yaml`` under a top-level ``prosody:`` key
+    # rather than in ``judge.yaml`` because PromptManager merges yaml files at
+    # the top level — a second file redefining ``judge:`` would clobber
+    # judge.yaml's entire judge section. Inherited ``get_judge_prompt`` and the
+    # signature drift test both resolve prompts through this namespace.
+    prompt_namespace = "prosody"
 
     async def compute(self, context: MetricContext) -> MetricScore:
         """Compute decoupled prosody scores for every assistant turn.

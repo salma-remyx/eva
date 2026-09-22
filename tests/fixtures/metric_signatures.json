@@ -41,6 +41,12 @@
     "source_hash": "93a559d0a028",
     "version": "v0.2"
   },
+  "ProsodyExpressivenessMetric": {
+    "name": "prosody_expressiveness",
+    "prompt_hash": "617f6f0e72d8",
+    "source_hash": "ead920fdcb81",
+    "version": "v0.1"
+  },
   "ResponseSpeedMetric": {
     "name": "response_speed",
     "prompt_hash": null,

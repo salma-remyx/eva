@@ -172,6 +172,11 @@ class BaseMetric(ABC):
     # Bump on intentional logic changes; MetricsRunner stamps this onto every MetricScore
     # produced by compute(). Required on all concrete subclasses — drift test enforces.
     version: str | None = None
+    # Top-level prompt namespace this metric's judge prompts resolve under,
+    # i.e. ``{prompt_namespace}.{name}.{prompt_key}``. Judge metrics whose prompts
+    # live outside judge.yaml (in their own yaml namespace) override this; the
+    # signature drift test hashes the same path.
+    prompt_namespace: str = "judge"
     # Direction of the displayed value (normalized_score if present, else score).
     # Override to False for lower-is-better parent metrics (e.g. latency). Sub-metric
     # direction is derived from the key suffix (see eva.metrics.utils.direction_for_sub_metric).
@@ -193,7 +198,7 @@ class BaseMetric(ABC):
         Stamps the unrendered template's sha256[:12] into the prompt-hash contextvar so
         any MetricScore built afterwards in the same compute() picks it up automatically.
         """
-        prompt_path = f"judge.{self.name}.{prompt_key}"
+        prompt_path = f"{self.prompt_namespace}.{self.name}.{prompt_key}"
         _CURRENT_PROMPT_HASH.set(hash_prompt_template(self.prompt_manager.get_template(prompt_path)))
         return self.prompt_manager.get_prompt(prompt_path, **variables)
 

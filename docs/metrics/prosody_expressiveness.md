@@ -77,6 +77,7 @@ Uses the following MetricContext fields:
 - **File**: `src/eva/metrics/diagnostic/prosody_expressiveness.py`
 - **Class**: `ProsodyExpressivenessMetric`
 - **Base Class**: `SpeechFidelityBaseMetric` → `AudioJudgeMetric` (reuses role-audio loading, silence trimming, and the Gemini call/retry/file-upload fallback path)
-- **Prompt**: `configs/prompts/prosody.yaml` under `prosody.prosody_expressiveness` (kept in its own top-level namespace because the prompt manager merges yaml files at the top level)
+- **Prompt**: `configs/prompts/prosody.yaml` under `prosody.prosody_expressiveness` (kept in its own top-level namespace because the prompt manager merges yaml files at the top level; resolved via the class's `prompt_namespace = "prosody"`)
+- **Versioning**: `version = "v0.1"`; tracked in `tests/fixtures/metric_signatures.json` (the drift test hashes the `prosody.`-namespace prompt like any other judge metric)
 - **Configuration**: `audio_judge_model` (default: Gemini 3 Flash), `aggregation` (default: "mean")
-- **Wiring**: opt-in via `scripts/run_prosody_expressiveness.py`; to include it in every run, import the module from `src/eva/metrics/diagnostic/__init__.py`, set a `version` on the class, and regenerate `tests/fixtures/metric_signatures.json` with `scripts/regen_metric_signatures.py`
+- **Wiring**: opt-in via `scripts/run_prosody_expressiveness.py` (`exclude_from_default_metrics = True`; the module is imported by `src/eva/metrics/diagnostic/__init__.py` like every metric, so it is registered but not run by default). To include it in every run, drop `exclude_from_default_metrics`
