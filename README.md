@@ -421,3 +421,13 @@ eva/
 ## Contributing
 
 We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request. For larger features, we recommend reaching out first to ensure alignment with our roadmap.
+
+## Prosody Expressiveness (opt-in diagnostic)
+
+`prosody_expressiveness` is an opt-in audio-judge metric that rates each agent turn's spoken prosody on three **independently judged** dimensions — emotion, intonation, energy — adapted from *Multi-Dimensional Prosody Judgment For Live Streaming Speech Synthesis* (D-LPJ). There is deliberately no overall rating, uncertain dimensions are masked (`null`) rather than guessed, and a `dimension_collapse_rate` sub-metric flags records where the judge collapsed all dimensions onto one value ("verdict coupling"). Run it on an existing benchmark run with:
+
+```bash
+PYTHONPATH=src python scripts/run_prosody_expressiveness.py --run-dir output/<run_id>
+```
+
+See [docs/metrics/prosody_expressiveness.md](docs/metrics/prosody_expressiveness.md) for the rubric, scoring, and wiring details.

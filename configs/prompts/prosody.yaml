@@ -1,0 +1,66 @@
+# Prosody judge prompts.
+#
+# Kept in a separate file with a `prosody:` top-level key (rather than inside
+# judge.yaml) because PromptManager merges prompt files at the top level: a
+# second file redefining `judge:` would replace judge.yaml's entire judge
+# section. Metrics under `prosody.*` are resolved by
+# ProsodyExpressivenessMetric.get_judge_prompt.
+prosody:
+  prosody_expressiveness:
+    user_prompt: |
+      You are an expert evaluator judging the PROSODY — the expressive quality of the delivery — of an AI voice agent.
+
+      You will listen to one audio clip containing only the agent's side of a conversation, and rate each agent turn on three INDEPENDENT prosody dimensions: emotion, intonation, and energy.
+
+      This is NOT a fidelity metric. Do not judge whether the spoken words match the intended text — another metric does that. Judge only how the words are delivered.
+
+      ## Intended Turns (context for the intended delivery)
+      {intended_turns_formatted}
+
+      The intended text may contain audio-direction tags such as [warm], [firm], [apologetic], or [excited]. These describe the intended emotional delivery — use them as the reference for what the agent's prosody was supposed to convey. The tags themselves are never spoken and must not be expected in the audio.
+
+      The conversation language is {expected_language}. Judge prosody relative to what sounds natural in that language; do not penalize a non-native accent unless it makes the delivery robotic or hard to listen to.
+
+      ## Dimensions (each rated 0-3, independently)
+
+      ### emotion
+      Does the delivery carry an appropriate emotional coloring that matches the intended delivery (including audio-direction tags) and the conversational context?
+      - 3 — Clearly expressive and appropriate: the emotional coloring matches the intended delivery and enhances the message.
+      - 2 — Appropriate but understated: some affect is audible, but the delivery is often closer to neutral than intended.
+      - 1 — Mostly flat: little or no emotional coloring, or affect that only briefly matches the intent.
+      - 0 — Wrong or robotic: monotone machine-like delivery, or emotion clearly mismatched with the intended delivery (e.g. cheerful delivery of an apology).
+
+      ### intonation
+      Is the pitch contour natural and meaningful?
+      - 3 — Natural and expressive: varied pitch, stress on the right words, natural phrase-final melodies (questions rise, statements settle).
+      - 2 — Adequate: mostly natural contours with some stretches of repetitive pitch.
+      - 1 — Largely monotone: narrow pitch range across most of the turn; word-level stress is hard to perceive.
+      - 0 — Robotic or aberrant: flat machine-like pitch, or unnatural pitch movements that make the delivery hard to listen to.
+
+      ### energy
+      Is the vocal energy engaging and situationally appropriate?
+      - 3 — Engaging and well-calibrated: liveliness matches the moment; a listener would describe the agent as present and attentive.
+      - 2 — Acceptable: energy is appropriate but bland, drifting toward listless or slightly rushed in places.
+      - 1 — Mismatched: noticeably lifeless and slow, or consistently too intense or rushed for the conversation.
+      - 0 — Extreme: exhausted mumbling, shouting, or energy so erratic the turn is hard to follow.
+
+      ## DECOUPLING RULES — critical
+      - Rate each dimension INDEPENDENTLY, from its own audible evidence. Do not let your impression of one dimension set the others: a turn can be energetic (energy 3) while the intonation is monotone (intonation 0), or emotionally on-target while the energy is bland.
+      - There is no overall rating for a turn. The response format has no field for one; do not compute one.
+      - Different ratings across dimensions on the same turn are expected and correct.
+      - If you are NOT confident about a dimension for a turn — the audio is unclear, the turn is too short to judge that quality, or you cannot point to audible evidence — set that dimension's rating to null instead of guessing. A masked dimension is more useful than an invented rating.
+
+      ## Response Format
+      Respond with a JSON object. Each turn entry must include the turn_id matching the turn numbers shown in the Intended Turns above:
+      {{
+        "turns": [
+          {{
+            "turn_id": <int: the turn number from the Intended Turns>,
+            "dimensions": {{
+              "emotion": {{"rating": <int 0-3, or null if uncertain>, "explanation": "<1-2 sentences citing the audible evidence for this dimension only>"}},
+              "intonation": {{"rating": <int 0-3, or null if uncertain>, "explanation": "<1-2 sentences citing the audible evidence for this dimension only>"}},
+              "energy": {{"rating": <int 0-3, or null if uncertain>, "explanation": "<1-2 sentences citing the audible evidence for this dimension only>"}}
+            }}
+          }}
+        ]
+      }}
