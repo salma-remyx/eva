@@ -142,6 +142,8 @@ Judge metric prompts are defined in `configs/prompts/judge.yaml` under the `judg
 
 LLM-as-judge evaluations are only as useful as the judges themselves. For each judge metric, we constructed a human-annotated validation dataset and measured judge accuracy against human labels. We use these datasets to improve our judge prompts as well as select the optimal LLM judge model for each metric. See [judge_validation_datasets/](judge_validation_datasets/) for the datasets and detailed judge accuracy results.
 
+Calibration scores (ECE, Brier, confidence gap) can be reported alongside these accuracy numbers, with confidence derived from self-consistency across repeat runs — see [calibration.md](calibration.md).
+
 ## Related Documentation
 
 - [../llm_configuration.md](../llm_configuration.md) - LLM configuration
