@@ -421,3 +421,8 @@ eva/
 ## Contributing
 
 We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request. For larger features, we recommend reaching out first to ensure alignment with our roadmap.
+
+## Judge Calibration
+
+Judge accuracy alone can hide an over- or under-confident judge — see [docs/metrics/calibration.md](docs/metrics/calibration.md) for ECE/Brier calibration scoring with confidence derived from self-consistency across repeat runs.
+
