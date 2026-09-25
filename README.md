@@ -421,3 +421,18 @@ eva/
 ## Contributing
 
 We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request. For larger features, we recommend reaching out first to ensure alignment with our roadmap.
+
+## Judge Calibration
+
+LLM-judge scores can be reported alongside a calibration check: whether the judge's confidence is empirically meaningful, not just accurate on average. EVA's judges emit no explicit confidence, so confidence is measured as self-consistency across repeat runs — the share of runs agreeing with the modal verdict — and scored against human labels with Expected Calibration Error and Brier score:
+
+```python
+from eva.utils.calibration import judge_calibration_from_repeats, load_validation_labels
+
+labels = load_validation_labels("docs/metrics/judge_validation_datasets/faithfulness.jsonl")
+report = judge_calibration_from_repeats(per_record_predictions, list(labels.values()))
+print(report.summary_fields())  # ece, brier, confidence_gap, judge_accuracy, ...
+```
+
+`judge_calibration_from_records` applies the same scoring to any multi-trial benchmark run, taking confidence from cross-trial verdict agreement and correctness from a human-labeled subset of scenarios. Adapted from *Calibration as a First-Class Criterion in LLM Evaluation* (arXiv:2609.26489).
+
