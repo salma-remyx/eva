@@ -421,3 +421,14 @@ eva/
 ## Contributing
 
 We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request. For larger features, we recommend reaching out first to ensure alignment with our roadmap.
+
+## Judge Cards
+
+Each LLM judge has a card that gathers what an LLM-as-judge evaluation should disclose — the judge model and how it can be overridden, its decoding parameters, the full unrendered prompt, the rating scale, the version/source/prompt hashes, and the evidence behind the judge — and flags the reporting items a judge cannot back with evidence (no human-labelled validation dataset, no development record, unpinned temperature).
+
+```bash
+python scripts/generate_judge_cards.py                # print cards and gaps to stdout
+python scripts/generate_judge_cards.py --out docs/metrics/judge_cards.md
+```
+
+Cards are built from the same metric signature walk the drift test uses, so they cannot disagree with `tests/fixtures/metric_signatures.json`. Judge Cards are adapted from *LLJ Cards: Best practices for the Use of LLMs as Judges*.
