@@ -24,6 +24,7 @@ from diff_viewer import diff_viewer
 
 import eva.metrics  # noqa: F401
 from apps.audio_plots import preload_audio_data, render_audio_analysis_tab
+from apps.rank_stability import RankStability, rank_stability_from_rows
 from eva.metrics.registry import get_global_registry
 from eva.models.record import EvaluationRecord
 from eva.models.results import ConversationResult, RecordMetrics
@@ -1168,6 +1169,36 @@ def _aggregate_scatter_by_system(scatter_data: list[dict], run_to_system: dict[s
 # ============================================================================
 
 
+def _render_rank_stability(stability: RankStability | None, metric: str) -> None:
+    """Render the rank-stability audit that accompanies the per-sample heatmap."""
+    st.markdown("#### Rank Stability")
+    metric_display = _format_metric_name(metric)
+    if stability is None:
+        st.info(f"Not enough data to audit {metric_display} ranks — need 2+ systems sharing 2+ samples.")
+        return
+    st.caption(
+        f"Joint cluster bootstrap over samples ({stability.n_boot} replicates on {stability.n_scenarios} shared). "
+        "**Holds Rank**: how often a system keeps the rank shown above. **Ranked Best**: how often it places first. "
+        "Low rates mean that row of the mean table is not settled by the evidence."
+    )
+    systems_df = pd.DataFrame(stability.system_rows()).rename(
+        columns={
+            "system": "System",
+            "mean": "Mean",
+            "rank": "Rank",
+            "rank_hold_rate": "Holds Rank",
+            "best_rate": "Ranked Best",
+        }
+    )
+    systems_styled = systems_df.style.format({"Mean": "{:.3f}", "Holds Rank": "{:.1%}", "Ranked Best": "{:.1%}"})
+    st.dataframe(systems_styled, hide_index=True)
+    matchups = stability.pairwise_rows()
+    if matchups:
+        matchup_rename = {"winner": "Observed Winner", "loser": "Observed Loser", "win_rate": "Wins Matchup"}
+        matchups_df = pd.DataFrame(matchups).rename(columns=matchup_rename)
+        st.dataframe(matchups_df.style.format({"Wins Matchup": "{:.1%}"}), hide_index=True)
+
+
 def render_cross_run_comparison(run_dirs: list[Path]):
     """Render a comparison view across multiple runs."""
     st.markdown("### Cross-Run Comparison")
@@ -1605,6 +1636,18 @@ def render_cross_run_comparison(run_dirs: list[Path]):
                 margin={"l": 20, "r": 20, "t": 50, "b": 120},
             )
             st.plotly_chart(heatmap_fig, width="stretch")
+
+            # === Rank Stability ===
+            # Joint cluster bootstrap over samples: re-rank systems on each
+            # resample to show how much evidence backs the mean table above.
+            _render_rank_stability(
+                rank_stability_from_rows(
+                    heatmap_rows,
+                    selected_heatmap_metric,
+                    higher_is_better=not _is_lower_is_better(selected_heatmap_metric),
+                ),
+                selected_heatmap_metric,
+            )
 
 
 def render_run_overview(run_dir: Path):
