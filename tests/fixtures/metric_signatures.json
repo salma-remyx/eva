@@ -77,6 +77,12 @@
     "source_hash": "01aed1a552f4",
     "version": "v0.1"
   },
+  "ToolCallAttributionMetric": {
+    "name": "tool_call_attribution",
+    "prompt_hash": null,
+    "source_hash": "33cc02d5e8db",
+    "version": "v0.1"
+  },
   "ToolCallValidity": {
     "name": "tool_call_validity",
     "prompt_hash": null,
