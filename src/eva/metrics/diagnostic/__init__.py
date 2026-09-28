@@ -6,6 +6,7 @@ from . import conversation_time_limit  # noqa
 from . import response_speed  # noqa
 from . import speakability  # noqa
 from . import stt_wer  # noqa
+from . import tool_call_attribution  # noqa
 from . import tool_call_validity  # noqa
 from . import transcription_accuracy_key_entities  # noqa
 from . import tts_fidelity  # noqa
@@ -17,6 +18,7 @@ __all__ = [
     "response_speed",
     "speakability",
     "stt_wer",
+    "tool_call_attribution",
     "tool_call_validity",
     "transcription_accuracy_key_entities",
     "tts_fidelity",
