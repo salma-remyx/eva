@@ -12,6 +12,7 @@ from typing import Any
 from pipecat.transcriptions.language import Language
 from pydub import AudioSegment
 
+from eva.metrics.evidence_grounding import attach_evidence_grounding
 from eva.metrics.utils import (
     aggregate_per_turn_scores,
     audio_to_base64,
@@ -407,7 +408,14 @@ class ConversationTextJudgeMetric(TextJudgeMetric):
                 rating, normalized = self.validate_and_normalize_rating(response, context)
 
                 # Build result
-                return self.build_metric_score(rating, normalized, response, prompt, context, raw_response)
+                score = self.build_metric_score(rating, normalized, response, prompt, context, raw_response)
+
+                # String-verify the judge's evidence citations against the transcript it
+                # saw (adjudication layer; no-op for responses without evidence fields).
+                if self.config.get("verify_evidence", True):
+                    attach_evidence_grounding(score, response, transcript_text)
+
+                return score
             except (KeyError, TypeError, ValueError) as e:
                 self.logger.error(f"Failed to process judge response for {context.record_id}: {e}")
                 self.logger.error(f"Response: {response}")

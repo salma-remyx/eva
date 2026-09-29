@@ -6,6 +6,9 @@
 
 LLM-based metric that evaluates whether the assistant remains faithful to information, policies, and instructions throughout the conversation. It checks that the assistant uses only grounded information in tool calls, accurately reports tool results, follows agent instructions and policies, disambiguates ambiguous or contradictory input, and avoids hallucinating information not present in any source. Complementary to task completion: a high task completion score with low faithfulness means the task was completed but the assistant made mistakes along the way (e.g., misrepresenting costs, skipping confirmation steps). Conversely, high faithfulness with low task completion means the assistant behaved correctly but failed to achieve the goal.
 
+> [!NOTE]
+> Flagged dimensions' `evidence` citations are string-verified against the transcript the judge saw, so each score carries an [`evidence_grounding`](evidence_grounding.md) details report and sub-metric (share of citations that verified). Verification never changes the rating; set `verify_evidence: false` in the metric config to disable it.
+
 ### Capabilities Measured
 
 - **Speech Recognition** *(audio-native only)*: In audio-native systems, the model is responsible for correctly understanding user audio. Mishearing is a faithfulness violation because the model's audio perception is part of its reasoning pipeline. In cascade, STT errors are not penalized here — the model can only work with what it received.
@@ -96,4 +99,4 @@ The judge evaluates five independent dimensions, each scored as a binary flag + 
 - **Class**: `FaithfulnessJudgeMetric`
 - **Base Class**: `ConversationTextJudgeMetric`
 - **Prompt**: `configs/prompts/judge.yaml` under `judge.faithfulness`
-- **Configuration**: `judge_model` (default: Claude Opus 4.6 via Bedrock)
+- **Configuration**: `judge_model` (default: Claude Opus 4.6 via Bedrock), `verify_evidence` (default: `true`)

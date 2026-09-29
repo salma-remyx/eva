@@ -6,6 +6,9 @@
 
 LLM-based metric that evaluates whether the assistant effectively moved the conversation forward without redundancy. It assesses whether the assistant makes consistent progress toward the user's goal, avoids repetitive tool calls with identical parameters, avoids redundant statements or questions, retains context across turns, and asks clarifying questions only when needed.
 
+> [!NOTE]
+> Flagged dimensions' `evidence` citations are string-verified against the transcript the judge saw, so each score carries an [`evidence_grounding`](evidence_grounding.md) details report and sub-metric (share of citations that verified). Verification never changes the rating; set `verify_evidence: false` in the metric config to disable it.
+
 ### Capabilities Measured
 
 - **Language Model**: Does the model avoid repeating itself, retain context across turns, and make consistent forward progress toward the user's goal?
@@ -81,3 +84,4 @@ This metric evaluates **conversation efficiency only**. It does NOT evaluate whe
 - **Prompt location**: `configs/prompts/judge.yaml` under `judge.conversation_progression`
 - **Configuration options**:
   - `judge_model`: LLM model to use (default: "gpt-5.2")
+  - `verify_evidence`: String-verify flagged dimensions' evidence citations (default: `true`)

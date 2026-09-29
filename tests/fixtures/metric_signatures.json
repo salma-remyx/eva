@@ -20,8 +20,8 @@
   "ConversationProgressionJudgeMetric": {
     "name": "conversation_progression",
     "prompt_hash": "174cdf93b398",
-    "source_hash": "4e5f59c32946",
-    "version": "v0.1"
+    "source_hash": "03e9b3418679",
+    "version": "v0.2"
   },
   "ConversationTimeLimitExceededMetric": {
     "name": "conversation_completed_on_time",
@@ -38,8 +38,8 @@
   "FaithfulnessJudgeMetric": {
     "name": "faithfulness",
     "prompt_hash": "060e3f1f9e7a",
-    "source_hash": "93a559d0a028",
-    "version": "v0.2"
+    "source_hash": "e1f47d5f8462",
+    "version": "v0.3"
   },
   "ResponseSpeedMetric": {
     "name": "response_speed",
@@ -98,8 +98,8 @@
   "UserBehavioralFidelityMetric": {
     "name": "user_behavioral_fidelity",
     "prompt_hash": "21527fa8d79b",
-    "source_hash": "7f5dcec51568",
-    "version": "v0.1"
+    "source_hash": "14b66ca6659f",
+    "version": "v0.2"
   },
   "UserSpeechFidelityMetric": {
     "name": "user_speech_fidelity",

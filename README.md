@@ -343,7 +343,7 @@ output/<run_id>/
 |  **Agent Speech Fidelity** · Audio LLM Judge `BETA` |  **Conciseness** · LLM Judge |
 |  **Faithfulness** · LLM Judge |  **Conversation Progression** · LLM Judge |
 
-See the [Metrics documentation](docs/metrics/README.md) for detailed scoring rubrics and judge prompts. For the data structures that metrics operate on, see [MetricContext documentation](docs/metric_context.md).
+See the [Metrics documentation](docs/metrics/README.md) for detailed scoring rubrics and judge prompts. For the data structures that metrics operate on, see [MetricContext documentation](docs/metric_context.md). Conversation judge metrics also string-verify the transcript citations behind every flagged dimension and report an `evidence_grounding` sub-metric — see [Evidence Grounding](docs/metrics/evidence_grounding.md).
 
 ## 🗂️ Dataset
 
