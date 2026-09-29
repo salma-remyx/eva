@@ -8,6 +8,9 @@ LLM-based validation metric that detects whether a simulated user's behavior **c
 
 This is a data quality gate — conversations scored 0 (corrupted) should be excluded or re-run before drawing conclusions about agent performance. The metric only cares about **modification tools** (write operations). User deviations that only trigger read-only tools are not considered corruption, and minor deviations that don't affect database state are acceptable. Each corruption type is analyzed independently with its own reasoning, making it easy to diagnose what went wrong.
 
+> [!NOTE]
+> This metric runs through the same shared post-judge hook as the other conversation judge metrics, but its `corruption_analysis` entries carry free-form `analysis` reasoning rather than quoted citations, so they are deliberately not string-verified — see [`evidence_grounding`](evidence_grounding.md). Flagged entries that cite verbatim transcript quotes would be adjudicated automatically.
+
 ## How It Works
 
 ### Evaluation Method
@@ -129,7 +132,7 @@ The user violated a specific instruction in their decision tree (negotiation beh
 
 ## Implementation Details
 
-- **File**: `src/eva/metrics/validation_metrics/user_behavioral_fidelity.py`
+- **File**: `src/eva/metrics/validation/user_behavioral_fidelity.py`
 - **Class**: `UserBehavioralFidelityMetric`
 - **Base Class**: `ConversationTextJudgeMetric`
 - **Prompt location**: `configs/prompts/judge.yaml` under `judge.user_behavioral_fidelity`

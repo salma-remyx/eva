@@ -142,6 +142,8 @@ Judge metric prompts are defined in `configs/prompts/judge.yaml` under the `judg
 
 LLM-as-judge evaluations are only as useful as the judges themselves. For each judge metric, we constructed a human-annotated validation dataset and measured judge accuracy against human labels. We use these datasets to improve our judge prompts as well as select the optimal LLM judge model for each metric. See [judge_validation_datasets/](judge_validation_datasets/) for the datasets and detailed judge accuracy results.
 
+At runtime, the conversation-level judge metrics ([`faithfulness`](faithfulness.md), [`conversation_progression`](conversation_progression.md)) also self-check: every flagged dimension's transcript citations are string-verified against the transcript the judge saw, and an `evidence_grounding` sub-metric reports the run-level grounding rate. See [evidence_grounding.md](evidence_grounding.md) for the verdict definitions, per-record report, and the `verify_evidence` opt-out.
+
 ## Related Documentation
 
 - [../llm_configuration.md](../llm_configuration.md) - LLM configuration
