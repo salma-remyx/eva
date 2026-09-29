@@ -421,3 +421,11 @@ eva/
 ## Contributing
 
 We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request. For larger features, we recommend reaching out first to ensure alignment with our roadmap.
+
+## Judge Evidence Grounding
+
+Conversation-level judge metrics (`faithfulness`, `conversation_progression`) ask the judge to justify every flagged dimension with an `evidence` field citing the transcript. After each judge call, EVA string-verifies those citations: quoted spans in a flagged dimension's evidence are checked against the transcript the judge saw (case- and whitespace-insensitive), and each dimension gets a verdict — `grounded` (citations appear verbatim), `fabricated` (at least one citation is not in the transcript), or `unquoted` (nothing quoted to verify).
+
+Per-record verdicts land in `details["evidence_grounding"]`, and an `evidence_grounding` sub-metric (share of cited quotes that verified) aggregates across records into a run-level grounding rate, giving a zero-cost judge-reliability diagnostic alongside the score itself. Verification never changes a score; set `verify_evidence: false` in a metric's config to disable it.
+
+*Judge Evidence Grounding — adapted from "Low-Cost Assays for Measuring Model Behavior Across Vendors and Releases".*

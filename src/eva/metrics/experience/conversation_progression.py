@@ -32,7 +32,7 @@ class ConversationProgressionJudgeMetric(ConversationTextJudgeMetric):
     """
 
     name = "conversation_progression"
-    version = "v0.1"
+    version = "v0.2"
     description = "LLM judge evaluation of whether the assistant moved the conversation forward productively"
     category = "experience"
     rating_scale = (1, 3)
