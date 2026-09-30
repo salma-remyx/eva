@@ -41,6 +41,12 @@
     "source_hash": "93a559d0a028",
     "version": "v0.2"
   },
+  "FloorControlMetric": {
+    "name": "floor_control",
+    "prompt_hash": null,
+    "source_hash": "1b8bdbcdece4",
+    "version": "v0.1"
+  },
   "ResponseSpeedMetric": {
     "name": "response_speed",
     "prompt_hash": null,

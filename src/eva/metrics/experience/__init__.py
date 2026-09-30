@@ -2,4 +2,5 @@
 
 from . import conciseness  # noqa
 from . import conversation_progression  # noqa
+from . import floor_control  # noqa
 from . import turn_taking  # noqa
