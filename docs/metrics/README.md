@@ -38,7 +38,7 @@ Measures whether the agent accomplished the user's goal correctly:
 | [`faithfulness`](faithfulness.md) | Judge (Claude Opus) | Speech Recognition (audio-native only), Language Model | Faithfulness to information, policies, and instructions (1-3) |
 | [`agent_speech_fidelity`](agent_speech_fidelity.md) | Audio Judge (Gemini) | Speech Synthesis | Whether key entities in the assistant's speech audio matches intended text (0-1) |
 
-### Experience (3 metrics)
+### Experience (4 metrics)
 
 Measures the quality of the user's conversational experience:
 
@@ -47,6 +47,7 @@ Measures the quality of the user's conversational experience:
 | [`turn_taking`](turn_taking.md) | Judge (text + timestamps) | VAD, Pipeline | Timing accuracy of turn transitions (-1 to +1) |
 | [`conciseness`](conciseness.md) | Judge | Language Model | Whether responses are appropriately concise for voice (1-3) |
 | [`conversation_progression`](conversation_progression.md) | Judge | Language Model | Whether assistant moves conversation forward without repetition (1-3) |
+| [`floor_control`](floor_control.md) | Deterministic | VAD, Pipeline | Full-duplex floor control: pause takeover, interruption response, backchannel resume (0-1). **Opt-in** — excluded from the default run; enable via `--metrics floor_control`. |
 
 ### Diagnostic (7 metrics)
 
