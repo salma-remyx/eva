@@ -34,6 +34,10 @@ Pipeline:
   2. bootstrap_ci      — bootstrapped 95% CI on mean delta (resample across scenarios)
   3. run_analysis      — applies both + Holm-Bonferroni correction across conditions
                          within each model × metric combination
+  4. rank_stability_table — joint cluster bootstrap over (domain, scenario) units:
+                         how often each model's rank survives resampling, plus a
+                         scenario-weighted vs domain-weighted sensitivity comparison
+                         (see eva.utils.rank_stability)
 """
 
 from pathlib import Path
@@ -47,6 +51,7 @@ from eva.utils.bootstrap import (  # noqa: F401 (bootstrap_ci re-exported for ba
     bootstrap_ci,
     run_seed,
 )
+from eva.utils.rank_stability import rank_stability_table
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 CONFIG_PATH = PROJECT_ROOT / "local" / "perturbations" / "perturbations_config.yaml"
@@ -273,6 +278,14 @@ def main(config_path: Path = CONFIG_PATH) -> None:
         mv_per_domain.to_csv(mv_per_domain_path, index=False)
         print(f"Wrote {len(mv_pooled):,} metric-value pooled rows → {mv_pooled_path}")
         print(f"Wrote {len(mv_per_domain):,} metric-value per-domain rows → {mv_per_domain_path}")
+
+        # ── Rank stability audit (joint bootstrap + pooling-rule sensitivity) ──
+        ranks = rank_stability_table(
+            mv_long, n_boot=config["n_bootstrap"], seed=config["random_seed"], alpha=config["alpha"]
+        )
+        ranks_path = output_dir / "results_rank_stability.csv"
+        ranks.to_csv(ranks_path, index=False)
+        print(f"Wrote {len(ranks):,} rank-stability rows → {ranks_path}")
     else:
         print(f"  [metric-values] skipped: {metric_values_path} not found (run data_perturbations.py)")
 
