@@ -34,3 +34,18 @@ controls the analysis run: which models/aliases to include, which metrics to com
 bootstrap/CI settings, and where to find the per-trial input scores.
 `regenerate_perturbation_blocks.yaml` controls the regen step: which metrics to write,
 the leaderboard JSON and results paths, and any display-name overrides.
+
+## Rank stability audit
+
+`stats_perturbations.py` also writes `results_rank_stability.csv` (via
+`eva.utils.rank_stability`): for each (metric, condition), every model gets its observed
+rank, how often it kept that rank under a joint cluster bootstrap over (domain, scenario)
+units (the same resampled scenarios applied to every model), a percentile band on its
+replicate ranks, and its rank under domain-weighted instead of scenario-weighted pooling
+— `rank_changed` flags rows an equally defensible aggregation rule would move. Read the
+per-model CIs and this table together: a model can sit atop the point estimates yet hold
+that top rank in only half the replicates. Adapted from *How Reproducible Are Evaluation
+Conclusions? A Self-Audit of LLM-Inferred Prompt Structure* (arXiv:2609.30074), which
+recommends reporting rank stability and executed sensitivity comparisons alongside any
+ranking.
+
