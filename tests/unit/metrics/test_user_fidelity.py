@@ -65,11 +65,7 @@ class TestUserFidelity:
         assert "user_fidelity" not in registry.list_metrics()
 
     def test_judge_prompt_loaded_from_prompts_directory(self):
-        # The template ships in configs/prompts/user_fidelity.yaml under its
-        # own top-level key (the PromptManager merges prompt files shallowly
-        # by top-level namespace, so a new file cannot extend the "judge"
-        # namespace owned by judge.yaml without clobbering it).
-        template = get_prompt_manager().get_template("user_fidelity.user_prompt")
+        template = get_prompt_manager().get_template("judge.user_fidelity.user_prompt")
         assert "premature disclosure" in template.lower()
 
         prompt = self.metric.get_judge_prompt(**self.metric.get_prompt_variables(_make_ctx(), "transcript text"))

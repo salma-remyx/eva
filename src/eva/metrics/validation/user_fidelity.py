@@ -21,7 +21,6 @@ from eva.metrics.base import ConversationTextJudgeMetric, MetricContext
 from eva.metrics.registry import register_metric
 from eva.metrics.utils import build_binary_flag_sub_metrics
 from eva.metrics.validation.user_behavioral_fidelity import _render_user_simulator_instructions
-from eva.metrics.versioning import _CURRENT_PROMPT_HASH, hash_prompt_template
 from eva.models.results import MetricScore
 
 _USER_FIDELITY_CRITERIA_KEYS = (
@@ -65,35 +64,15 @@ class UserFidelityMetric(ConversationTextJudgeMetric):
     Opt-in diagnostic: excluded from default metric runs and resolvable by
     name for explicit selection. Score existing runs with
     ``scripts/compute_user_fidelity.py``.
-
-    ``version`` is intentionally unset for now: enrolling this metric in the
-    versioned set requires regenerating ``tests/fixtures/metric_signatures.json``
-    (``scripts/regen_metric_signatures.py``), which should happen together
-    with wiring the module into ``eva.metrics.validation`` imports when the
-    metric is promoted out of opt-in.
     """
 
     name = "user_fidelity"
+    version = "v0.1"
     description = "User Fidelity Score: simulated-user adherence to its private instructions"
     category = "validation"
     rating_scale = (0, 1)
     default_model = "gpt-5.2-medium"
     exclude_from_default_metrics = True
-
-    def get_judge_prompt(self, prompt_key: str = "user_prompt", **variables: Any) -> str:
-        """Resolve the judge prompt from this metric's own top-level namespace.
-
-        The PromptManager merges prompt files shallowly by top-level key, so a
-        new file cannot extend the ``judge`` namespace owned by judge.yaml
-        without clobbering it; this metric's template therefore ships under
-        ``user_fidelity`` in configs/prompts/user_fidelity.yaml. Stamps the
-        template hash like the base implementation. Move the template into
-        judge.yaml (as ``judge.user_fidelity``) and drop this override when
-        the metric is promoted out of opt-in.
-        """
-        prompt_path = f"{self.name}.{prompt_key}"
-        _CURRENT_PROMPT_HASH.set(hash_prompt_template(self.prompt_manager.get_template(prompt_path)))
-        return self.prompt_manager.get_prompt(prompt_path, **variables)
 
     def get_prompt_variables(self, context: MetricContext, transcript_text: str) -> dict[str, Any]:
         """Return variables for prompt formatting."""

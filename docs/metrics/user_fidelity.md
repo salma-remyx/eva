@@ -119,9 +119,9 @@ Scores merge into each record's `metrics.json` (other metrics are preserved), an
 - **File**: `src/eva/metrics/validation/user_fidelity.py`
 - **Class**: `UserFidelityMetric`
 - **Base Class**: `ConversationTextJudgeMetric`
-- **Prompt location**: `configs/prompts/user_fidelity.yaml` under `user_fidelity` (own top-level namespace — the PromptManager merges prompt files shallowly, so a separate file cannot extend the `judge` namespace in judge.yaml without clobbering it; move it there when promoting the metric into the default set)
-- **Registration**: self-registers on import but is excluded from default metric runs; `scripts/compute_user_fidelity.py` imports it and drives `MetricsRunner`
-- **Versioning**: not yet enrolled in the metric-signature drift fixture; enroll (set `version`, run `scripts/regen_metric_signatures.py`, wire into `eva.metrics.validation` imports) when promoting out of opt-in
+- **Prompt location**: `configs/prompts/judge.yaml` under `judge.user_fidelity`
+- **Registration**: registered on import of `eva.metrics.validation` but excluded from default metric runs; `scripts/compute_user_fidelity.py` drives `MetricsRunner` for it
+- **Versioning**: `v0.1`, enrolled in the metric-signature drift fixture (`tests/fixtures/metric_signatures.json`) — changes to the metric or its judge prompt require a `version` bump plus fixture regen via `scripts/regen_metric_signatures.py`
 - **Configuration options**:
   - `judge_model`: LLM model to use (default: "gpt-5.2-medium")
   - `judge_params`: parameters merged over the judge defaults

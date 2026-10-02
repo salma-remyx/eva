@@ -101,6 +101,12 @@
     "source_hash": "7f5dcec51568",
     "version": "v0.1"
   },
+  "UserFidelityMetric": {
+    "name": "user_fidelity",
+    "prompt_hash": "8d0306175788",
+    "source_hash": "b0db04f61821",
+    "version": "v0.1"
+  },
   "UserSpeechFidelityMetric": {
     "name": "user_speech_fidelity",
     "prompt_hash": "849e13c42e3b",

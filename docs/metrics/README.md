@@ -62,13 +62,14 @@ Metrics that help isolate root causes of failures. These provide signals for und
 | [`tool_call_validity`](tool_call_validity.md) | Deterministic | Language Model | Fraction of tool calls with correctly formatted parameters (0.0-1.0) |
 | [`transcription_accuracy_key_entities`](transcription_accuracy_key_entities.md) | Judge | Speech Recognition | STT accuracy for key entities (names, dates, numbers) (0.0-1.0) |
 
-### Validation Metrics (3 metrics)
+### Validation Metrics (4 metrics)
 
 Quality control metrics that identify problematic simulations. These evaluate the simulation infrastructure, not agent capabilities.
 
 | Metric | Type | Description |
 |--------|------|-------------|
 | [`user_behavioral_fidelity`](user_behavioral_fidelity.md) | Judge | Whether simulated user corrupted agent evaluation (0-1) |
+| [`user_fidelity`](user_fidelity.md) | Judge | Whether simulated user followed its private instructions (0-1). **Opt-in** — excluded from the default run; score existing runs with `scripts/compute_user_fidelity.py`. |
 | [`conversation_valid_end`](conversation_valid_end.md) | Deterministic | Whether conversation ended with proper end_call tool (0-1) |
 | [`user_speech_fidelity`](user_speech_fidelity.md) | Audio (Gemini) | Whether user simulator speech audio matches intended text (1-3) |
 
