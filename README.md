@@ -421,3 +421,15 @@ eva/
 ## Contributing
 
 We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request. For larger features, we recommend reaching out first to ensure alignment with our roadmap.
+
+## User Simulator Fidelity (opt-in)
+
+The `user_fidelity` metric scores how faithfully the simulated user executed its assigned role — persona, private information, decision tree, and end-of-call rules — independently of agent success. It complements the `user_behavioral_fidelity` corruption gate, which only flags user behavior that changed database state: role violations such as prematurely disclosing private information before the agent asks for it change the interaction being evaluated even when the final state is untouched. This makes it the tool for checking whether runs from different user simulators (ElevenLabs Agents vs OpenAI Realtime) are comparable.
+
+Score existing runs — one `--run-dir` per run to compare simulators side by side:
+
+```bash
+PYTHONPATH=src python scripts/compute_user_fidelity.py --run-dir output/<run_id>
+```
+
+Results merge into each record's `metrics.json` and show up in the analysis app. See the [metric documentation](docs/metrics/user_fidelity.md) for the rubric and scoring.
