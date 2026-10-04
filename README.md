@@ -421,3 +421,8 @@ eva/
 ## Contributing
 
 We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request. For larger features, we recommend reaching out first to ensure alignment with our roadmap.
+
+## Disclosure-Sharding Condition Suite
+
+How well does an agent integrate user requirements that arrive one turn at a time? The [disclosure-sharding suite](analysis/disclosure_sharding/README.md) — adapted from the full/concat/sharded protocol of [SCB](https://arxiv.org/abs/2609.40198) — expands any evaluation dataset into three condition variants: the original goal (`full`), its clause-level shards restated up front (`concat`), and the same shards disclosed one per turn (`sharded`). Run the benchmark on the expanded dataset as usual, then compare conditions on any metric; the paired `sharded − concat` delta isolates the cost of incremental disclosure from goal reformulation.
+
