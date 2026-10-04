@@ -158,6 +158,7 @@ class TestProductionContracts:
         ]
         assert loaded[0].ground_truth == record.ground_truth
 
+    @pytest.mark.skipif(not DATASET_PATH.exists(), reason="airline dataset not present in this checkout")
     def test_real_dataset_variants_survive_culture_resolution(self) -> None:
         """Sharded variants flow through the runtime goal-resolution path."""
         record = EvaluationRecord.load_dataset(DATASET_PATH)[0]
@@ -209,7 +210,7 @@ class TestConditionDeltas:
         assert summary["sharded"]["mean"] == pytest.approx(0.5)
 
     def test_paired_deltas_report_disclosure_cost(self) -> None:
-        """sharded minus concat is negative and excludes zero; full minus concat is zero."""
+        """Sharded minus concat is negative and excludes zero; full minus concat is zero."""
         deltas = cross_condition_deltas(normalize_rows(make_trial_rows()), n_boot=500)
         by_pair = {(row["condition_a"], row["condition_b"]): row for row in deltas}
 
