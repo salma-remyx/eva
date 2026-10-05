@@ -24,6 +24,7 @@ from diff_viewer import diff_viewer
 
 import eva.metrics  # noqa: F401
 from apps.audio_plots import preload_audio_data, render_audio_analysis_tab
+from apps.rank_stability import render_rank_stability_section
 from eva.metrics.registry import get_global_registry
 from eva.models.record import EvaluationRecord
 from eva.models.results import ConversationResult, RecordMetrics
@@ -1605,6 +1606,13 @@ def render_cross_run_comparison(run_dirs: list[Path]):
                 margin={"l": 20, "r": 20, "t": 50, "b": 120},
             )
             st.plotly_chart(heatmap_fig, width="stretch")
+
+    # === Rank Stability ===
+    # Self-audit of the ranked table above: a joint cluster bootstrap over the
+    # shared records reports how often each row holds its rank, so the ranking
+    # carries its own confidence statement instead of a single ordering.
+    if heatmap_rows:
+        render_rank_stability_section(heatmap_rows, ordered_metrics, _is_lower_is_better)
 
 
 def render_run_overview(run_dir: Path):

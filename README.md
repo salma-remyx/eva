@@ -248,6 +248,8 @@ streamlit run apps/analysis.py
 
 The app reads from the `output/` directory by default and provides three views: cross-run comparison, run overview, and per-record detail (transcripts, audio, metrics, conversation traces). See [`apps/README.md`](apps/README.md) for full documentation.
 
+The cross-run comparison ends with a **Rank Stability** section: a joint cluster bootstrap over the records shared by the compared systems re-runs the ranking and reports how often each row holds its rank, together with the pairwise probability that one system outscores another. Rows holding their rank in under 75% of replicates are flagged unstable — the ranking may identify the worst system reliably without reliably identifying the best (adapted from [*How Reproducible Are Evaluation Conclusions? A Self-Audit of LLM-Inferred Prompt Structure*](https://arxiv.org/abs/2609.30074)).
+
 ### Using Docker
 
 ```bash
