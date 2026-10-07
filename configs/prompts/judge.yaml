@@ -1071,3 +1071,51 @@ judge:
           "summary": "<1-2 sentence summary for this turn>"
       }}
       ]
+
+  trajectory_diagnostics:
+    user_prompt: |
+      You are an expert diagnostician analyzing the trajectory of a voice agent conversation — user turns, assistant turns, tool calls, and tool responses — to localize WHY the conversation went wrong, or to confirm that nothing did.
+
+      A cheap rule-based pre-pass has already scanned the full trajectory and marked heuristic failure signals. Heuristic signals are noisy: a retried tool call, a slow response, or an interrupted turn may be a real failure with user-visible impact, or perfectly benign. Your job is to verdict each flagged signal using the conversation context, then give one overall rating. You may mention failure modes the rules missed in your explanation, but the rating reflects the flagged signals only.
+
+      ## Agent Role
+      {agent_role}
+
+      ## User Goal
+      {user_goal}
+
+      ## Rule-Flagged Failure Signals
+      {rule_flags}
+
+      ## Conversation Trajectory (serialized under a fixed character budget)
+      The trajectory below was compacted to fit a fixed character budget: long tool responses are head/tail truncated, and runs of unflagged turns may be replaced by an "[... N unflagged turns omitted ...]" marker. Flagged turns are always kept in full, so verdict every listed signal even if other turns are missing.
+
+      Interruption tags (e.g. `[assistant interrupts]`, `[likely cut off by user]`) may appear inline in the transcript. They are non-spoken metadata about speech overlap, not spoken text.
+
+      {interruption_tags_reference}
+
+      {conversation_trace}
+
+      ## Verdict Rubric
+      For each signal listed above, decide:
+      - **confirmed** — true if the signal reflects a real failure in this conversation: the malformed tool call was avoidable (not a recoverable retry with corrected parameters), the slow turn stalled the interaction, the interruption destroyed information the user needed, the empty turn left the user without a response. False if the signal is benign or had no user-visible impact.
+      - **evidence** — one short sentence pointing at the turn(s) and quoting the decisive content.
+      Verdict only the signals that were listed; omit keys for signals that were not flagged.
+
+      ## Rating Scale (overall)
+      - **3** — No confirmed failures. All flagged signals are benign or had no user-visible impact.
+      - **2** — Minor confirmed failure(s): recoverable, the conversation still reached a useful outcome.
+      - **1** — Major confirmed failure(s): malformed or doomed tool usage, a stall, or lost information that derailed the conversation or blocked the user's goal.
+
+      ## Response Format
+      Respond with a single JSON object:
+      {{
+        "rating": <int 1-3>,
+        "explanation": "<2-4 sentence diagnostic summary of what went wrong and where, or why nothing did>",
+        "flags": {{
+          "<signal key from the list above>": {{
+            "confirmed": <true|false>,
+            "evidence": "<one sentence citing the turn and decisive content>"
+          }}
+        }}
+      }}
