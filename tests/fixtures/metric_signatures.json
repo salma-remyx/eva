@@ -83,6 +83,12 @@
     "source_hash": "761f0d0a32dd",
     "version": "v0.1"
   },
+  "TrajectoryDiagnosticsJudgeMetric": {
+    "name": "trajectory_diagnostics",
+    "prompt_hash": "d0e0fb6a53eb",
+    "source_hash": "db698f58d6b1",
+    "version": "v0.1"
+  },
   "TranscriptionAccuracyKeyEntitiesMetric": {
     "name": "transcription_accuracy_key_entities",
     "prompt_hash": "877dfa61f232",
