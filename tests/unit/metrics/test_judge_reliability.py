@@ -1,18 +1,12 @@
-"""Tests for the judge reliability audit (eva.metrics.judge_reliability).
+"""Tests for the judge reliability statistics (eva.metrics.judge_reliability).
 
-Covers the pure reliability statistics and the wiring into MetricsRunner's
-per-metric compute path, which is where the audit becomes part of a real run.
+Covers the pure per-item and population statistics; the wiring into
+``MetricsRunner`` lives in ``test_runner.py``, the mirror of the module that
+changed.
 """
-
-import json
-from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from eva.metrics.accuracy.faithfulness import FaithfulnessJudgeMetric
-from eva.metrics.accuracy.task_completion import TaskCompletion
-from eva.metrics.base import MetricContext
 from eva.metrics.judge_reliability import (
     REVERSED,
     VerdictSample,
@@ -22,46 +16,8 @@ from eva.metrics.judge_reliability import (
     trustworthy_verdict_rate,
     verdict_of,
 )
-from eva.metrics.runner import MetricsRunner
 from eva.models.results import MetricScore
 from tests.unit.metrics.conftest import make_metric_context
-
-
-def make_judge(*, flip_on_reverse: bool = True) -> FaithfulnessJudgeMetric:
-    """A faithfulness judge whose verdict flips when the transcript is reversed."""
-    metric = FaithfulnessJudgeMetric()
-    metric.llm_client = MagicMock()
-    metric.llm_client.params = {}
-
-    async def generate_text(messages):
-        prompt = messages[0]["content"]
-        rating = 1 if flip_on_reverse and prompt.index("Turn 1") < prompt.index("Turn 0") else 3
-        return json.dumps({"rating": rating}), None
-
-    metric.llm_client.generate_text = AsyncMock(side_effect=generate_text)
-    return metric
-
-
-def make_partial_runner(metric_configs: dict | None = None) -> MetricsRunner:
-    """A MetricsRunner carrying only what _run_record needs, so the real path runs."""
-    runner = MetricsRunner.__new__(MetricsRunner)
-    runner.metrics = []
-    runner.record_metric_filter = None
-    runner.metric_configs = metric_configs or {}
-    return runner
-
-
-def make_audit_context() -> MetricContext:
-    """A context with two turns in presentation order and non-empty turn counts."""
-    return make_metric_context(
-        record_id="1.1.1",
-        num_assistant_turns=1,
-        num_user_turns=1,
-        conversation_trace=[
-            {"turn_id": 0, "role": "user", "content": "book me a flight"},
-            {"turn_id": 1, "role": "assistant", "content": "done"},
-        ],
-    )
 
 
 class TestReverseContextOrder:
@@ -192,81 +148,3 @@ class TestAuditMetricVerdict:
         assert summary["reproducible"] is True
         assert summary["order_invariant"] is False
         assert summary["trustworthy"] is False
-
-
-class TestRunnerSettings:
-    def test_default_off(self, monkeypatch):
-        monkeypatch.delenv("JUDGE_RELIABILITY_REPS", raising=False)
-        monkeypatch.delenv("JUDGE_RELIABILITY_ORDER_SWAP", raising=False)
-        runner = make_partial_runner()
-
-        assert runner._judge_reliability_settings(FaithfulnessJudgeMetric()) == (0, False)
-
-    def test_code_metrics_are_never_audited(self, monkeypatch):
-        monkeypatch.setenv("JUDGE_RELIABILITY_REPS", "5")
-        runner = make_partial_runner()
-
-        assert runner._judge_reliability_settings(TaskCompletion()) == (0, False)
-
-    def test_per_metric_config_wins(self, monkeypatch):
-        monkeypatch.setenv("JUDGE_RELIABILITY_REPS", "5")
-        runner = make_partial_runner({"faithfulness": {"reliability_reps": 2}})
-
-        assert runner._judge_reliability_settings(FaithfulnessJudgeMetric()) == (2, False)
-
-    def test_env_vars_enable_it(self, monkeypatch):
-        monkeypatch.setenv("JUDGE_RELIABILITY_REPS", "3")
-        monkeypatch.setenv("JUDGE_RELIABILITY_ORDER_SWAP", "true")
-        runner = make_partial_runner()
-
-        assert runner._judge_reliability_settings(FaithfulnessJudgeMetric()) == (3, True)
-
-
-class TestRunRecordWiring:
-    """Drive the audit hook through the real MetricsRunner._run_record path."""
-
-    async def _run_record(self, judge, metric_configs):
-        runner = make_partial_runner(metric_configs)
-        runner.metrics = [judge]
-        runner._load_context = AsyncMock(return_value=make_audit_context())
-        return await runner._run_record("1.1.1", Path("records/1.1.1"))
-
-    @pytest.mark.asyncio
-    async def test_audit_off_by_default(self):
-        judge = make_judge()
-
-        result = await self._run_record(judge, None)
-
-        assert "judge_reliability" not in result.metrics["faithfulness"].details
-        assert judge.llm_client.generate_text.await_count == 1
-
-    @pytest.mark.asyncio
-    async def test_audit_attached_to_the_score(self):
-        judge = make_judge()
-
-        result = await self._run_record(
-            judge, {"faithfulness": {"reliability_reps": 1, "reliability_order_swap": True}}
-        )
-
-        # Primary call + 1 forward repetition + 2 reversed runs (reps + a primary one).
-        assert judge.llm_client.generate_text.await_count == 4
-        reliability = result.metrics["faithfulness"].details["judge_reliability"]
-        assert reliability["verdicts"] == {"forward": [3.0, 3.0], REVERSED: [1.0, 1.0]}
-        assert reliability["reproducible"] is True
-        assert reliability["order_invariant"] is False
-        assert reliability["trustworthy"] is False
-        # The reported verdict itself is unchanged by the audit.
-        assert result.metrics["faithfulness"].score == 3.0
-
-    @pytest.mark.asyncio
-    async def test_stable_judge_is_trustworthy(self):
-        judge = make_judge(flip_on_reverse=False)
-
-        result = await self._run_record(
-            judge, {"faithfulness": {"reliability_reps": 1, "reliability_order_swap": True}}
-        )
-
-        reliability = result.metrics["faithfulness"].details["judge_reliability"]
-        assert reliability["reproducible"] is True
-        assert reliability["order_invariant"] is True
-        assert reliability["trustworthy"] is True

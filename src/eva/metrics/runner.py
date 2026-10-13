@@ -90,6 +90,8 @@ class MetricsRunner:
         record_ids: list[str] | None = None,
         record_metric_filter: dict[str, set[str]] | None = None,
         force_rerun: bool = False,
+        judge_reliability_reps: int = 0,
+        judge_reliability_order_swap: bool = False,
     ):
         """Initialize the metrics runner.
 
@@ -108,6 +110,12 @@ class MetricsRunner:
                 the specified metrics and merge with existing results.
             force_rerun: If True, recompute all requested metrics even if they already
                 exist and succeeded on disk.
+            judge_reliability_reps: Run-level default for extra identical re-runs per
+                text-judge verdict (judge reliability audit); per-metric
+                ``reliability_reps`` config wins. 0 disables.
+            judge_reliability_order_swap: Run-level default for also re-running text
+                judges on the reversed-order transcript; per-metric
+                ``reliability_order_swap`` config wins.
         """
         self.run_dir = Path(run_dir)
         self.dataset = {r.id: r for r in dataset}
@@ -115,6 +123,8 @@ class MetricsRunner:
         self.record_metric_filter = record_metric_filter
         self._is_rerun_mode = record_metric_filter is not None
         self.force_rerun = force_rerun
+        self.judge_reliability_reps = judge_reliability_reps
+        self.judge_reliability_order_swap = judge_reliability_order_swap
         self.metric_configs = metric_configs or {}
         self.registry = registry or get_global_registry()
         self._context_cache: dict[str, Any] = {}
@@ -199,19 +209,19 @@ class MetricsRunner:
         """Resolve the opt-in judge reliability audit settings for a metric.
 
         Returns ``(reps, order_swap)``. Per-metric config wins over the
-        ``JUDGE_RELIABILITY_*`` env vars, mirroring how ``judge_model`` is
-        resolved. Code metrics and audio judges never audit: the order swap only
-        means something for a judge reading a transcript.
+        run-level ``judge_reliability_*`` settings, mirroring how
+        ``judge_model`` is resolved. Code metrics and audio judges never audit:
+        the order swap only means something for a judge reading a transcript.
         """
         if not isinstance(metric, TextJudgeMetric):
             return 0, False
 
         config = self.metric_configs.get(metric.name, {})
-        reps = config.get("reliability_reps") or os.environ.get("JUDGE_RELIABILITY_REPS")
+        reps = config.get("reliability_reps") or self.judge_reliability_reps
         reps = max(int(reps), 0) if reps else 0
         order_swap = config.get("reliability_order_swap")
         if order_swap is None:
-            order_swap = os.environ.get("JUDGE_RELIABILITY_ORDER_SWAP", "").lower() in ("1", "true", "yes")
+            order_swap = self.judge_reliability_order_swap
         return reps, bool(order_swap)
 
     @staticmethod

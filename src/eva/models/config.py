@@ -559,6 +559,20 @@ class RunConfig(BaseSettings):
         description="Metrics to run. Skip all metrics with `EVA_METRICS=` or `--metrics=`.",
     )
 
+    # Judge reliability audit (opt-in; see docs/metrics/judge_reliability.md)
+    judge_reliability_reps: int = Field(
+        0,
+        ge=0,
+        description="Extra identical re-runs per text-judge verdict to audit reproducibility. "
+        "0 (default) disables the audit; each rep adds one judge call per audited score. "
+        "Per-metric `reliability_reps` config wins over this value.",
+    )
+    judge_reliability_order_swap: bool = Field(
+        False,
+        description="Also re-run text judges on the transcript presented back-to-front to audit "
+        "order invariance. Per-metric `reliability_order_swap` config wins over this value.",
+    )
+
     # Aggregate-only mode
     aggregate_only: bool = Field(
         False,

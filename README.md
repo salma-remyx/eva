@@ -345,7 +345,7 @@ output/<run_id>/
 
 See the [Metrics documentation](docs/metrics/README.md) for detailed scoring rubrics and judge prompts. For the data structures that metrics operate on, see [MetricContext documentation](docs/metric_context.md).
 
-Text judges can additionally be audited for reliability: setting `JUDGE_RELIABILITY_REPS` (or `reliability_reps` in a metric's config) re-runs the judge on the same conversation, and `JUDGE_RELIABILITY_ORDER_SWAP` re-runs it on the transcript presented back-to-front. Each audited score gains a `judge_reliability` entry reporting whether the verdict was reproducible and order-invariant, plus a `trustworthy` flag combining the two. Adapted from *All Verdicts are Not Equal: Rethinking LLM Judge Reliability*.
+Text judges can additionally be audited for reliability: an opt-in re-run per verdict reports whether it was reproducible under identical re-sampling and invariant to the transcript being presented back-to-front, plus a combined `trustworthy` flag. See the [judge reliability audit documentation](docs/metrics/judge_reliability.md) for the knobs (`EVA_JUDGE_RELIABILITY_REPS`, `EVA_JUDGE_RELIABILITY_ORDER_SWAP`, or per-metric `reliability_*` config).
 
 ## 🗂️ Dataset
 

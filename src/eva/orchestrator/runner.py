@@ -230,6 +230,8 @@ class BenchmarkRunner:
                     metric_configs=self._metric_configs,
                     num_draws=self.config.num_trials,
                     force_rerun=self.config.force_rerun_metrics,
+                    judge_reliability_reps=self.config.judge_reliability_reps,
+                    judge_reliability_order_swap=self.config.judge_reliability_order_swap,
                 )
             except Exception as e:
                 logger.warning(f"Failed to pre-create MetricsRunner for overlapped execution: {e}")
@@ -498,6 +500,8 @@ class BenchmarkRunner:
                     record_ids=list(successful_ids),
                     num_draws=self.config.num_trials,
                     force_rerun=self.config.force_rerun_metrics,
+                    judge_reliability_reps=self.config.judge_reliability_reps,
+                    judge_reliability_order_swap=self.config.judge_reliability_order_swap,
                 )
             await metrics_runner.run()
         elif self.config.metrics and not successful_ids:
@@ -869,6 +873,8 @@ class BenchmarkRunner:
                 record_ids=list(successful_ids),
                 num_draws=self.config.num_trials,
                 force_rerun=self.config.force_rerun_metrics,
+                judge_reliability_reps=self.config.judge_reliability_reps,
+                judge_reliability_order_swap=self.config.judge_reliability_order_swap,
             )
             metrics_result = await metrics_runner.run()
         elif self.config.metrics and not successful_ids:
@@ -1084,6 +1090,8 @@ class BenchmarkRunner:
             record_ids=successful_ids,
             num_draws=self.config.num_trials,
             record_metric_filter=record_metric_filter,
+            judge_reliability_reps=self.config.judge_reliability_reps,
+            judge_reliability_order_swap=self.config.judge_reliability_order_swap,
         )
         metrics_result = await metrics_runner.run()
 

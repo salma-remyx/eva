@@ -685,6 +685,14 @@ class TestExecutionSettings:
         c = _config(env_vars=_BASE_ENV | {"EVA_NUM_TRIALS": "10"})
         assert c.num_trials == 10
 
+    def test_judge_reliability_reps(self):
+        c = _config(env_vars=_BASE_ENV | {"EVA_JUDGE_RELIABILITY_REPS": "2"})
+        assert c.judge_reliability_reps == 2
+
+    def test_judge_reliability_order_swap(self):
+        c = _config(env_vars=_BASE_ENV | {"EVA_JUDGE_RELIABILITY_ORDER_SWAP": "true"})
+        assert c.judge_reliability_order_swap is True
+
     def test_validation_thresholds(self):
         thresholds = {"conversation_valid_end": 0.9, "user_behavioral_fidelity": 0.8}
         c = _config(env_vars=_BASE_ENV | {"EVA_VALIDATION_THRESHOLDS": json.dumps(thresholds)})
