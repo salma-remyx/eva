@@ -15,7 +15,8 @@ from eva.metrics.aggregation import (
     compute_run_level_aggregates,
     scenario_means_for_metric,
 )
-from eva.metrics.base import BaseMetric, MetricContext
+from eva.metrics.base import BaseMetric, MetricContext, TextJudgeMetric
+from eva.metrics.judge_reliability import audit_metric_verdict, verdict_of
 from eva.metrics.legacy_aliases import rename_metric_keys
 from eva.metrics.processor import MetricsContextProcessor
 from eva.metrics.registry import MetricRegistry, get_global_registry
@@ -193,6 +194,25 @@ class MetricsRunner:
             "instructions": instructions,
             "tools": agent_config["tools"],
         }
+
+    def _judge_reliability_settings(self, metric: BaseMetric) -> tuple[int, bool]:
+        """Resolve the opt-in judge reliability audit settings for a metric.
+
+        Returns ``(reps, order_swap)``. Per-metric config wins over the
+        ``JUDGE_RELIABILITY_*`` env vars, mirroring how ``judge_model`` is
+        resolved. Code metrics and audio judges never audit: the order swap only
+        means something for a judge reading a transcript.
+        """
+        if not isinstance(metric, TextJudgeMetric):
+            return 0, False
+
+        config = self.metric_configs.get(metric.name, {})
+        reps = config.get("reliability_reps") or os.environ.get("JUDGE_RELIABILITY_REPS")
+        reps = max(int(reps), 0) if reps else 0
+        order_swap = config.get("reliability_order_swap")
+        if order_swap is None:
+            order_swap = os.environ.get("JUDGE_RELIABILITY_ORDER_SWAP", "").lower() in ("1", "true", "yes")
+        return reps, bool(order_swap)
 
     @staticmethod
     def _discover_record_dirs(run_dir: Path, record_ids: set[str] | None = None) -> list[tuple[str, Path]]:
@@ -467,6 +487,17 @@ class MetricsRunner:
             try:
                 logger.info(f"[{record_id}] Starting metric: {metric.name}")
                 score = await metric.compute(context)
+                # Opt-in judge reliability audit: re-run the judge to score how
+                # trustworthy this verdict is (see eva.metrics.judge_reliability).
+                reps, order_swap = self._judge_reliability_settings(metric)
+                if reps > 0 or order_swap:
+                    score.details["judge_reliability"] = await audit_metric_verdict(
+                        metric.compute,
+                        context,
+                        primary_verdict=verdict_of(score),
+                        reps=reps,
+                        order_swap=order_swap,
+                    )
                 logger.info(
                     f"[{record_id}] Finished metric: {metric.name} "
                     f"(score={score.score}, normalized={score.normalized_score}, error={score.error})"

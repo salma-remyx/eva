@@ -345,6 +345,8 @@ output/<run_id>/
 
 See the [Metrics documentation](docs/metrics/README.md) for detailed scoring rubrics and judge prompts. For the data structures that metrics operate on, see [MetricContext documentation](docs/metric_context.md).
 
+Text judges can additionally be audited for reliability: setting `JUDGE_RELIABILITY_REPS` (or `reliability_reps` in a metric's config) re-runs the judge on the same conversation, and `JUDGE_RELIABILITY_ORDER_SWAP` re-runs it on the transcript presented back-to-front. Each audited score gains a `judge_reliability` entry reporting whether the verdict was reproducible and order-invariant, plus a `trustworthy` flag combining the two. Adapted from *All Verdicts are Not Equal: Rethinking LLM Judge Reliability*.
+
 ## 🗂️ Dataset
 
 We created three datasets on different enterprise domains, each selected to target a distinct axis of difficulty for voice agents. All three require accurate transcription of structured named entities over voice (e.g., confirmation codes and employee identifiers), but differ in their primary challenge. **Airline Customer Service Management (CSM)** tests temporal reasoning and complex policy adherence in high-stakes flight rebooking scenarios. **Healthcare Human Resources Service Delivery (HRSD)** stresses entity density, requiring callers to communicate multiple registration and license numbers across clinical and administrative HR workflows. **Enterprise Information Technology Service Management (ITSM)** introduces branching conversational flows (e.g., incident resolution attempts must fail before ticket escalation is permitted) and tiered authentication reflecting the access sensitivity of different workflows.
