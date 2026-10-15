@@ -4,6 +4,9 @@
 # trial_scores_path: output/<subdir>/trial_scores.csv  # alternative: explicit path
 # output_dir: output_processed/<subdir>/perturbations
 # random_seed: 42
+# group_col: accent   # optional trial_scores column labelling a demographic group
+#                     # (accent, speaker gender, ...); carried into
+#                     # scenario_metricvalues.csv for group-fairness analysis
 # metrics:
 #   - EVA-A_mean
 #   - EVA-A_pass
@@ -78,14 +81,30 @@ def load_trial_scores(path: Path) -> pd.DataFrame:
     return df
 
 
-def compute_scenario_means(df: pd.DataFrame) -> pd.DataFrame:
+def compute_scenario_means(df: pd.DataFrame, extra_group_keys: list[str] | None = None) -> pd.DataFrame:
     """Compute mean score across trials for each (alias, domain, condition, scenario, metric).
+
+    Args:
+        df: trial_scores rows.
+        extra_group_keys: Extra columns to split the mean by, e.g. a demographic group
+            column. Rows whose group is missing are kept as their own bucket, so an
+            unlabelled clean baseline survives the aggregation.
 
     Returns DataFrame with columns:
         system_alias, domain, perturbation_category, scenario_id, metric, mean_value
+        (plus the extra_group_keys, when given)
     """
     group_keys = ["system_alias", "domain", "perturbation_category", "scenario_id", "metric"]
-    return df.groupby(group_keys, sort=False)["value"].mean().reset_index().rename(columns={"value": "mean_value"})
+    if extra_group_keys:
+        group_keys = group_keys + extra_group_keys
+    # dropna stays at the pandas default unless splitting by group, where dropping it
+    # would silently discard every unlabelled (clean) row.
+    return (
+        df.groupby(group_keys, sort=False, dropna=not extra_group_keys)["value"]
+        .mean()
+        .reset_index()
+        .rename(columns={"value": "mean_value"})
+    )
 
 
 def compute_deltas(
@@ -267,6 +286,7 @@ def build_condition_scenario_values(
     model_label: str,
     condition_map: dict[str, str],
     metrics: list[str],
+    group_col: str | None = None,
 ) -> pd.DataFrame:
     """Scenario-level metric values for clean + each perturbation, on the paired set.
 
@@ -275,16 +295,27 @@ def build_condition_scenario_values(
     in BOTH clean and that condition. The clean bar uses every scenario that has
     at least one perturbation counterpart.
 
+    Args:
+        trial_scores: Full trial_scores.csv as DataFrame.
+        alias: system_alias string identifying this model in the data.
+        model_label: Display label for this model (added as a column).
+        condition_map: Maps condition label → perturbation_category.
+        metrics: Which metrics to include. Rows with other metrics are dropped.
+        group_col: Optional demographic column to carry through. Trial means are
+            computed within group so a condition run under several groups (e.g. one
+            run per accent) keeps one row per group instead of pooling them into
+            the aggregate that hides the group differences.
+
     Returns columns: model_label, domain, condition, scenario_id, metric, value
-    (condition ∈ {clean, accent, background_noise, both}).
+    (condition ∈ {clean, accent, background_noise, both}), plus group_col when set.
     """
-    cols = METRIC_VALUE_COLUMNS
+    cols = [*METRIC_VALUE_COLUMNS, *([group_col] if group_col else [])]
     pert_cats = list(condition_map.values())
     filtered = trial_scores[(trial_scores["system_alias"] == alias) & (trial_scores["metric"].isin(metrics))]
     if filtered.empty:
         return pd.DataFrame(columns=cols)
 
-    means = compute_scenario_means(filtered)  # ..., perturbation_category, scenario_id, metric, mean_value
+    means = compute_scenario_means(filtered, extra_group_keys=[group_col] if group_col else None)
     join = ["domain", "scenario_id", "metric"]
     clean = means[means["perturbation_category"] == "clean"]
     pert = means[means["perturbation_category"].isin(pert_cats)]
@@ -331,9 +362,17 @@ def main(config_path: Path = CONFIG_PATH) -> None:
     expected_scenarios: int = config.get("expected_scenarios", 30)
     expected_pert_trials: int = config.get("expected_pert_trials", 3)
 
+    group_col: str | None = config.get("group_col")
+
     print(f"Loading trial scores from {trial_scores_path} ...")
     trial_scores = load_trial_scores(trial_scores_path)
     print(f"  {len(trial_scores):,} rows loaded")
+
+    if group_col and group_col not in trial_scores.columns:
+        print(f"  [group] configured group_col '{group_col}' not in trial_scores.csv — carrying no group labels")
+        group_col = None
+    elif group_col:
+        print(f"  Carrying group column '{group_col}' into the metric-value tables")
 
     all_deltas: list[pd.DataFrame] = []
     all_metric_values: list[pd.DataFrame] = []
@@ -404,6 +443,7 @@ def main(config_path: Path = CONFIG_PATH) -> None:
                 model_label=model_label,
                 condition_map=condition_map,
                 metrics=metrics,
+                group_col=group_col,
             )
             all_metric_values.append(metric_values)
 
