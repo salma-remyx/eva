@@ -16,6 +16,9 @@
 # alpha: 0.05
 # n_permutations: 10000
 # n_bootstrap: 1000
+# group_col: accent   # optional demographic column carried through by data_perturbations.py
+# lower_is_better_metrics: [custom_score]   # optional: force lower-is-better for these metrics
+# higher_is_better_metrics: [stt_wer]       # optional: force higher-is-better (overrides name inference)
 #
 # models:
 #   <display_label>:
@@ -47,6 +50,7 @@ from eva.utils.bootstrap import (  # noqa: F401 (bootstrap_ci re-exported for ba
     bootstrap_ci,
     run_seed,
 )
+from eva.utils.group_fairness import group_fairness_summary
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 CONFIG_PATH = PROJECT_ROOT / "local" / "perturbations" / "perturbations_config.yaml"
@@ -273,6 +277,25 @@ def main(config_path: Path = CONFIG_PATH) -> None:
         mv_per_domain.to_csv(mv_per_domain_path, index=False)
         print(f"Wrote {len(mv_pooled):,} metric-value pooled rows → {mv_pooled_path}")
         print(f"Wrote {len(mv_per_domain):,} metric-value per-domain rows → {mv_per_domain_path}")
+
+        # ── Group fairness (per-group scores, worst group, group gap) ────────
+        # Aggregate scores can hide how a condition affects individual demographic
+        # groups; this reports the groups the aggregate pools over, with the
+        # worst-performing group and the best-to-worst gap as first-class results.
+        group_col: str | None = config.get("group_col")
+        if group_col is None:
+            print("  [group-fairness] skipped: no 'group_col' configured")
+        elif group_col not in mv_long.columns:
+            missing = f"'{group_col}' column missing (carried from trial_scores.csv by data_perturbations.py)"
+            print(f"  [group-fairness] skipped: {missing}")
+        else:
+            gf_per_group, gf_summary = group_fairness_summary(mv_long, config, group_col=group_col)
+            gf_per_group_path = output_dir / "results_groupfairness_per_group.csv"
+            gf_summary_path = output_dir / "results_groupfairness_summary.csv"
+            gf_per_group.to_csv(gf_per_group_path, index=False)
+            gf_summary.to_csv(gf_summary_path, index=False)
+            print(f"Wrote {len(gf_per_group):,} group-fairness rows → {gf_per_group_path}")
+            print(f"Wrote {len(gf_summary):,} group-fairness summary rows → {gf_summary_path}")
     else:
         print(f"  [metric-values] skipped: {metric_values_path} not found (run data_perturbations.py)")
 
