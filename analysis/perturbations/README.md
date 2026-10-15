@@ -52,3 +52,5 @@ criterion in its own right, not only the aggregate. Summaries are computed by
 `eva.utils.group_fairness` (adapted from *Pruning for Efficiency, Paying in
 Fairness: Demographic Disparities in Pruned Speech-LLMs*, arXiv:2609.38106), and
 error-rate metrics such as `stt_wer` are oriented automatically (lower is better).
+The automatic orientation can be overridden per metric via the optional
+`lower_is_better_metrics` and `higher_is_better_metrics` config keys.

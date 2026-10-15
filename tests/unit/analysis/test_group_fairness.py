@@ -75,92 +75,95 @@ def _scenario_values() -> pd.DataFrame:
     )
 
 
-def test_group_column_flows_through_scenario_values() -> None:
-    values = _scenario_values()
+class TestGroupCarryThrough:
+    def test_group_column_flows_through_scenario_values(self) -> None:
+        values = _scenario_values()
 
-    assert "accent" in values.columns
-    # clean rows keep no label; the accent condition keeps one row per group
-    assert values[values["condition"] == "clean"]["accent"].isna().all()
-    assert (values["condition"] == "accent").sum() == 8
+        assert "accent" in values.columns
+        # clean rows keep no label; the accent condition keeps one row per group
+        assert values[values["condition"] == "clean"]["accent"].isna().all()
+        assert (values["condition"] == "accent").sum() == 8
 
-    # means stay within group instead of pooling both accents into one aggregate
-    by_group = values[values["condition"] == "accent"].groupby("accent")["value"].mean()
-    assert by_group["french"] == pytest.approx(0.7)
-    assert by_group["indian"] == pytest.approx(0.3)
+        # means stay within group instead of pooling both accents into one aggregate
+        by_group = values[values["condition"] == "accent"].groupby("accent")["value"].mean()
+        assert by_group["french"] == pytest.approx(0.7)
+        assert by_group["indian"] == pytest.approx(0.3)
 
+    def test_group_fairness_without_group_column_is_empty(self) -> None:
+        ungrouped = data_perturbations.build_condition_scenario_values(
+            trial_scores=_trial_scores(),
+            alias="agent",
+            model_label="agent",
+            condition_map=CONDITION_MAP,
+            metrics=METRICS,
+        )
+        assert "accent" not in ungrouped.columns
 
-def test_group_fairness_summary_reports_worst_group_and_gap() -> None:
-    per_group, summary = group_fairness_summary(_scenario_values(), CONFIG, group_col="accent")
-
-    row = summary[summary["condition"] == "accent"].iloc[0]
-    assert row["n_groups"] == 2
-    assert row["n_scenarios"] == 8
-    assert bool(row["lower_is_better"]) is False
-    assert row["best_group"] == "french"
-    assert row["worst_group"] == "indian"
-    assert row["best_group_point"] == pytest.approx(0.7)
-    assert row["worst_group_point"] == pytest.approx(0.3)
-    # the aggregate a deployment decision would otherwise stop at sits between the groups
-    assert row["aggregate_point"] == pytest.approx(0.5)
-    assert row["group_gap"] == pytest.approx(0.4)
-    # bootstrap resamples cannot close a uniform 0.4 gap, so the disparity is resolvable
-    assert 0.0 < row["gap_ci_lower"] <= 0.4 <= row["gap_ci_upper"]
-    assert bool(row["gap_ci_excludes_zero"]) is True
-    assert row["worst_group_share"] == 1.0
-    # the worst group's own interval brackets its point estimate
-    assert row["worst_group_ci_lower"] < row["worst_group_point"] < row["worst_group_ci_upper"]
-
-    assert set(per_group["group"]) == {"french", "indian"}
-    assert len(per_group) == 2
+        per_group, summary = group_fairness_summary(ungrouped, CONFIG, group_col="accent")
+        assert per_group.empty
+        assert summary.empty
 
 
-def test_group_fairness_without_group_column_is_empty() -> None:
-    ungrouped = data_perturbations.build_condition_scenario_values(
-        trial_scores=_trial_scores(),
-        alias="agent",
-        model_label="agent",
-        condition_map=CONDITION_MAP,
-        metrics=METRICS,
-    )
-    assert "accent" not in ungrouped.columns
+class TestWorstGroupAndGap:
+    def test_group_fairness_summary_reports_worst_group_and_gap(self) -> None:
+        per_group, summary = group_fairness_summary(_scenario_values(), CONFIG, group_col="accent")
 
-    per_group, summary = group_fairness_summary(ungrouped, CONFIG, group_col="accent")
-    assert per_group.empty
-    assert summary.empty
+        row = summary[summary["condition"] == "accent"].iloc[0]
+        assert row["n_groups"] == 2
+        assert row["n_scenarios"] == 8
+        assert bool(row["lower_is_better"]) is False
+        assert row["best_group"] == "french"
+        assert row["worst_group"] == "indian"
+        assert row["best_group_point"] == pytest.approx(0.7)
+        assert row["worst_group_point"] == pytest.approx(0.3)
+        # the aggregate a deployment decision would otherwise stop at sits between the groups
+        assert row["aggregate_point"] == pytest.approx(0.5)
+        assert row["group_gap"] == pytest.approx(0.4)
+        # bootstrap resamples cannot close a uniform 0.4 gap, so the disparity is resolvable
+        assert 0.0 < row["gap_ci_lower"] <= 0.4 <= row["gap_ci_upper"]
+        assert bool(row["gap_ci_excludes_zero"]) is True
+        assert row["worst_group_share"] == 1.0
+        # the worst group's own interval brackets its point estimate
+        assert row["worst_group_ci_lower"] < row["worst_group_point"] < row["worst_group_ci_upper"]
+
+        assert set(per_group["group"]) == {"french", "indian"}
+        assert len(per_group) == 2
 
 
-def test_error_rate_metrics_are_lower_is_better() -> None:
-    assert metric_lower_is_better("stt_wer") is True
-    assert metric_lower_is_better("interruption_rate") is True
-    assert metric_lower_is_better("agent_speech_fidelity") is False
-    assert metric_lower_is_better("custom_score", {"lower_is_better_metrics": ["custom_score"]}) is True
-    # an explicit override beats name inference
-    assert metric_lower_is_better("stt_wer", {"higher_is_better_metrics": ["stt_wer"]}) is False
+class TestMetricOrientation:
+    def test_error_rate_metrics_are_lower_is_better(self) -> None:
+        assert metric_lower_is_better("stt_wer") is True
+        assert metric_lower_is_better("interruption_rate") is True
+        assert metric_lower_is_better("agent_speech_fidelity") is False
+        assert metric_lower_is_better("custom_score", {"lower_is_better_metrics": ["custom_score"]}) is True
+        # an explicit override beats name inference
+        assert metric_lower_is_better("stt_wer", {"higher_is_better_metrics": ["stt_wer"]}) is False
 
 
-def test_stats_main_writes_group_fairness_csvs(tmp_path: Path) -> None:
-    """stats_perturbations.main() emits the group-fairness tables alongside its other outputs."""
-    output_dir = tmp_path / "output_processed" / "test"
-    output_dir.mkdir(parents=True)
-    _scenario_values().to_csv(output_dir / "scenario_metricvalues.csv", index=False)
-    data_perturbations.build_scenario_deltas(
-        trial_scores=_trial_scores(),
-        model_label="agent",
-        alias="agent",
-        condition_map=CONDITION_MAP,
-        metrics=METRICS,
-    ).to_csv(output_dir / "scenario_deltas.csv", index=False)
+class TestStatsMainEmitsGroupFairnessCsvs:
+    def test_stats_main_writes_group_fairness_csvs(self, tmp_path: Path) -> None:
+        """stats_perturbations.main() emits the group-fairness tables alongside its other outputs."""
+        output_dir = tmp_path / "output_processed" / "test"
+        output_dir.mkdir(parents=True)
+        _scenario_values().to_csv(output_dir / "scenario_metricvalues.csv", index=False)
+        data_perturbations.build_scenario_deltas(
+            trial_scores=_trial_scores(),
+            model_label="agent",
+            alias="agent",
+            condition_map=CONDITION_MAP,
+            metrics=METRICS,
+        ).to_csv(output_dir / "scenario_deltas.csv", index=False)
 
-    config_path = tmp_path / "local" / "perturbations" / "perturbations_config.yaml"
-    config_path.parent.mkdir(parents=True)
-    config_path.write_text(yaml.safe_dump({**CONFIG, "output_dir": "output_processed/test", "group_col": "accent"}))
+        config_path = tmp_path / "local" / "perturbations" / "perturbations_config.yaml"
+        config_path.parent.mkdir(parents=True)
+        config_path.write_text(yaml.safe_dump({**CONFIG, "output_dir": "output_processed/test", "group_col": "accent"}))
 
-    stats_perturbations.main(config_path)
+        stats_perturbations.main(config_path)
 
-    summary = pd.read_csv(output_dir / "results_groupfairness_summary.csv")
-    assert set(summary["condition"]) == {"accent"}  # clean carries no group label
-    assert summary.iloc[0]["worst_group"] == "indian"
-    assert summary.iloc[0]["group_gap"] == pytest.approx(0.4)
+        summary = pd.read_csv(output_dir / "results_groupfairness_summary.csv")
+        assert set(summary["condition"]) == {"accent"}  # clean carries no group label
+        assert summary.iloc[0]["worst_group"] == "indian"
+        assert summary.iloc[0]["group_gap"] == pytest.approx(0.4)
 
-    per_group = pd.read_csv(output_dir / "results_groupfairness_per_group.csv")
-    assert set(per_group["group"]) == {"french", "indian"}
+        per_group = pd.read_csv(output_dir / "results_groupfairness_per_group.csv")
+        assert set(per_group["group"]) == {"french", "indian"}

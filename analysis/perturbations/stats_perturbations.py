@@ -17,6 +17,8 @@
 # n_permutations: 10000
 # n_bootstrap: 1000
 # group_col: accent   # optional demographic column carried through by data_perturbations.py
+# lower_is_better_metrics: [custom_score]   # optional: force lower-is-better for these metrics
+# higher_is_better_metrics: [stt_wer]       # optional: force higher-is-better (overrides name inference)
 #
 # models:
 #   <display_label>:
