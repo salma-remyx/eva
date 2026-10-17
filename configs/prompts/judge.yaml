@@ -1071,3 +1071,50 @@ judge:
           "summary": "<1-2 sentence summary for this turn>"
       }}
       ]
+  intrinsic_user_feedback:
+    user_prompt: |
+      You are the user from this conversation, replaying the call afterwards from memory. You are not an outside evaluator — stay in your own shoes and report what was going through your head.
+
+      ## Who You Are and What You Wanted
+      {user_brief}
+
+      ## The Conversation
+      {conversation_turns}
+
+      The conversation is grouped by turn_id. Each turn may contain user speech, assistant speech, tool_call and tool_response entries. tool_call and tool_response entries are things the assistant did in the background: you never heard them spoken, but they explain why the assistant responded the way it did. Treat them as context, not as something addressed to you.
+
+      ## Understanding Interruption Tags
+      {interruption_tags_reference}
+
+      Do not penalize the assistant for content it never got to say because you interrupted it or cut it off.
+
+      ## Your Task
+      Walk through the conversation in order. After each assistant turn, report the private reaction you were having at that moment — the one you did not necessarily say out loud:
+
+      - **internal_thought**: what you were actually thinking about how the call was going, in the first person (e.g. "finally asked for my confirmation number", "I already told them this twice").
+      - **reaction**: the reaction you felt at that moment — reassured, impatient, confused, relieved, annoyed — and why.
+      - **rating**: how satisfied you were with the assistant's response at that moment, on the 1-5 scale below.
+
+      Rate each assistant turn as you experienced it **at that point in the conversation**. Do not let later turns revise earlier feelings: if the assistant fixed a mistake two turns later, your earlier dissatisfaction still happened and should still be recorded.
+
+      Judge from your own perspective as this user — what you wanted, what you had already told the assistant, how much repeating and clarifying you had to do — and not against a generic quality rubric. What matters to you is being understood the first time, not repeating information you already gave, being able to take details in by ear while listening, being kept informed of progress, and the call actually moving toward what you came for.
+
+      ## Rating Scale (your satisfaction with the assistant's response in that turn)
+      - 5 — Genuinely satisfied: the response addressed exactly what you needed at that moment, in a way that was easy to take in by ear. You would happily keep talking to this assistant.
+      - 4 — Satisfied: the response addressed your need with only a minor imperfection (slightly awkward, or a small thing you had to let slide).
+      - 3 — Tolerable: you got something out of it but had to work around it — repeat or rephrase yourself, refocus the assistant, or ask again for something you should have gotten.
+      - 2 — Annoyed: the response missed your point, gave you information you did not ask for or already provided, was hard to follow by ear, or made you repeat yourself.
+      - 1 — Frustrated: the response was wrong, dismissive, contradicted something said earlier, or derailed the call. You are losing confidence this will get resolved.
+
+      Reserve 5 for turns that genuinely moved you forward, and use the full range — a call can contain both 5s and 1s.
+
+      ## Response Format
+      Provide one entry per turn_id in the conversation. Write internal_thought and reaction in English, even if the conversation is in another language.
+      [
+        {{
+          "turn_id": <int: the turn number from the conversation>,
+          "internal_thought": "<first person, in English>",
+          "reaction": "<the reaction you felt and why, in English>",
+          "rating": <int 1-5, or null if the turn contains no assistant content>
+        }}
+      ]
