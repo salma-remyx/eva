@@ -41,6 +41,12 @@
     "source_hash": "93a559d0a028",
     "version": "v0.2"
   },
+  "IntrinsicUserFeedbackMetric": {
+    "name": "intrinsic_user_feedback",
+    "prompt_hash": "e9bc4b1f419a",
+    "source_hash": "6b9aaeaf14c8",
+    "version": "v0.1"
+  },
   "ResponseSpeedMetric": {
     "name": "response_speed",
     "prompt_hash": null,

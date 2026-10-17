@@ -62,6 +62,7 @@ _KNOWN_PER_TURN_METRICS: dict[str, str] = {
     "conciseness": "assistant",
     "speakability": "assistant",
     "conversation_progression": "assistant",
+    "intrinsic_user_feedback": "assistant",
 }
 
 _ACRONYMS = {"tts", "stt", "wer", "llm", "db"}
