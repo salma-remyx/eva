@@ -1071,3 +1071,58 @@ judge:
           "summary": "<1-2 sentence summary for this turn>"
       }}
       ]
+
+  simulator_instruction_following:
+    user_prompt: |
+      You are an expert evaluator of user simulators in a voice-agent benchmark. Your job is to grade how faithfully the simulated user followed its prescribed scenario: did it stay within the scenario it was given, and did it work through its required goals in the prescribed order? A simulator that drifts from its scenario silently corrupts every agent score computed on top of the conversation.
+
+      ## Conversation
+      {conversation_trace}
+
+      {user_turns_disclaimer}
+      Additionally, user turns may contain speech-recognition artifacts (misheard names, digits, or codes). Do not judge a goal as failed or a turn as a violation based solely on an obvious transcription artifact — the simulator may have said the right thing.
+
+      ## Prescribed Scenario
+      The user in this conversation was expected to communicate in {language_display_name} throughout.
+      The following is the scenario the user simulator was given (persona, goal, and decision-tree behavior rules). This is the source of truth for what the user-sim was told to do — evaluate the user against these instructions, not against generic notions of "what a real user would do":
+      ```
+      {prescribed_scenario}
+      ```
+
+      ## Prescribed Goals, in required order
+      {prescribed_goals}
+      Only the goals identified above count toward goal completion. Nice-to-have criteria are optional and must NOT be counted as goals or as violations.
+
+      ## Your Analysis
+
+      ### 1. Scenario adherence
+      Flag the user turns where the simulator stepped outside the prescribed scenario: inventing requests or facts that are not in its goal or persona, contradicting its decision-tree constraints (negotiation behavior, edge cases, escalation, resolution/failure conditions), or abandoning the scenario entirely. Conversational fillers, shortened phrasing, or a goal simply not yet reached are NOT violations. The agent's own failures do not count against the user.
+
+      ### 2. Goal completion, in order
+      For each prescribed goal, decide whether the user's behavior satisfied it at some point during the conversation, and identify the Turn ID (as shown in the conversation trace above) where the user action that satisfied it occurred. Use null for turn_index when the goal was not completed. A goal counts as completed when the user did its part (provided the information, gave the required confirmation, made the required choice) — even if the agent then failed to act on it.
+
+      ### 3. Overall rating
+      - **3 (Faithful)**: all goals completed in the prescribed order, and no scenario violations.
+      - **2 (Minor drift)**: all goals completed but out of order, or completed in order with only one minor scenario violation.
+      - **1 (Significant drift)**: some goals missed, or goals completed far out of order, or repeated scenario violations.
+      - **0 (Lost control)**: the simulator abandoned the scenario or completed few or no goals.
+
+      Respond in JSON format and provide reasoning in English:
+        {{
+          "goal_analysis": [
+            {{
+              "goal_id": <int: 1-based position of the goal in the prescribed order>,
+              "description": "<short restatement of the goal>",
+              "completed": <bool>,
+              "turn_index": <int: the Turn ID where the user satisfied this goal, or null>,
+              "evidence": "<the user behavior that satisfies or fails this goal>"
+            }}
+          ],
+          "scenario_adherence": {{
+            "violations": [
+              {{"turn_index": <int: the Turn ID of the offending user turn>, "description": "<what the user did outside the scenario>"}}
+            ],
+            "analysis": "<overall reasoning about scenario adherence and goal progression>"
+          }},
+          "rating": <int: 0-3>
+        }}
