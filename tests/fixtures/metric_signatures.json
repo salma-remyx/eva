@@ -53,6 +53,12 @@
     "source_hash": "e7b839b89d75",
     "version": "v0.1"
   },
+  "SimulatorInstructionFollowingMetric": {
+    "name": "simulator_instruction_following",
+    "prompt_hash": "1b674a80cde8",
+    "source_hash": "cc466dd84bc1",
+    "version": "v0.1"
+  },
   "SpeakabilityJudgeMetric": {
     "name": "speakability",
     "prompt_hash": "1e4f78cb051e",
