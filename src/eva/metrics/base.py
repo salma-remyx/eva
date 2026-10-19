@@ -92,6 +92,9 @@ class MetricContext:
         user_interrupted_turns: set[int] | None = None,
         pipeline_type: PipelineType = PipelineType.CASCADE,
         language: str = "en",
+        # Candidate-blind reference sheet for tool-call arguments; populated by
+        # metrics that opt into reference derivation (eva.metrics.reference_derivation).
+        derived_tool_reference: str | None = None,
     ):
         self.record_id = record_id
 
@@ -144,6 +147,7 @@ class MetricContext:
         self.assistant_interrupted_turns = assistant_interrupted_turns or set()
         self.user_interrupted_turns = user_interrupted_turns or set()
         self.pipeline_type = pipeline_type
+        self.derived_tool_reference = derived_tool_reference
 
     @property
     def is_audio_native(self) -> bool:

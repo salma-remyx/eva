@@ -1,6 +1,7 @@
 """Faithfulness metric using LLM-as-judge (whole conversation)."""
 
 import json
+import os
 from typing import Any
 
 from eva.metrics.base import ConversationTextJudgeMetric, MetricContext
@@ -9,6 +10,7 @@ from eva.metrics.pipeline_prompts import (
     get_misrepresentation_pipeline_note,
     get_user_turns_disclaimer,
 )
+from eva.metrics.reference_derivation import derive_tool_reference
 from eva.metrics.registry import register_metric
 from eva.metrics.utils import build_binary_flag_sub_metrics
 from eva.models.results import MetricScore
@@ -40,6 +42,14 @@ _S2S_DISAMBIGUATION_CONTEXT = (
     "audio and should anticipate mishearings."
 )
 
+# Embedded in the judge prompt when reference derivation is disabled or not yet run,
+# so the {derived_reference} template variable always renders.
+_NO_DERIVED_REFERENCE_NOTE = (
+    "No derived reference was requested for this conversation. Verify tool-call arguments "
+    "against the user statements, tool responses, and agent instructions in the conversation "
+    "trace above, per the grounding rules in this prompt."
+)
+
 
 @register_metric
 class FaithfulnessJudgeMetric(ConversationTextJudgeMetric):
@@ -54,7 +64,7 @@ class FaithfulnessJudgeMetric(ConversationTextJudgeMetric):
     """
 
     name = "faithfulness"
-    version = "v0.2"
+    version = "v0.3"
     description = (
         "LLM judge evaluation of whether the assistant remains faithful to information, policies, and instructions"
     )
@@ -62,6 +72,36 @@ class FaithfulnessJudgeMetric(ConversationTextJudgeMetric):
     default_model = "us.anthropic.claude-opus-4-6-v1"
     default_params = {"max_tokens": 100000}  # Drop the OpenAI-only flex tier inherited from TextJudgeMetric.
     rating_scale = (1, 3)
+
+    def _reference_derivation_enabled(self) -> bool:
+        """Opt-in flag: metric config ``derived_reference`` or the FAITHFULNESS_DERIVED_REFERENCE env var."""
+        if "derived_reference" in self.config:
+            return bool(self.config["derived_reference"])
+        return os.environ.get("FAITHFULNESS_DERIVED_REFERENCE", "").strip().lower() in {"1", "true", "yes"}
+
+    async def compute(self, context: MetricContext) -> MetricScore:
+        """Derive a candidate-blind reference sheet (when enabled), then run the judge.
+
+        An auxiliary LLM call reads only the grounding sources — agent instructions,
+        tool schemas, user utterances, raw tool responses — and writes a reference
+        for tool-call argument values (see eva.metrics.reference_derivation). The
+        judge then verifies arguments against an explicit reference instead of
+        relying solely on hand-written grounding exceptions.
+        """
+        if self._reference_derivation_enabled():
+            reference = await derive_tool_reference(self.llm_client, self.prompt_manager, context, self.logger)
+            if reference.prompt:
+                # Account for the aux call's tokens alongside the judge's own usage.
+                self._log_token_usage(
+                    context,
+                    self.llm_client.model,
+                    {"stage": "reference_derivation"},
+                    reference.prompt,
+                    reference.usage,
+                    reference.text,
+                )
+            context.derived_tool_reference = reference.text
+        return await super().compute(context)
 
     def get_prompt_variables(self, context: MetricContext, transcript_text: str) -> dict[str, Any]:
         """Return variables for prompt formatting."""
@@ -80,6 +120,7 @@ class FaithfulnessJudgeMetric(ConversationTextJudgeMetric):
             "assistant_turns_disclaimer": get_assistant_turns_disclaimer(context.is_audio_native),
             "misrepresentation_pipeline_note": get_misrepresentation_pipeline_note(context.is_audio_native),
             "disambiguation_context": disambiguation_context,
+            "derived_reference": context.derived_tool_reference or _NO_DERIVED_REFERENCE_NOTE,
         }
 
     def build_metric_score(
