@@ -10,10 +10,11 @@ from eva.metrics.pipeline_prompts import (
     get_misrepresentation_pipeline_note,
     get_user_turns_disclaimer,
 )
-from eva.metrics.reference_derivation import derive_tool_reference
+from eva.metrics.reference_derivation import DERIVATION_MAX_TOKENS, derive_tool_references
 from eva.metrics.registry import register_metric
 from eva.metrics.utils import build_binary_flag_sub_metrics
 from eva.models.results import MetricScore
+from eva.utils.llm_client import LLMClient
 
 _FAITHFULNESS_DIMENSION_KEYS = (
     "fabricating_tool_parameters",
@@ -44,11 +45,7 @@ _S2S_DISAMBIGUATION_CONTEXT = (
 
 # Embedded in the judge prompt when reference derivation is disabled or not yet run,
 # so the {derived_reference} template variable always renders.
-_NO_DERIVED_REFERENCE_NOTE = (
-    "No derived reference was requested for this conversation. Verify tool-call arguments "
-    "against the user statements, tool responses, and agent instructions in the conversation "
-    "trace above, per the grounding rules in this prompt."
-)
+_NO_DERIVED_REFERENCE_NOTE = "No derived reference was requested for this conversation."
 
 
 @register_metric
@@ -64,7 +61,7 @@ class FaithfulnessJudgeMetric(ConversationTextJudgeMetric):
     """
 
     name = "faithfulness"
-    version = "v0.3"
+    version = "v0.4"
     description = (
         "LLM judge evaluation of whether the assistant remains faithful to information, policies, and instructions"
     )
@@ -79,28 +76,44 @@ class FaithfulnessJudgeMetric(ConversationTextJudgeMetric):
             return bool(self.config["derived_reference"])
         return os.environ.get("FAITHFULNESS_DERIVED_REFERENCE", "").strip().lower() in {"1", "true", "yes"}
 
-    async def compute(self, context: MetricContext) -> MetricScore:
-        """Derive a candidate-blind reference sheet (when enabled), then run the judge.
+    def _deriver_client(self) -> LLMClient:
+        """The derivation stage's client.
 
-        An auxiliary LLM call reads only the grounding sources — agent instructions,
-        tool schemas, user utterances, raw tool responses — and writes a reference
-        for tool-call argument values (see eva.metrics.reference_derivation). The
-        judge then verifies arguments against an explicit reference instead of
-        relying solely on hand-written grounding exceptions.
+        DeRef derives references with its own model, separate from the judge
+        (the paper's deref_qwen3_8b ablation shows deriver choice moves
+        results). Set ``deriver_model`` (or FAITHFULNESS_DERIVER_MODEL) to
+        configure one; when unset, the aux calls run on the judge's client.
+        """
+        model = self.config.get("deriver_model") or os.environ.get("FAITHFULNESS_DERIVER_MODEL")
+        if not model or model == self.llm_client.model:
+            return self.llm_client
+        params = {"max_tokens": DERIVATION_MAX_TOKENS}  # DeRef's derivation generation budget.
+        params.update(self.config.get("deriver_params", {}))
+        return LLMClient(model=model, params=params)
+
+    async def compute(self, context: MetricContext) -> MetricScore:
+        """Derive per-argument expected values (when enabled), then run the judge.
+
+        One auxiliary LLM call per tool-call argument reads the question and the
+        earlier calls with their returns — never the proposed value — and writes
+        the expected value of that parameter (see eva.metrics.reference_derivation).
+        The judge prompt embeds each answer as a block with DeRef's neutral
+        header and no consumption instructions.
         """
         if self._reference_derivation_enabled():
-            reference = await derive_tool_reference(self.llm_client, self.prompt_manager, context, self.logger)
-            if reference.prompt:
-                # Account for the aux call's tokens alongside the judge's own usage.
+            deriver = self._deriver_client()
+            references = await derive_tool_references(deriver, self.prompt_manager, context, self.logger)
+            for call in references.calls:
+                # Account for each aux call's tokens alongside the judge's own usage.
                 self._log_token_usage(
                     context,
-                    self.llm_client.model,
+                    deriver.model,
                     {"stage": "reference_derivation"},
-                    reference.prompt,
-                    reference.usage,
-                    reference.text,
+                    call.prompt,
+                    call.usage,
+                    call.response,
                 )
-            context.derived_tool_reference = reference.text
+            context.derived_tool_reference = references.text
         return await super().compute(context)
 
     def get_prompt_variables(self, context: MetricContext, transcript_text: str) -> dict[str, Any]:

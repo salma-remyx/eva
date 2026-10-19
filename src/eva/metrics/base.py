@@ -92,8 +92,8 @@ class MetricContext:
         user_interrupted_turns: set[int] | None = None,
         pipeline_type: PipelineType = PipelineType.CASCADE,
         language: str = "en",
-        # Candidate-blind reference sheet for tool-call arguments; populated by
-        # metrics that opt into reference derivation (eva.metrics.reference_derivation).
+        # Derived expected-value blocks for tool-call arguments (DeRef); populated
+        # by metrics that opt into reference derivation (eva.metrics.reference_derivation).
         derived_tool_reference: str | None = None,
     ):
         self.record_id = record_id

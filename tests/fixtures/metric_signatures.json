@@ -37,9 +37,9 @@
   },
   "FaithfulnessJudgeMetric": {
     "name": "faithfulness",
-    "prompt_hash": "8c06164d77d1",
-    "source_hash": "a487bde492cc",
-    "version": "v0.3"
+    "prompt_hash": "1000cd9e10be",
+    "source_hash": "23144b724332",
+    "version": "v0.4"
   },
   "ResponseSpeedMetric": {
     "name": "response_speed",

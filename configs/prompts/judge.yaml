@@ -318,8 +318,8 @@ judge:
       - Do NOT flag incomplete information delivery caused by the user interrupting mid-sentence as a policy violation — the assistant was cut off, not choosing to withhold information.
       - Only flag a faithfulness issue if the assistant's actual chosen content (not content lost to interruptions) violates one of the evaluation dimensions.
 
-      ## Derived Reference for Tool-Call Arguments
-      The reference sheet below was derived independently from the conversation's grounding sources — user statements, raw tool responses, agent instructions, and tool schemas — **without seeing the assistant's tool calls**. When evaluating `fabricating_tool_parameters`, use it as the reference for argument values: a value that matches a grounded value in the sheet (exactly, or via the unambiguous domain mapping, policy entitlement, or arithmetic it shows) is NOT fabricated. A value that contradicts the sheet, or that fills a parameter the sheet lists as ungrounded, is fabricated unless it is traceable to the conversation trace above — and if the trace plainly contradicts the sheet, trust the trace.
+      ## Derived References for Tool-Call Arguments
+      Each entry below states the expected value of one tool-call parameter, written before seeing the proposed value.
 
       {derived_reference}
 
@@ -506,33 +506,19 @@ judge:
           "rating": <int: 1, 2, or 3 - minimum rating across all dimensions>
       }}
 
-    # Aux prompt for the derived-reference stage (eva.metrics.reference_derivation).
-    # Reads grounding sources only — assistant turns and tool calls are excluded.
+    # Aux prompt for the derived-reference stage (eva.metrics.reference_derivation):
+    # DeRef's per-argument derivation prompt — one call per tool-call argument.
+    # The history holds only earlier calls and their returns; the proposed value
+    # of {parameter_name} is never shown (candidate-blind). The instruction is
+    # DeRef's F2, verbatim.
     reference_derivation_prompt: |
-      You are preparing a reference sheet for an evaluator who will verify the tool-call arguments a voice assistant used in a conversation. You have NOT seen the assistant's tool calls or statements. Derive expectations ONLY from the grounding sources below.
+      Question: {question}
+      History (all earlier calls and their returns, oldest first):
+      {history}
+      {function_line}
+      {parameter_line}
 
-      ## Agent Instructions
-      {agent_instructions}
-
-      ## Tool Schemas
-      {available_tools}
-
-      ## Grounding Transcript (user statements and raw tool responses only; assistant turns and tool calls removed)
-      {grounding_transcript}
-
-      ## Task
-      For each tool that the user's requests or the tool responses imply was used or will be used, list the values that are GROUNDED for its parameters:
-      - Values the user stated (names, identifiers, numbers, dates, preferences)
-      - Values returned in tool responses (IDs, record fields, statuses, balances, entitlements)
-      - Values derivable from the agent instructions or policies combined with tool results (e.g., an entitlement the user's status qualifies for)
-      - Standard unambiguous domain mappings of user-stated information (e.g., airport name to IATA code, spoken letters to a confirmation code)
-      - Values computable from tool results by simple arithmetic (totals, differences, remaining amounts)
-
-      Rules:
-      - One line per grounded value, in the form: tool_name.parameter = value — source: user turn | tool_name response | agent instructions
-      - List only values supported by the sources above. Do not guess, and do not infer values the assistant "probably" used.
-      - If no value is grounded for a parameter, write: tool_name.parameter = <ungrounded>
-      - Output only the reference sheet. No commentary, no JSON.
+      Before seeing any proposed value: what should the value of parameter {parameter_name} be in this call, and where in the context does it come from? Quote the source text if there is one, or say that the context does not determine it. Answer in at most 3 sentences.
 
   user_behavioral_fidelity:
     user_prompt: |
