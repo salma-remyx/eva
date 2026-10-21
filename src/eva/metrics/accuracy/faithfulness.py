@@ -10,6 +10,7 @@ from eva.metrics.pipeline_prompts import (
     get_user_turns_disclaimer,
 )
 from eva.metrics.registry import register_metric
+from eva.metrics.tool_argument_reference import build_tool_argument_reference
 from eva.metrics.utils import build_binary_flag_sub_metrics
 from eva.models.results import MetricScore
 
@@ -54,7 +55,7 @@ class FaithfulnessJudgeMetric(ConversationTextJudgeMetric):
     """
 
     name = "faithfulness"
-    version = "v0.2"
+    version = "v0.3"
     description = (
         "LLM judge evaluation of whether the assistant remains faithful to information, policies, and instructions"
     )
@@ -80,6 +81,11 @@ class FaithfulnessJudgeMetric(ConversationTextJudgeMetric):
             "assistant_turns_disclaimer": get_assistant_turns_disclaimer(context.is_audio_native),
             "misrepresentation_pipeline_note": get_misrepresentation_pipeline_note(context.is_audio_native),
             "disambiguation_context": disambiguation_context,
+            # Explicit reference for tool-call arguments whose source is otherwise invisible to
+            # the judge (schema defaults, categorical values) — see tool_argument_reference.py.
+            "derived_tool_reference": build_tool_argument_reference(
+                context.agent_tools, context.conversation_trace
+            ),
         }
 
     def build_metric_score(
