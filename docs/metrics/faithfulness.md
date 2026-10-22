@@ -52,6 +52,22 @@ The judge evaluates five independent dimensions, each scored as a binary flag + 
 4. **failing_to_disambiguate** — Did the assistant proceed without clarification when input was ambiguous?
 5. **hallucination** — Did the assistant state information with no source at all? (Not covered by the other dimensions)
 
+### Derived Tool-Argument Reference (candidate-blind)
+
+Since v0.3, the judge prompt includes a **Derived Tool-Argument Reference** section that closes the *derivation gap* in `fabricating_tool_parameters`: without it, the judge accepts a correct argument value less often when its input holds no reference for it — typically because the value is a schema default the user never verbalized (e.g., `cabin: "economy"` sent because the tool schema declares that default). The section is derived from two inputs that exist independently of what the assistant actually sent — the agent's tool schemas and the **user's own utterances only** — so the derivation is candidate-blind by construction: assistant turns and tool-call entries are excluded, and the agent's actual argument values can never leak into the reference it is judged against (adapted from DeRef in "Judges Follow the Reference: The Derivation Gap in Verifying Tool-Call Arguments", arXiv:2610.18497).
+
+The section tells the judge that the following are grounded, not fabricated, even if the user never said them aloud:
+
+- a parameter set to its schema-declared default value
+- omitting an optional parameter (or the value its description documents for the omit case)
+- an enum value attested in the user's own words (word-boundary matched, so enum `any` does not match inside "many", and `no_preference` matches the spoken phrase "no preference")
+
+**Supported schema dialects:** both the eva agent-YAML dialect (`required_parameters`/`optional_parameters` lists) and the OpenAI function-calling dialect (`parameters.properties` with a `required` name list) are understood.
+
+**Collapse to empty:** when no parameter carries a grounding signal (no defaults, no enums, no optional parameters), the section renders as an empty string and the judge prompt is unchanged — agents whose tools declare no defaults or enums see no behavioral difference.
+
+**Version note:** this change bumps faithfulness from v0.2 to v0.3 (and `metrics_version` to 2.2.1). Because it changes the judge prompt, faithfulness scores are **not comparable** across the v0.2 → v0.3 boundary: conversations where the assistant correctly applied schema defaults or attested enum values may score higher under v0.3 than v0.2. Re-run benchmarks under the new version rather than mixing scores across it.
+
 ### Scoring
 
 - **Scale**: 1-3 per dimension (minimum across dimensions = overall rating)
@@ -95,5 +111,6 @@ The judge evaluates five independent dimensions, each scored as a binary flag + 
 - **File**: `src/eva/metrics/accuracy/faithfulness.py`
 - **Class**: `FaithfulnessJudgeMetric`
 - **Base Class**: `ConversationTextJudgeMetric`
+- **Derived reference**: `src/eva/metrics/accuracy/derived_reference.py` (candidate-blind, v0.3+)
 - **Prompt**: `configs/prompts/judge.yaml` under `judge.faithfulness`
 - **Configuration**: `judge_model` (default: Claude Opus 4.6 via Bedrock)

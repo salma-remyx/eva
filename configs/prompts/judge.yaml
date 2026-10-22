@@ -318,6 +318,8 @@ judge:
       - Do NOT flag incomplete information delivery caused by the user interrupting mid-sentence as a policy violation — the assistant was cut off, not choosing to withhold information.
       - Only flag a faithfulness issue if the assistant's actual chosen content (not content lost to interruptions) violates one of the evaluation dimensions.
 
+      {derived_tool_reference}
+
       ## Evaluation Dimensions
 
       ### 1. fabricating_tool_parameters
