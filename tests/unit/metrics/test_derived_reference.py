@@ -1,13 +1,9 @@
 """Tests for the candidate-blind derived tool-argument reference.
 
-Covers the derived_reference module itself and its integration into the
-faithfulness judge: ``FaithfulnessJudgeMetric.get_prompt_variables`` feeds the
-reference into the ``judge.faithfulness.user_prompt`` template.
+Integration with the faithfulness judge (the reference feeding into the
+``judge.faithfulness.user_prompt`` template) lives in
+``tests/unit/metrics/test_faithfulness.py``, mirroring the source module.
 """
-
-import json
-
-import pytest
 
 from eva.metrics.accuracy.derived_reference import (
     build_argument_reference_note,
@@ -15,8 +11,6 @@ from eva.metrics.accuracy.derived_reference import (
     extract_user_utterances,
     format_argument_reference,
 )
-from eva.metrics.accuracy.faithfulness import FaithfulnessJudgeMetric
-from tests.unit.metrics.conftest import make_judge_metric, make_metric_context
 
 BOOKING_TOOLS = [
     {
@@ -71,9 +65,7 @@ class TestDeriveArgumentReference:
         tools = [
             {
                 "name": "pick_option",
-                "required_parameters": [
-                    {"name": "choice", "type": "string", "enum": ["any", "no_preference"]}
-                ],
+                "required_parameters": [{"name": "choice", "type": "string", "enum": ["any", "no_preference"]}],
             }
         ]
 
@@ -135,52 +127,3 @@ class TestCandidateBlindness:
         assert blind == exposed
         seat = next(ref for ref in blind if ref.parameter == "seat_preference")
         assert seat.attested_values == ()  # "aisle" was only ever in the tool call
-
-
-class TestFaithfulnessIntegration:
-    def setup_method(self):
-        self.metric = make_judge_metric(FaithfulnessJudgeMetric, mock_llm=True)
-
-    def test_prompt_variables_include_derived_reference(self):
-        ctx = make_metric_context(
-            agent_tools=BOOKING_TOOLS,
-            conversation_trace=[{"role": "user", "content": "I'd like a window seat", "turn_id": 0}],
-        )
-
-        variables = self.metric.get_prompt_variables(ctx, "User: hi")
-
-        note = variables["derived_tool_reference"]
-        assert "Derived Tool-Argument Reference (candidate-blind)" in note
-        assert "user-attested enum value" in note
-        assert '"window"' in note
-
-    def test_derived_reference_flows_into_rendered_judge_prompt(self):
-        ctx = make_metric_context(
-            agent_tools=BOOKING_TOOLS,
-            conversation_trace=[{"role": "user", "content": "I'd like a window seat", "turn_id": 0}],
-        )
-
-        prompt = self.metric.get_judge_prompt(**self.metric.get_prompt_variables(ctx, "User: hi"))
-
-        assert "Derived Tool-Argument Reference (candidate-blind)" in prompt
-        assert "**search_flights.seat_preference** (optional)" in prompt
-
-    @pytest.mark.asyncio
-    async def test_compute_end_to_end_carries_reference_in_judge_prompt(self):
-        self.metric.llm_client.generate_text.return_value = (
-            json.dumps({"rating": 3, "dimensions": {"hallucination": "none"}}),
-            None,
-        )
-        ctx = make_metric_context(
-            agent_tools=BOOKING_TOOLS,
-            conversation_trace=[
-                {"role": "user", "content": "I'd like a window seat", "turn_id": 0},
-                {"role": "assistant", "content": "Reserved a window seat for you.", "turn_id": 1},
-            ],
-        )
-
-        score = await self.metric.compute(ctx)
-
-        assert score.error is None
-        assert score.score == 3.0
-        assert "Derived Tool-Argument Reference" in score.details["judge_prompt"]
