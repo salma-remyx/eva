@@ -4,6 +4,7 @@ import json
 from typing import Any
 
 from eva.metrics.base import ConversationTextJudgeMetric, MetricContext
+from eva.metrics.derived_references import build_tool_argument_references
 from eva.metrics.pipeline_prompts import (
     get_assistant_turns_disclaimer,
     get_misrepresentation_pipeline_note,
@@ -54,7 +55,7 @@ class FaithfulnessJudgeMetric(ConversationTextJudgeMetric):
     """
 
     name = "faithfulness"
-    version = "v0.2"
+    version = "v0.3"
     description = (
         "LLM judge evaluation of whether the assistant remains faithful to information, policies, and instructions"
     )
@@ -80,6 +81,9 @@ class FaithfulnessJudgeMetric(ConversationTextJudgeMetric):
             "assistant_turns_disclaimer": get_assistant_turns_disclaimer(context.is_audio_native),
             "misrepresentation_pipeline_note": get_misrepresentation_pipeline_note(context.is_audio_native),
             "disambiguation_context": disambiguation_context,
+            # Explicit references for tool-call arguments, so the judge verifies against a
+            # derived reference instead of re-deriving where each value should have come from.
+            "derived_tool_references": build_tool_argument_references(context.agent_tools, context.conversation_trace),
         }
 
     def build_metric_score(
