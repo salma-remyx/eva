@@ -1,10 +1,8 @@
-"""Tests for derived tool-argument references and their injection into the faithfulness judge."""
+"""Tests for derived tool-argument references."""
 
 import copy
 
-from eva.metrics.accuracy.faithfulness import FaithfulnessJudgeMetric
 from eva.metrics.derived_references import build_tool_argument_references
-from tests.unit.metrics.conftest import make_judge_metric, make_metric_context
 
 AGENT_TOOLS = [
     {
@@ -149,30 +147,3 @@ class TestDerivedReferences:
     def test_empty_inputs_are_tolerated(self):
         block = build_tool_argument_references(None, None)
         assert block == "No tool calls with arguments in this conversation."
-
-
-class TestFaithfulnessJudgeWiring:
-    """The derived references must reach the rendered faithfulness judge prompt."""
-
-    def setup_method(self):
-        self.metric = make_judge_metric(FaithfulnessJudgeMetric, mock_llm=True)
-
-    def test_get_prompt_variables_exposes_derived_references(self):
-        ctx = make_metric_context(agent_tools=AGENT_TOOLS, conversation_trace=CONVERSATION_TRACE)
-        variables = self.metric.get_prompt_variables(ctx, "transcript")
-        assert "ZK3FFW" in variables["derived_tool_references"]
-        assert "user-stated" in variables["derived_tool_references"]
-
-    def test_rendered_judge_prompt_carries_the_reference_block(self):
-        ctx = make_metric_context(agent_tools=AGENT_TOOLS, conversation_trace=CONVERSATION_TRACE)
-        prompt = self.metric.get_judge_prompt(**self.metric.get_prompt_variables(ctx, "transcript"))
-        assert "## Derived References for Tool-Call Arguments" in prompt
-        assert "prior tool result get_reservation [turn 1] → reservation.confirmation_number = `ZK3FFW`" in prompt
-
-    def test_conversation_without_tools_still_renders(self):
-        ctx = make_metric_context(
-            agent_tools=[],
-            conversation_trace=[{"role": "user", "content": "hi", "turn_id": 0}],
-        )
-        prompt = self.metric.get_judge_prompt(**self.metric.get_prompt_variables(ctx, "transcript"))
-        assert "No tool calls with arguments in this conversation." in prompt

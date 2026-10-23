@@ -11,4 +11,4 @@ simulation_version = "2.0.1"
 
 # Bump metrics_version when changes affect metric computation (metrics code,
 # judge prompts, pricing tables, postprocessor).
-metrics_version = "2.2.0"
+metrics_version = "2.2.1"  # faithfulness v0.2 → v0.3: derived tool-argument references in the judge prompt
