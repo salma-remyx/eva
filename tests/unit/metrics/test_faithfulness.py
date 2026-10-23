@@ -7,6 +7,61 @@ import pytest
 from eva.metrics.accuracy.faithfulness import FaithfulnessJudgeMetric
 from tests.unit.metrics.conftest import make_judge_metric, make_metric_context
 
+# Airline-shaped tools/trace exercising every derivation source: a schema default
+# (notify), an enum (reason), a prior tool-result field (confirmation_number from
+# get_reservation), user-stated literals (ZK3FFW, Flores), and arithmetic over
+# prior results (260 + 75 = 335).
+AGENT_TOOLS = [
+    {
+        "id": "get_reservation",
+        "name": "get_reservation",
+        "description": "Retrieve a reservation.",
+        "tool_type": "read",
+        "required_parameters": [
+            {"name": "confirmation_number", "type": "string", "description": "6-character booking code"},
+            {"name": "last_name", "type": "string", "description": "Passenger last name"},
+        ],
+    },
+    {
+        "id": "apply_change_fee",
+        "name": "apply_change_fee",
+        "description": "Charge a change fee.",
+        "tool_type": "write",
+        "required_parameters": [
+            {"name": "confirmation_number", "type": "string", "description": "6-character booking code"},
+            {"name": "amount", "type": "number", "description": "Amount to charge"},
+            {"name": "reason", "type": "string", "enum": ["voluntary", "irrops_cancellation", "goodwill"]},
+            {"name": "notify", "type": "string", "default": "email", "description": "Notification channel"},
+        ],
+    },
+]
+
+CONVERSATION_TRACE = [
+    {"role": "user", "content": "Hi, my confirmation number is ZK3FFW and my last name is Flores.", "turn_id": 1},
+    {
+        "tool_name": "get_reservation",
+        "parameters": {"confirmation_number": "ZK3FFW", "last_name": "Flores"},
+        "type": "tool_call",
+        "turn_id": 1,
+    },
+    {
+        "tool_name": "get_reservation",
+        "tool_response": {
+            "status": "success",
+            "reservation": {"confirmation_number": "ZK3FFW", "fare_paid": 260.0, "change_fee": 75.0},
+        },
+        "type": "tool_response",
+        "turn_id": 1,
+    },
+    {"role": "assistant", "content": "I found your reservation.", "turn_id": 1},
+    {
+        "tool_name": "apply_change_fee",
+        "parameters": {"confirmation_number": "ZK3FFW", "amount": 335.0, "reason": "voluntary", "notify": "email"},
+        "type": "tool_call",
+        "turn_id": 2,
+    },
+]
+
 
 class TestFaithfulness:
     def setup_method(self):
@@ -160,3 +215,30 @@ class TestFaithfulness:
         score = await self.metric.compute(ctx)
         assert score.score == 0.0
         assert score.error is not None
+
+
+class TestFaithfulnessJudgeWiring:
+    """The derived references must reach the rendered faithfulness judge prompt."""
+
+    def setup_method(self):
+        self.metric = make_judge_metric(FaithfulnessJudgeMetric, mock_llm=True)
+
+    def test_get_prompt_variables_exposes_derived_references(self):
+        ctx = make_metric_context(agent_tools=AGENT_TOOLS, conversation_trace=CONVERSATION_TRACE)
+        variables = self.metric.get_prompt_variables(ctx, "transcript")
+        assert "ZK3FFW" in variables["derived_tool_references"]
+        assert "user-stated" in variables["derived_tool_references"]
+
+    def test_rendered_judge_prompt_carries_the_reference_block(self):
+        ctx = make_metric_context(agent_tools=AGENT_TOOLS, conversation_trace=CONVERSATION_TRACE)
+        prompt = self.metric.get_judge_prompt(**self.metric.get_prompt_variables(ctx, "transcript"))
+        assert "## Derived References for Tool-Call Arguments" in prompt
+        assert "prior tool result get_reservation [turn 1] → reservation.confirmation_number = `ZK3FFW`" in prompt
+
+    def test_conversation_without_tools_still_renders(self):
+        ctx = make_metric_context(
+            agent_tools=[],
+            conversation_trace=[{"role": "user", "content": "hi", "turn_id": 0}],
+        )
+        prompt = self.metric.get_judge_prompt(**self.metric.get_prompt_variables(ctx, "transcript"))
+        assert "No tool calls with arguments in this conversation." in prompt

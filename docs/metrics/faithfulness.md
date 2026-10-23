@@ -52,6 +52,20 @@ The judge evaluates five independent dimensions, each scored as a binary flag + 
 4. **failing_to_disambiguate** — Did the assistant proceed without clarification when input was ambiguous?
 5. **hallucination** — Did the assistant state information with no source at all? (Not covered by the other dimensions)
 
+### Derived References for Tool-Call Arguments (v0.3)
+
+When judging `fabricating_tool_parameters`, the judge prompt carries a **derived references** block: for every tool call in the conversation and every parameter it passed, the reference the argument should be checked against. References are derived mechanically from the agent's declared tool schemas and from the sources that preceded each call:
+
+- **Schema defaults** — a parameter sent at its schema-declared default is grounded even though the user never stated it
+- **Enums** — categorical parameters are grounded when the chosen value matches the user's situation
+- **Prior tool-result fields** — values returned by earlier tool responses, cited by tool and turn
+- **User-stated literals** — salient dates, codes, numbers, and names from user turns
+- **Arithmetic over prior results** — simple sums and differences over numeric values from earlier tool responses
+
+Derivation is **candidate-blind**: it reads parameter *names* only and never consults the values the assistant actually sent, so a derived reference cannot echo the argument under review. When nothing can be derived for a parameter, the block states that plainly and labels it as *not* evidence of fabrication — a missing reference is a limitation of the derivation, not a signal about the assistant.
+
+This block was introduced in metric version **v0.3** (`metrics_version` 2.2.1). Faithfulness scores from runs before this version bump were judged against a prompt without derived references and are therefore **not comparable** with scores from later runs.
+
 ### Scoring
 
 - **Scale**: 1-3 per dimension (minimum across dimensions = overall rating)
@@ -95,5 +109,6 @@ The judge evaluates five independent dimensions, each scored as a binary flag + 
 - **File**: `src/eva/metrics/accuracy/faithfulness.py`
 - **Class**: `FaithfulnessJudgeMetric`
 - **Base Class**: `ConversationTextJudgeMetric`
+- **Derived references**: `src/eva/metrics/derived_references.py` (`build_tool_argument_references`)
 - **Prompt**: `configs/prompts/judge.yaml` under `judge.faithfulness`
 - **Configuration**: `judge_model` (default: Claude Opus 4.6 via Bedrock)
