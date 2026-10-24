@@ -52,6 +52,16 @@ The judge evaluates five independent dimensions, each scored as a binary flag + 
 4. **failing_to_disambiguate** — Did the assistant proceed without clarification when input was ambiguous?
 5. **hallucination** — Did the assistant state information with no source at all? (Not covered by the other dimensions)
 
+### Derived Tool References (candidate-blind helper pass)
+
+Before the judge runs, a helper pass reads the conversation **with tool-call argument values redacted** and writes a reference sheet: for each tool call, the parameter values supported by user statements, prior tool results, the tool schema (defaults/enums), or unambiguous inferences — each with its source. The sheet is injected into the `fabricating_tool_parameters` dimension of the judge prompt.
+
+This closes the *derivation gap* ("Judges Follow the Reference: The Derivation Gap in Verifying Tool-Call Arguments", arXiv:2610.18497): judges tend to reject correct argument values as fabricated when their input holds no reference for them — schema defaults the user never stated, values that must be inferred, or values whose source text is not visible in the transcript. Because the helper never sees the values the assistant actually sent, it cannot rubber-stamp them.
+
+- Skipped (no extra LLM call) for conversations without tool calls.
+- Helper model configurable via `derived_reference_model` / `derived_reference_params` metric config; defaults to the judge model.
+- On helper failure or unparseable output, the judge proceeds without the sheet.
+
 ### Scoring
 
 - **Scale**: 1-3 per dimension (minimum across dimensions = overall rating)
